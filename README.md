@@ -1,2 +1,3 @@
-# dp
-Diplomová práce - Sb
+# Systém pro sběr a zpracování dat v zemědělství
+Tato diplomová práce se zabývá návrhem a implementací systému pro sběr, zpracování, uchovávání a vizualizaci dat získaných v oblasti zemědělství, primárně v oblasti sadařství a vinařství.  Výsledný systém umožňuje uživateli monitorování podmínek v místě umístění zařízení se senzory. Systém klade důraz na nízkou cenu, odolnost a rozšiřitelnost. V rámci teoretické části jsou popsána existující řešení a rozebrána problematika sběru, zpracování a vizualizace dat. Praktická část se věnuje návrhu architektury systému, včetně návrhu jednotlivých zařízení pro sběr dat a komunikačních protokolů. Dále se praktická část zabývá implementací celého systému a jeho jednotlivých částí. V práci jsou též diskutovány výsledky získané experimentováním s vytvořeným systémem a diskutovány další možnosti zlepšení systémy jako takového.
+
