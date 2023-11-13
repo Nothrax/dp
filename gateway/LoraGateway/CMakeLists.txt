@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.13)
+project(LoraGateway)
+set(CMAKE_CXX_STANDARD 14)
+add_executable(LoraGateway main.cpp main.cpp Logger/Logger.cpp Logger/Logger.h Arguments.cpp Arguments.h LoRa.cpp LoRa.h UART.cpp UART.h)
+include_directories(./)
+target_link_libraries(LoraGateway wiringPi)
