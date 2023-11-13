@@ -7,16 +7,16 @@ Vedoucí: Ing. Bc. Pavel Vařacha, Ph.D.
 TODO 
 
 ## android_app
-TODO
+Složka obsahuje projekt mobilní aplikace pro zobrazování dat získaných z jednotlivých zařízení.
 
 ## device
-TODO
+Složka obsahuje zdrojové kódy k zařízením ke sběru dat.
 
 ## gateway 
-TODO
+Složka obsahuje zdrojové kódy pro přístupové body systému.
 
 ## latex
 Složka obsahuje zdrojové kódy k latex projektu diplomové práce.
 
 ## server
-TODO
+Složka obsahuje zdrojové kódy serverové části projektu.
