@@ -1,18 +1,15 @@
-//
-// Created by trubk on 19/08/2020.
-//
-
-#ifndef LORAGATEWAY_ARGUMENTS_H
-#define LORAGATEWAY_ARGUMENTS_H
+#pragma once
 
 #include <string>
 #include <iostream>
 #include <getopt.h>
 
+namespace gateway::settings{
 class Arguments {
 public:
+	//todo from json
     static bool getVerboseFromArgument(int argc, char **argv);
+private:
+
 };
-
-
-#endif //LORAGATEWAY_ARGUMENTS_H
+}

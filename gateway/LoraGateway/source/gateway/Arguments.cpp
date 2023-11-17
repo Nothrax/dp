@@ -1,8 +1,7 @@
-//
-// Created by trubk on 19/08/2020.
-//
 
-#include "Arguments.h"
+#include <gateway/settings/SettingsParser.hpp>
+
+namespace gateway::settings{
 bool Arguments::getVerboseFromArgument(int argc, char **argv){
     bool verbose = false;
     int c;
@@ -11,4 +10,5 @@ bool Arguments::getVerboseFromArgument(int argc, char **argv){
             verbose = true;
         }
     return verbose;
+}
 }

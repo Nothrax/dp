@@ -1,12 +1,7 @@
-//
-// Created by nothrax on 28.05.20.
-//
 
-
-
-#include "LoRa.h"
-#include "Logger/Logger.h"
-#include "Arguments.h"
+#include "include/iot/LoRa.h"
+#include "include/iot/logger/Logger.h"
+#include "include/iot/Arguments.h"
 
 //do dokumentace
 //https://www.raspberrypi.org/documentation/configuration/uart.md
