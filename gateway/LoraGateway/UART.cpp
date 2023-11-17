@@ -1,7 +1,3 @@
-//
-// Created by root on 24.08.20.
-//
-
 #include "UART.h"
 UART* UART::instance = nullptr;
 
@@ -24,7 +20,7 @@ void UART::readBuffer(uint8_t *buffer, uint32_t bufferSize) {
     }
 }
 
-void UART::sendBuffer(uint8_t *buffer, uint32_t bufferSize) {
+void UART::sendBuffer(const uint8_t *buffer, uint32_t bufferSize) {
     for(int i = 0; i < bufferSize; i++){
         serialPutchar(fileDescriptor,buffer[i]);
     }
@@ -35,8 +31,8 @@ UART::~UART() {
     instance = nullptr;
 }
 
-void UART::startUart(std::string device, uint32_t baudRate) {
-    fileDescriptor = serialOpen(device, baudRate);
+void UART::startUart(const std::string& device, uint32_t baudRate) {
+    fileDescriptor = serialOpen(device.c_str(), baudRate);
     if(fileDescriptor < 0){
         Logger::logError( "Cannot open device ttyS0\n");
         exit(EXIT_FAILURE);
