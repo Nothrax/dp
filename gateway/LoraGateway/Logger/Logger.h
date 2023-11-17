@@ -15,7 +15,7 @@
 
 class Logger {
 public:
-    static void initLogger(std::string logPath, bool verbose);
+    static void initLogger(const std::string& logPath, bool verbose);
     static void logInfo(std::string log);
     static void logWarning(std::string log);
     static void logError(std::string log);

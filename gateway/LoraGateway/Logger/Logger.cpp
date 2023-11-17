@@ -4,7 +4,7 @@
 
 #include "Logger.h"
 
-void Logger::initLogger(std::string logPath, bool verbose) {
+void Logger::initLogger(const std::string& logPath, bool verbose) {
     try
     {
         std::vector<spdlog::sink_ptr> sinks;

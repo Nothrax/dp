@@ -18,9 +18,10 @@ uint8_t calculateCheckSum(uint8_t *data, size_t dataSize);
 
 int main(int argc, char **argv) {
     //todo inicializace, nejspis config
+	std::cout << "Starting LoRa gateway\n";
     SettingsStruct loRaSettings;
 
-    Logger::initLogger("/var/log/", Arguments::getVerboseFromArgument(argc, argv));
+    Logger::initLogger("/var/log/", true);
 
     LoRa *lora = LoRa::getInstance();
     lora->startLoRa(loRaSettings);
