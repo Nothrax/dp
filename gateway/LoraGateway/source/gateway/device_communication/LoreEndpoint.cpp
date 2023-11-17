@@ -18,10 +18,14 @@ bool LoraEndpoint::initialize() {
 		logger::Logger::logError( "Failed to initialize LoRa board");
 		return false;
 	}
+	initialized_ = true;
 	return true;
 }
 
 structures::LoraMessage LoraEndpoint::getMessage() {
+	if(!initialized_){
+		throw std::runtime_error("LoRa endpoint was not initialized");
+	}
 	structures::LoraMessage loRaMessage;
     uint8_t receiveBuffer[sizeof(structures::LoraMessage)];
 

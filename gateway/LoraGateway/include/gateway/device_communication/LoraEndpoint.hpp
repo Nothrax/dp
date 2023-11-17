@@ -42,10 +42,11 @@ private:
 	static constexpr uint32_t HIGH { 1 };
 
 	std::shared_ptr<structures::GlobalContext> &context_;
-	std::unique_ptr<UART> uart_ { nullptr };
+	std::unique_ptr<UARTManager> uart_ { nullptr };
 	//todo naplnit z konstruktoru?
 	uint8_t settingsRegister_[6] { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0xa4 };
 	uint8_t receiveBuffer_[sizeof(structures::LoraMessage)];
+	bool initialized_;
 
 	//todo nastaveni jednotlivych parametru?
 	bool initializeUart();

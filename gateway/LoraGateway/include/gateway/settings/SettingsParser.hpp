@@ -5,7 +5,7 @@
 #include <getopt.h>
 
 namespace gateway::settings{
-class Arguments {
+class SettingsParser {
 public:
 	//todo from json
     static bool getVerboseFromArgument(int argc, char **argv);
