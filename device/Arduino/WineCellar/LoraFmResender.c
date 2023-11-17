@@ -43,41 +43,46 @@ struct RFMessage {
   * bit 6 - lost message
   * bits 5-4 reserved
   * bits 3-0 message counter
-  * | 7 | 6 | 5 4 | 3 2 1 0 |
+  * | 7 | 6 | 5-4 | 3-0 |
 **/
-struct LoRaMessage{
+struct LoRaMessage {
 	/// Version number of protocl
 	uint8_t protocolVersion;
 	/// Unit identification number
 	uint16_t unitNumber;
 	/// Flags
-	uint8_t flags{0};
+	uint8_t flags { 0 };
 	/// Measured values
-	uint32_t values[5]{0};
+	uint32_t values[5] { 0 };
 	/// Checksum
-	uint8_t checkSum{0};
+	uint8_t checkSum { 0 };
 };
 #pragma pack(pop)
 
 
 /// Can be edited start
-//LoRa E32-868T20D settings, see documentation
-uint8_t loraSettings[] = {0xc0, 0x11, 0x22, 0x1a, 0x17, 0xa4};
-/// Address of the LoRa device
-uint8_t loraAddress[] = {0x14, 0x24, 0x02};
+/// LoRa E32-868T20D settings, see documentation
+/// 0xc0 - this frame data is control command
+/// 0x1122 - address of module, NOT USED
+/// 0x1a - 8N1 uart mode, 9600bps TTL UART baud rate, 2.4k bps Air data Rate
+/// 0x17 Communication channel - NOT USED
+/// 0xa4 - Fixed transmission mode, first three bytes are use
+uint8_t loraSettings[] = { 0xc0, 0x11, 0x22, 0x1a, 0x17, 0xa4 };
+/// Address of the LoRa device, 0x1424 is the address of target gateway, 0x2 is channel
+uint8_t loraAddress[] = { 0x14, 0x24, 0x02 };
 
 /// LoRa Gateway protocol values
-#define PROTOCOL_VERSION{1};
-#define UNIT_NUMBER{1};
+#define PROTOCOL_VERSION 1;
+#define UNIT_NUMBER 1;
 
 /// Can be edited end
 
 /// RF message counter
-uint32_t lastRfIndex{0};
+uint32_t lastRfIndex { 0 };
 /// LoRa message counter
-uint8_t loraCounter{0};
+uint8_t loraCounter { 0 };
 /// Indication of first received message
-bool firstRfMessage{true};
+bool firstRfMessage { true };
 
 /**
  * Calculate 8b long checksum
@@ -92,16 +97,20 @@ uint32_t checkSum32b(const uint8_t *data, size_t dataSize);
 /**
  * Send LoRa message from given RF message
 **/
-void sendLoRaMessage(const RFMessage &rfMessage);
+void sendLoRaMessage(const RFMessage
+
+&rfMessage);
 
 
 /// Lora board instance
-SoftwareSerial loraSerial(LORA_TX_PIN, LORA_RX_PIN);
+SoftwareSerial loraSerial(
+
+LORA_TX_PIN, LORA_RX_PIN);
 
 void setup() {
 	Serial.begin(SERIAL_DATA_RATE);
 
-	// Start LoRa board communication on serial
+	/// Start LoRa board communication on serial
 	loraSerial.begin(SERIAL_DATA_RATE);
 
 	// Set LoRa board M0 and M1 pins to HIGH - sleep mode when settings can be uploaded
@@ -115,14 +124,14 @@ void setup() {
 
 	/// Upload settings to LoRa board
 	int sended = loraSerial.write(loraSettings, sizeof(loraSettings));
-	if(sended == sizeof(loraSettings)){
+	if(sended == sizeof(loraSettings)) {
 		Serial.print("LoRa settings uploaded to the board");
 	}
 
 	delay(100);
 
 	/// Wait for ACK from LoRa board
-	while(loraSerial.available() > 0){
+	while(loraSerial.available() > 0) {
 		int readed = loraSerial.read();
 		Serial.print(readed, HEX);
 	}
@@ -135,14 +144,14 @@ void setup() {
 	delay(500);
 
 
-	//433MHZ RF communication
-	// Set the type of RF communication
+	///433MHZ RF communication
+	/// Set the type of RF communication
 	vw_set_ptt_inverted(true);
-	// Set bps speed
+	/// Set bps speed
 	vw_setup(RF_BITS_PER_SECOND);
-	// Set pin number of the receiver
+	/// Set pin number of the receiver
 	vw_set_rx_pin(RF_WIRELESS_PIN);
-	// Start the communication
+	/// Start the communication
 	vw_rx_start();
 
 
@@ -153,67 +162,67 @@ void loop() {
 	uint8_t rfMessageSize = sizeof(RFMessage);
 
 	/// Wait for RF message
-	if (vw_get_message((uint8_t *)&rfMessage, &rfMessageSize)) {
+	if(vw_get_message((uint8_t*) & rfMessage, &rfMessageSize)) {
 		sendLoRaMessage(rfMessage);
 	}
 }
 
-void sendLoRaMessage(const RFMessage &rfMessage){
+void sendLoRaMessage(const RFMessage &rfMessage) {
 	LoRaMessage loraMessage;
 	loraMessage.protocolVersion = PROTOCOL_VERSION;
 	loraMessage.unitNumber = UNIT_NUMBER;
 	loraMessage.flags = 0;
-	// Adding message counter to flags
+	/// Adding message counter to flags
 	loraMessage.flags = loraCounter & 0b00001111;
 
-	uint32_t calculatedCheckSum = checkSum32b((uint8_t *) &rfMessage, sizeof(RFMessage) - sizeof(uint32_t));
-	if(calculatedCheckSum != rfMessage.checkSum){ /// RF message checksum error, values wont be copied
+	uint32_t calculatedCheckSum = checkSum32b((uint8_t*) & rfMessage, sizeof(RFMessage) - sizeof(uint32_t));
+	if(calculatedCheckSum != rfMessage.checkSum) { /// RF message checksum error, values wont be copied
 		Serial.println("Wrong RF message check Sum");
 		loraMessage.flags |= 0b1000000;
-	}else{  /// Checksum ok, copy values
-		memcpy((void *) loraMessage.values, (void *)&rfMessage.temperature, 12);
+	} else {  /// Checksum ok, copy values
+		memcpy((void *)loraMessage.values, (void *)&rfMessage.temperature, 12);
 		loraMessage.values[3] = 0;
 		loraMessage.values[4] = 0;
 	}
 
-	// Check if RF message got lost
-	if(lastRfIndex + 1 != rfMessage.counter){
-		// First message of program, do not set lost flag
-		if(firstRfMessage){
+	/// Check if RF message got lost
+	if(lastRfIndex + 1 != rfMessage.counter) {
+	/// First message of program, do not set lost flag
+		if(firstRfMessage) {
 			firstRfMessage = false;
-		}else{
+		} else {
 			loraMessage.flags |= 0b01000000;
 		}
 	}
 	lastRfIndex = rfMessage.counter;
 
-	loraMessage.checkSum = checkSum8b((uint8_t *)&loraMessage, sizeof(LoRaMessage) - sizeof(uint32_t));
+	loraMessage.checkSum = checkSum8b((uint8_t*) & loraMessage, sizeof(LoRaMessage) - sizeof(uint32_t));
 	/// First three bytes contains address
 	int sended = loraSerial.write(loraAddress, sizeof(loraAddress));
 	/// Send the LoRa message
-	sended += loraSerial.write((uint8_t *)&loraMessage, sizeof(LoRaMessage));
-	if(sended == sizeof(LoRaMessage) + sizeof(loraAddress)){
-	Serial.print("LoRa Message sended ");
+	sended += loraSerial.write((uint8_t*) & loraMessage, sizeof(LoRaMessage));
+	if(sended == sizeof(LoRaMessage) + sizeof(loraAddress)) {
+		Serial.print("LoRa Message sended ");
 	}
 
-	// Counting lora messages on 4 bits, 0-15
+	/// Counting lora messages on 4 bits, 0-15
 	loraCounter++;
-	if(loraCounter > 15){
+	if(loraCounter > 15) {
 		loraCounter = 0;
 	}
 }
 
-uint32_t checkSum32b(const uint8_t *data, size_t dataSize){
+uint32_t checkSum32b(const uint8_t *data, size_t dataSize) {
 	uint32_t sum = 0;
-	for(int index = 0; index < dataSize; index++){
+	for(int index = 0; index < dataSize; index++) {
 		sum += data[index];
 	}
 	return sum;
 }
 
-uint8_t checkSum8b(const uint8_t *data, size_t dataSize){
+uint8_t checkSum8b(const uint8_t *data, size_t dataSize) {
 	uint8_t sum = 0;
-	for(int index = 0; index < dataSize; index++){
+	for(int index = 0; index < dataSize; index++) {
 		sum += data[index];
 	}
 	return sum;
