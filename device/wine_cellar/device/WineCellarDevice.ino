@@ -9,8 +9,6 @@
 #define DHT_PIN 2
 // Sensor is of type DHT22
 #define DHT_TYPE DHT22
-/// Instance of the DHT sensor
-DHT dht(DHTPIN, DHTTYPE);
 
 /// CO2 and temperature sensor MHZ19 defines
 /// PWM pin of MHZ19
@@ -31,13 +29,17 @@ DHT dht(DHTPIN, DHTTYPE);
 #define SERIAL_DATA_RATE 9600
 
 /// CO2 threshold, after reaching this value, red led will be turned on
-#define CO2_THRESHOLD 4900;
+#define CO2_THRESHOLD 4900
 /// How often will the values be measured and sended using RF board
 #define MEASUREMENT_DELAY_MS 15000
 
 /// Instances of MHZ19 sensor
 MHZ19 *mhz19_uart = new MHZ19(MHZ19_RX_PIN, MHZ19_TX_PIN);
 MHZ19 *mhz19_pwm = new MHZ19(MHZ19_PWN_PIN);
+
+
+/// Instance of the DHT sensor
+DHT dht(DHT_PIN, DHT_TYPE);
 
 // Set the LCD address to 0x3F for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x3f, 16, 2);
@@ -94,7 +96,7 @@ void setup() {
 	/// 433Mhz chip setup
 	vw_set_ptt_inverted(true);
 	vw_setup(RF_BITS_PER_SECOND);
-	vw_set_tx_pin(WIRELESS_PIN);
+	vw_set_tx_pin(RF_WIRELESS_PIN);
 
 	/// Init done indication using leds
 	digitalWrite(LED_PIN, HIGH);
@@ -103,6 +105,7 @@ void setup() {
 	delay(1000);
 	digitalWrite(LED_PIN, HIGH);
 	delay(1000);
+	Serial.println("Device initialized");
 }
 
 void loop() {
@@ -116,7 +119,7 @@ void loop() {
 	float temp = dht.readTemperature();
 
 	/// If CO2 is over threshold, turn on warning led
-	if(co2 > co2Threshold) {
+	if(co2 > CO2_THRESHOLD) {
 		digitalWrite(LED_PIN, HIGH);
 	} else {
 		digitalWrite(LED_PIN, LOW);
@@ -135,10 +138,11 @@ void loop() {
 	lcd.print("%");
 
 
-	Message message = { messageCounter, temp, hum, co2, 0 };
-	messageCounter++;
+	RFMessage message = { rfMessageCounter, temp, hum, co2, 0 };
+	rfMessageCounter++;
 	message.checkSum = calculateCheckSum((uint8_t*) & message, 20);
-	sendData((uint8_t*) & message, sizeof(Message));
+	sendData((uint8_t*) & message, sizeof(RFMessage));
+	Serial.println("Measurement send");
 	delay(MEASUREMENT_DELAY_MS);
 }
 

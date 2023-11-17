@@ -1,16 +1,11 @@
-//
-// Created by trubk on 17.11.2023.
-//
+#pragma once
 
-#ifndef LORAGATEWAY_GATEWAY_HPP
-#define LORAGATEWAY_GATEWAY_HPP
-
-
-
+namespace gateway{
 class Gateway {
+public:
+private:
 
+
+	uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize);
 };
-
-
-
-#endif //LORAGATEWAY_GATEWAY_HPP
+}

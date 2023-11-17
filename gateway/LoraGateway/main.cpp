@@ -1,15 +1,10 @@
 
-#include "include/iot/LoRa.h"
-#include "include/iot/logger/Logger.h"
-#include "include/iot/Arguments.h"
+#include <gateway/Gateway.hpp>
 
-//do dokumentace
-//https://www.raspberrypi.org/documentation/configuration/uart.md
-//https://www.electronicwings.com/raspberry-pi/raspberry-pi-uart-communication-using-python-and-c
 
 
 //todo odchytavat signal a ukoncovat komunikaci
-uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize);
+
 
 int main(int argc, char **argv) {
     //todo inicializace, nejspis config
@@ -69,10 +64,4 @@ int main(int argc, char **argv) {
     }
 }
 
-uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize) {
-    uint8_t sum = 0;
-    for(int index = 0; index < dataSize; index++){
-        sum += data[index];
-    }
-    return sum;
-}
+
