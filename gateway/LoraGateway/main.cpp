@@ -14,7 +14,7 @@
 
 
 //todo odchytavat signal a ukoncovat komunikaci
-uint8_t calculateCheckSum(uint8_t *data, size_t dataSize);
+uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize);
 
 int main(int argc, char **argv) {
     //todo inicializace, nejspis config
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     }
 }
 
-uint8_t calculateCheckSum(uint8_t *data, size_t dataSize) {
+uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize) {
     uint8_t sum = 0;
     for(int index = 0; index < dataSize; index++){
         sum += data[index];

@@ -1,151 +1,220 @@
 #include <SoftwareSerial.h>
 #include <VirtualWire.h>
 
-#define TX_PIN 2
-#define RX_PIN 3
-#define M0_PIN 4
-#define M1_PIN 5
-#define WIRELESS_PIN 7
+/// LoRa board (E32-868T20D) specific settings
+/// LoRa Tx pin number
+#define LORA_TX_PIN 2
+/// LoRa Rx pin number
+#define LORA_RX_PIN 3
+/// M0 and M1 pins decide mode of the board, see documentation for available modes
+#define LORA_M0_PIN 4
+#define LORA_M1_PIN 5
 
-#define GATEWAY_ADDRESS_SIZE 3
+/// RF board (NiceRF 433MHz wl101-341) specific settings
+#define RF_WIRELESS_PIN 7
+#define RF_BITS_PER_SECOND 512
+
+/// Data rate on serial port
+#define SERIAL_DATA_RATE 9600
+
 
 #pragma pack(push, 1)
 
+/**
+ * Definition of the RF message
+**/
 struct RFMessage {
-    uint32_t counter;
-    float temperature;
-    float humidity;
-    uint32_t carbonDioxide;
-    uint32_t checkSum;
+	/// Message counter
+	uint32_t counter;
+	/// Current temperature
+	float temperature;
+	/// Current humidity
+	float humidity;
+	/// Currenc CO2 level
+	uint32_t carbonDioxide;
+	/// Check sum
+	uint32_t checkSum;
 };
 
+/**
+  * Definition of LoRa message
+  * flags:
+  * bit 7 - wrong cheksum received
+  * bit 6 - lost message
+  * bits 5-4 reserved
+  * bits 3-0 message counter
+  * | 7 | 6 | 5 4 | 3 2 1 0 |
+**/
 struct LoRaMessage{
-    uint8_t protocolVersion = 1;
-    uint16_t unitNumber = 3;
-    uint8_t flags = 0;
-    uint32_t values[5] = {0};
-    uint8_t checkSum = 0;
+	/// Version number of protocl
+	uint8_t protocolVersion;
+	/// Unit identification number
+	uint16_t unitNumber;
+	/// Flags
+	uint8_t flags{0};
+	/// Measured values
+	uint32_t values[5]{0};
+	/// Checksum
+	uint8_t checkSum{0};
 };
 #pragma pack(pop)
-uint8_t checkSum8b(uint8_t *data, size_t dataSize);
-uint32_t checkSum32b(uint8_t *data, size_t dataSize);
 
-SoftwareSerial loraSerial(TX_PIN, RX_PIN);
+
+/// Can be edited start
+//LoRa E32-868T20D settings, see documentation
+uint8_t loraSettings[] = {0xc0, 0x11, 0x22, 0x1a, 0x17, 0xa4};
+/// Address of the LoRa device
+uint8_t loraAddress[] = {0x14, 0x24, 0x02};
+
+/// LoRa Gateway protocol values
+#define PROTOCOL_VERSION{1};
+#define UNIT_NUMBER{1};
+
+/// Can be edited end
+
+/// RF message counter
+uint32_t lastRfIndex{0};
+/// LoRa message counter
+uint8_t loraCounter{0};
+/// Indication of first received message
+bool firstRfMessage{true};
+
+/**
+ * Calculate 8b long checksum
+**/
+uint8_t checkSum8b(const uint8_t *data, size_t dataSize);
+
+/**
+ * Calculate 32b long checksum
+**/
+uint32_t checkSum32b(const uint8_t *data, size_t dataSize);
+
+/**
+ * Send LoRa message from given RF message
+**/
+void sendLoRaMessage(const RFMessage &rfMessage);
+
+
+/// Lora board instance
+SoftwareSerial loraSerial(LORA_TX_PIN, LORA_RX_PIN);
 
 void setup() {
-    Serial.begin(9600);
-    //zacatek komunikace s uartem lory
-    loraSerial.begin(9600);
+	Serial.begin(SERIAL_DATA_RATE);
 
-    //nastaveni m0 a m1 do nastavovaciho rezimu
-    pinMode(M0_PIN, OUTPUT);
-    pinMode(M1_PIN, OUTPUT);
-    digitalWrite(M0_PIN, HIGH);
-    digitalWrite(M1_PIN, HIGH);
+	// Start LoRa board communication on serial
+	loraSerial.begin(SERIAL_DATA_RATE);
+
+	// Set LoRa board M0 and M1 pins to HIGH - sleep mode when settings can be uploaded
+	pinMode(LORA_M0_PIN, OUTPUT);
+	pinMode(LORA_M1_PIN, OUTPUT);
+	digitalWrite(LORA_M0_PIN, HIGH);
+	digitalWrite(LORA_M1_PIN, HIGH);
+
+	/// Delay for pin settings to become stable
+	delay(500);
+
+	/// Upload settings to LoRa board
+	int sended = loraSerial.write(loraSettings, sizeof(loraSettings));
+	if(sended == sizeof(loraSettings)){
+		Serial.print("LoRa settings uploaded to the board");
+	}
+
+	delay(100);
+
+	/// Wait for ACK from LoRa board
+	while(loraSerial.available() > 0){
+		int readed = loraSerial.read();
+		Serial.print(readed, HEX);
+	}
+
+	Serial.print("\n");
+	Serial.println("Setting LoRa board into transmition mode");
+	/// Set LoRa board M0 and M1 pins to LOW - UART and wireless channel are open, transparent transmission is on
+	digitalWrite(LORA_M0_PIN, LOW);
+	digitalWrite(LORA_M1_PIN, LOW);
+	delay(500);
 
 
-    delay(500);
-
-    //pole s nastavenim registru, viz dokumentace
-    uint8_t setSettings[6] = {0xc0, 0x11, 0x22, 0x1a, 0x17, 0xa4};
-
-    int sended = loraSerial.write(setSettings, 6);
-    if(sended == 6){
-        Serial.print("poslal jsem 6\n");
-    }
-
-    delay(100);
-
-    while(loraSerial.available() > 0){
-        int readed = loraSerial.read();
-        Serial.print(readed, HEX);
-    }
-
-    Serial.print("\n");
-    Serial.println("Setting transmition mode");
-    digitalWrite(M0_PIN, LOW);
-    digitalWrite(M1_PIN, LOW);
-    delay(500);
-
-
-    //433MHZ RF komunikace
-    // nastavení typu bezdrátové komunikace
-    vw_set_ptt_inverted(true);
-    // nastavení rychlosti přenosu v bitech za sekundu
-    vw_setup(512);
-    // nastavení čísla datového pinu pro přijímač
-    vw_set_rx_pin(WIRELESS_PIN);
-    // nastartování komunikace po nastaveném pinu
-    vw_rx_start();
+	//433MHZ RF communication
+	// Set the type of RF communication
+	vw_set_ptt_inverted(true);
+	// Set bps speed
+	vw_setup(RF_BITS_PER_SECOND);
+	// Set pin number of the receiver
+	vw_set_rx_pin(RF_WIRELESS_PIN);
+	// Start the communication
+	vw_rx_start();
 
 
 }
-uint32_t rfCounter = 0;
-uint8_t loraCounter = 0;
 
 void loop() {
-    RFMessage rfMessage;
-    uint8_t rfMessageSize = sizeof(RFMessage);
+	RFMessage rfMessage;
+	uint8_t rfMessageSize = sizeof(RFMessage);
 
-    LoRaMessage loraMessage;
-    loraMessage.protocolVersion = 1;
-    loraMessage.unitNumber = 3;
-    // 1b wrong cheksum received, 1b lost message, 2b reserved, 4b counter
-    loraMessage.flags = 0;
-    //adding message counter to flags
-    loraMessage.flags = loraCounter & 0b00001111;
-    uint8_t gatewayAddress[3] = {0x14,0x24,0x02};
-
-    //todo lora message counter
-
-    if (vw_get_message((uint8_t *)&rfMessage, &rfMessageSize)) {
-        uint32_t calculatedCheckSum = checkSum32b((uint8_t *) &rfMessage, rfMessageSize-sizeof(uint32_t));
-        if(calculatedCheckSum != rfMessage.checkSum){
-            Serial.println("Wrong Check Sum");
-
-            loraMessage.flags |= 0b1000000;
-        }else{
-            memcpy((void *) loraMessage.values, (void *)&rfMessage.temperature, 12);
-            loraMessage.values[3] = 0;
-            loraMessage.values[4] = 0;
-        }
-        //check if message got lost
-        rfCounter++;
-        if(rfCounter != rfMessage.counter){
-            //first message of program
-            if(rfCounter != 0){
-                loraMessage.flags |= 0b01000000;
-            }
-            rfCounter = rfMessage.counter;
-        }
-
-        loraMessage.checkSum = checkSum8b((uint8_t *)&loraMessage, sizeof(struct LoRaMessage) - sizeof(uint32_t));
-        int sended = loraSerial.write(gatewayAddress,GATEWAY_ADDRESS_SIZE);
-        sended += loraSerial.write((uint8_t *)&loraMessage,sizeof(LoRaMessage));
-        if(sended == sizeof(LoRaMessage)+ GATEWAY_ADDRESS_SIZE){
-            Serial.println("odeslano");
-        }
-        //counting lora messages on 4 bits, 0-15
-        loraCounter++;
-        if(loraCounter > 15){
-            loraCounter = 0;
-        }
-
-    }
+	/// Wait for RF message
+	if (vw_get_message((uint8_t *)&rfMessage, &rfMessageSize)) {
+		sendLoRaMessage(rfMessage);
+	}
 }
 
-uint32_t checkSum32b(uint8_t *data, size_t dataSize){
-    uint32_t sum = 0;
-    for(int index = 0; index < dataSize; index++){
-        sum += data[index];
-    }
-    return sum;
+void sendLoRaMessage(const RFMessage &rfMessage){
+	LoRaMessage loraMessage;
+	loraMessage.protocolVersion = PROTOCOL_VERSION;
+	loraMessage.unitNumber = UNIT_NUMBER;
+	loraMessage.flags = 0;
+	// Adding message counter to flags
+	loraMessage.flags = loraCounter & 0b00001111;
+
+	uint32_t calculatedCheckSum = checkSum32b((uint8_t *) &rfMessage, sizeof(RFMessage) - sizeof(uint32_t));
+	if(calculatedCheckSum != rfMessage.checkSum){ /// RF message checksum error, values wont be copied
+		Serial.println("Wrong RF message check Sum");
+		loraMessage.flags |= 0b1000000;
+	}else{  /// Checksum ok, copy values
+		memcpy((void *) loraMessage.values, (void *)&rfMessage.temperature, 12);
+		loraMessage.values[3] = 0;
+		loraMessage.values[4] = 0;
+	}
+
+	// Check if RF message got lost
+	if(lastRfIndex + 1 != rfMessage.counter){
+		// First message of program, do not set lost flag
+		if(firstRfMessage){
+			firstRfMessage = false;
+		}else{
+			loraMessage.flags |= 0b01000000;
+		}
+	}
+	lastRfIndex = rfMessage.counter;
+
+	loraMessage.checkSum = checkSum8b((uint8_t *)&loraMessage, sizeof(LoRaMessage) - sizeof(uint32_t));
+	/// First three bytes contains address
+	int sended = loraSerial.write(loraAddress, sizeof(loraAddress));
+	/// Send the LoRa message
+	sended += loraSerial.write((uint8_t *)&loraMessage, sizeof(LoRaMessage));
+	if(sended == sizeof(LoRaMessage) + sizeof(loraAddress)){
+	Serial.print("LoRa Message sended ");
+	}
+
+	// Counting lora messages on 4 bits, 0-15
+	loraCounter++;
+	if(loraCounter > 15){
+		loraCounter = 0;
+	}
 }
 
-uint8_t checkSum8b(uint8_t *data, size_t dataSize){
-    uint8_t sum = 0;
-    for(int index = 0; index < dataSize; index++){
-        sum += data[index];
-    }
-    return sum;
+uint32_t checkSum32b(const uint8_t *data, size_t dataSize){
+	uint32_t sum = 0;
+	for(int index = 0; index < dataSize; index++){
+		sum += data[index];
+	}
+	return sum;
+}
+
+uint8_t checkSum8b(const uint8_t *data, size_t dataSize){
+	uint8_t sum = 0;
+	for(int index = 0; index < dataSize; index++){
+		sum += data[index];
+	}
+	return sum;
 }
