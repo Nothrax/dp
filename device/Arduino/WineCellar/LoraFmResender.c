@@ -43,7 +43,7 @@ struct RFMessage {
   * bit 6 - lost message
   * bits 5-4 reserved
   * bits 3-0 message counter
-  * | 7 | 6 | 5-4 | 3-0 |
+  * | 7 | 6 | 5 4 | 3 2 1 0 |
 **/
 struct LoRaMessage {
 	/// Version number of protocl
@@ -62,14 +62,12 @@ struct LoRaMessage {
 
 /// Can be edited start
 /// LoRa E32-868T20D settings, see documentation
-/// 0xc0 - this frame data is control command
-/// 0x1122 - address of module, NOT USED
-/// 0x1a - 8N1 uart mode, 9600bps TTL UART baud rate, 2.4k bps Air data Rate
-/// 0x17 Communication channel - NOT USED
-/// 0xa4 - Fixed transmission mode, first three bytes are use
-uint8_t loraSettings[] = { 0xc0, 0x11, 0x22, 0x1a, 0x17, 0xa4 };
-/// Address of the LoRa device, 0x1424 is the address of target gateway, 0x2 is channel
-uint8_t loraAddress[] = { 0x14, 0x24, 0x02 };
+/// 0xc0 - settings command
+/// 0x1424 - address of the device
+/// 0x1a - 8N1 UART mode, 9600 UART baud rate, 2.4k Air Data Rate
+/// 0x02 - channel of the device
+/// 0x24 - Transparent transition mode, IO drive mode 0, Wireles wake-up time 1250ms, FEC off, transmission power 30dBm
+uint8_t loraSettings[] = { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0x24 };
 
 /// LoRa Gateway protocol values
 #define PROTOCOL_VERSION 1;
@@ -113,7 +111,7 @@ void setup() {
 	/// Start LoRa board communication on serial
 	loraSerial.begin(SERIAL_DATA_RATE);
 
-	// Set LoRa board M0 and M1 pins to HIGH - sleep mode when settings can be uploaded
+	/// Set LoRa board M0 and M1 pins to HIGH - sleep mode when settings can be uploaded
 	pinMode(LORA_M0_PIN, OUTPUT);
 	pinMode(LORA_M1_PIN, OUTPUT);
 	digitalWrite(LORA_M0_PIN, HIGH);
@@ -125,7 +123,7 @@ void setup() {
 	/// Upload settings to LoRa board
 	int sended = loraSerial.write(loraSettings, sizeof(loraSettings));
 	if(sended == sizeof(loraSettings)) {
-		Serial.print("LoRa settings uploaded to the board");
+		Serial.println("LoRa settings uploaded to the board");
 	}
 
 	delay(100);
@@ -144,14 +142,14 @@ void setup() {
 	delay(500);
 
 
-	///433MHZ RF communication
-	/// Set the type of RF communication
+	//433MHZ RF communication
+	// Set the type of RF communication
 	vw_set_ptt_inverted(true);
-	/// Set bps speed
+	// Set bps speed
 	vw_setup(RF_BITS_PER_SECOND);
-	/// Set pin number of the receiver
+	// Set pin number of the receiver
 	vw_set_rx_pin(RF_WIRELESS_PIN);
-	/// Start the communication
+	// Start the communication
 	vw_rx_start();
 
 
@@ -197,12 +195,10 @@ void sendLoRaMessage(const RFMessage &rfMessage) {
 	lastRfIndex = rfMessage.counter;
 
 	loraMessage.checkSum = checkSum8b((uint8_t*) & loraMessage, sizeof(LoRaMessage) - sizeof(uint32_t));
-	/// First three bytes contains address
-	int sended = loraSerial.write(loraAddress, sizeof(loraAddress));
 	/// Send the LoRa message
-	sended += loraSerial.write((uint8_t*) & loraMessage, sizeof(LoRaMessage));
-	if(sended == sizeof(LoRaMessage) + sizeof(loraAddress)) {
-		Serial.print("LoRa Message sended ");
+	int sended = loraSerial.write((uint8_t*) & loraMessage, sizeof(LoRaMessage));
+	if(sended == sizeof(LoRaMessage)) {
+		Serial.println("LoRa Message sended");
 	}
 
 	/// Counting lora messages on 4 bits, 0-15
