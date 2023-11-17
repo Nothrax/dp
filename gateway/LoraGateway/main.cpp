@@ -3,23 +3,47 @@
 #include <gateway/logger/Logger.hpp>
 #include <gateway/settings/SettingsParser.hpp>
 
-
-
-//todo odchytavat signal a ukoncovat komunikaci
-
+#include <thread>
+#include <iostream>
 
 int main(int argc, char **argv) {
-    //todo inicializace, nejspis config
-	std::cout << "Starting LoRa gateway\n";
-    gateway::settings::SettingsParser settingsParser;
+	using namespace gateway;
+	std::thread contextThread;
+    settings::SettingsParser settingsParser;
+	auto context = std::make_shared<structures::GlobalContext>();
 
-    gateway::logger::Logger::initLogger("/var/log/", true);
+	if(!settingsParser.parseSettings(argc, argv)){
+		std::cout << "Failed to parse settings\n";
+		return EXIT_FAILURE;
+	}
 
-	auto context = std::make_shared<gateway::structures::GlobalContext>();
+	context->settings = settingsParser.getSettings();
 
-	gateway::Gateway worker(context);
+	//todo from settings
+	logger::Logger::initLogger("/var/log/", true);
 
-	worker.start();
+	try{
+		Gateway worker(context);
+		boost::asio::signal_set signals { context->context, SIGINT, SIGTERM, SIGHUP };
+		signals.async_wait([context](auto, auto) { context->context.stop(); });
+		contextThread = std::thread([context]() { context->context.run(); });
+
+		worker.start();
+
+	}catch(std::exception &e){
+		logger::Logger::logError(std::string("Exception occurred ")+e.what());
+	}catch (...){
+		logger::Logger::logError("Unknown exception caught");
+	}
+
+	if(!context->context.stopped()) {
+		context->context.stop();
+	}
+
+	contextThread.join();
+
+
+	return EXIT_SUCCESS;
 }
 
 

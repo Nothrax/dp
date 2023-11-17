@@ -2,6 +2,8 @@
 
 #include <gateway/settings/Settings.hpp>
 
+#include <boost/asio.hpp>
+
 #include <memory>
 
 
@@ -9,13 +11,8 @@
 namespace gateway::structures {
 class GlobalContext {
 public:
-	[[nodiscard]] const std::shared_ptr<settings::Settings> &getSettings() const;
-
-	void setSettings(const std::shared_ptr<settings::Settings> &settings);
-
-private:
-	std::shared_ptr<settings::Settings> settings_;
-	//todo from boost
-
+	std::shared_ptr<settings::Settings> settings;
+	/// Boost context
+	boost::asio::io_context context;
 };
 }

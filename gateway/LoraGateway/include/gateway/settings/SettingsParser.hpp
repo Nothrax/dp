@@ -1,15 +1,17 @@
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <getopt.h>
+#include <gateway/settings/Settings.hpp>
+
+#include <memory>
 
 namespace gateway::settings{
 class SettingsParser {
 public:
-	//todo from json
-    static bool getVerboseFromArgument(int argc, char **argv);
+	bool parseSettings(int argc, char **argv);
+
+	[[nodiscard]] const std::shared_ptr<Settings> &getSettings() const;
 private:
+	std::shared_ptr<Settings> settings_;
 
 };
 }

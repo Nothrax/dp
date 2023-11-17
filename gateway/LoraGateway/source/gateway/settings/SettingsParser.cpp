@@ -2,7 +2,7 @@
 #include <gateway/settings/SettingsParser.hpp>
 
 namespace gateway::settings{
-bool Arguments::getVerboseFromArgument(int argc, char **argv){
+bool SettingsParser::parseSettings(int argc, char **argv){
     bool verbose = false;
     int c;
     while ((c = getopt(argc, argv, "v")) != -1)
@@ -10,5 +10,9 @@ bool Arguments::getVerboseFromArgument(int argc, char **argv){
             verbose = true;
         }
     return verbose;
+}
+
+const std::shared_ptr<Settings> &SettingsParser::getSettings() const {
+	return settings_;
 }
 }
