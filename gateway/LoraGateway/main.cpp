@@ -6,13 +6,15 @@
 #include <thread>
 #include <iostream>
 
+
+
 int main(int argc, char **argv) {
 	using namespace gateway;
 	std::thread contextThread;
-    settings::SettingsParser settingsParser;
+	settings::SettingsParser settingsParser;
 	auto context = std::make_shared<structures::GlobalContext>();
 
-	if(!settingsParser.parseSettings(argc, argv)){
+	if(!settingsParser.parseSettings(argc, argv)) {
 		std::cout << "Failed to parse settings\n";
 		return EXIT_FAILURE;
 	}
@@ -22,7 +24,7 @@ int main(int argc, char **argv) {
 	//todo from settings
 	logger::Logger::initLogger("/var/log/", true);
 
-	try{
+	try {
 		Gateway worker(context);
 		boost::asio::signal_set signals { context->context, SIGINT, SIGTERM, SIGHUP };
 		signals.async_wait([context](auto, auto) { context->context.stop(); });
@@ -30,9 +32,9 @@ int main(int argc, char **argv) {
 
 		worker.start();
 
-	}catch(std::exception &e){
-		logger::Logger::logError(std::string("Exception occurred ")+e.what());
-	}catch (...){
+	} catch(std::exception &e) {
+		logger::Logger::logError(std::string("Exception occurred ") + e.what());
+	} catch(...) {
 		logger::Logger::logError("Unknown exception caught");
 	}
 
