@@ -5,7 +5,8 @@ namespace gateway{
 
 void Gateway::start() {
 	logger::Logger::logInfo("Starting gateway of type LoRa");
-	loraEndpoint_ = std::make_unique<device_communication::LoraEndpoint>(context_);
+	loraEndpoint_ = std::make_unique<device::LoraEndpoint>(context_);
+	csvWriter_ = std::make_unique<cloud::CsvWriter>("./");
 
 	uint8_t messageCounter = 0;
 	//todo boost context
@@ -40,12 +41,13 @@ void Gateway::start() {
 			logger::Logger::logError("Wrong checksum");
 		}
 
+		//todo create factory for devices
 		float floatValues[2];
 		memcpy((void *)floatValues, (void *) loRaMessage.values, 8);
 		printf("version: %d, unit number: %d, flags: %02x, temp: %f hum: %f co2: %d sum: %d\n"
 				,loRaMessage.protocolVersion, loRaMessage.unitNumber, loRaMessage.flags, floatValues[0], floatValues[1], loRaMessage.values[2], loRaMessage.checkSum);
+		csvWriter_->write(loRaMessage);
 	}
-	//todo store into csv
 }
 
 uint8_t Gateway::calculateCheckSum(const uint8_t *data, size_t dataSize) {

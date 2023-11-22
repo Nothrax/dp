@@ -1,16 +1,15 @@
 #pragma once
 
 #include <gateway/structures/LoraMessage.hpp>
-#include <gateway/device_communication/UartManager.hpp>
+#include <gateway/device/UartManager.hpp>
 #include <gateway/structures/GlobalContext.hpp>
 
-#include <wiringPi.h>
 
 #include <memory>
 
 
 
-namespace gateway::device_communication {
+namespace gateway::device {
 enum class ELoraMode {
 	E_BEGIN = 0,
 	E_INVALID = E_BEGIN,
@@ -27,7 +26,7 @@ public:
 
 	bool initialize();
 
-	structures::LoraMessage getMessage();
+	structures::LoraMessage getMessage() const;
 
 	~LoraEndpoint();
 

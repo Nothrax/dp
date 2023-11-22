@@ -1,11 +1,11 @@
-#include <gateway/device_communication/UartManager.hpp>
+#include <gateway/device//UartManager.hpp>
 #include <gateway/logger/Logger.hpp>
 
 #include <wiringSerial.h>
 
 
 
-namespace gateway::device_communication {
+namespace gateway::device {
 
 bool UARTManager::readBuffer(uint8_t *buffer, uint32_t bufferSize) {
 	//todo timeout

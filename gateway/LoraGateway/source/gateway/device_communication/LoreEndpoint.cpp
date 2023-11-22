@@ -1,10 +1,12 @@
-#include <gateway/device_communication/LoraEndpoint.hpp>
+#include <gateway/device/LoraEndpoint.hpp>
 #include <gateway/logger/Logger.hpp>
+
+#include <wiringPi.h>
 
 #include <chrono>
 #include <thread>
 
-namespace gateway::device_communication{
+namespace gateway::device{
 bool LoraEndpoint::initialize() {
     if(!initializeUart()){
 		logger::Logger::logError( "Failed to initialize UART");
@@ -22,7 +24,7 @@ bool LoraEndpoint::initialize() {
 	return true;
 }
 
-structures::LoraMessage LoraEndpoint::getMessage() {
+structures::LoraMessage LoraEndpoint::getMessage() const {
 	if(!initialized_){
 		throw std::runtime_error("LoRa endpoint was not initialized");
 	}
@@ -49,8 +51,8 @@ bool LoraEndpoint::initializeModePins() {
 }
 
 bool LoraEndpoint::initializeUart() {
-    uart_ = std::make_unique<UART>();
-	return uart_->startUart(context_->getSettings()->getUartDevice(), context_->getSettings()->getBaudRate());
+    uart_ = std::make_unique<UARTManager>();
+	return uart_->startUart(context_->settings->getUartDevice(), context_->settings->getBaudRate());
 }
 
 void LoraEndpoint::setMode(ELoraMode mode) {

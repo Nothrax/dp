@@ -1,7 +1,8 @@
 #pragma once
 
 #include <gateway/structures/GlobalContext.hpp>
-#include <gateway/device_communication/LoraEndpoint.hpp>
+#include <gateway/device/LoraEndpoint.hpp>
+#include <gateway/cloud/CsvWriter.hpp>
 
 #include <cstdint>
 
@@ -14,7 +15,8 @@ public:
 
 private:
 	std::shared_ptr<structures::GlobalContext> context_;
-	std::unique_ptr<device_communication::LoraEndpoint> loraEndpoint_;
+	std::unique_ptr<device::LoraEndpoint> loraEndpoint_;
+	std::unique_ptr<cloud::CsvWriter> csvWriter_;
 
 	uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize);
 };

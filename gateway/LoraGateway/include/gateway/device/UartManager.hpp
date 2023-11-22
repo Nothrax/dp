@@ -4,7 +4,7 @@
 
 
 
-namespace gateway::device_communication {
+namespace gateway::device {
 class UARTManager {
 public:
 	bool startUart(const std::string &device, uint32_t baudRate);
