@@ -26,8 +26,8 @@ CsvWriter::~CsvWriter() {
 }
 
 void CsvWriter::openFile() {
-	auto filename = filePath_ / "data_" + std::to_string(std::time(0)) +".csv";
-	file_.open(filename, std::ios::out | std::ios::app);
+	auto filename = "data_" + std::to_string(std::time(0)) +".csv";
+	file_.open(filePath_ /filename, std::ios::out | std::ios::app);
 	file_ << "protocolVersion,unitNumber,flags,temp,hum,co2,checkSum\n";
 }
 }
