@@ -1,0 +1,14 @@
+Unit]
+Description=LoRa gateway
+After=network.target
+
+[Service]
+User=root
+Type=simple
+WorkingDirectory=/home/nothrax/dp/gateway/lora_gateway/
+ExecStart=/home/nothrax/dp/gateway/lora_gateway/_build/LoraGateway
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -10,7 +10,7 @@ void CsvWriter::write(const gateway::structures::LoraMessage &data) {
 
 	float floatValues[2];
 	std::memcpy((void *)floatValues, (void *) data.values, 8);
-	file_ << data.protocolVersion << "," << data.unitNumber << "," << data.flags << "," << floatValues[0] << "," << floatValues[1] << "," << data.values[2] << "," << data.checkSum << "\n";
+	file_ << std::to_string(data.protocolVersion) << "," << std::to_string(data.unitNumber) << "," << data.flags << "," << floatValues[0] << "," << floatValues[1] << "," << data.values[2] << "," << std::to_string(data.checkSum) << "\n";
 
 	entryCounter_++;
 	if(entryCounter_ >= maxEntries_){
@@ -26,7 +26,7 @@ CsvWriter::~CsvWriter() {
 }
 
 void CsvWriter::openFile() {
-	auto filename = "data" + std::to_string(std::time(0)) +".csv";
+	auto filename = "data_" + std::to_string(std::time(0)) +".csv";
 	file_.open(filename, std::ios::out | std::ios::app);
 	file_ << "protocolVersion,unitNumber,flags,temp,hum,co2,checkSum\n";
 }

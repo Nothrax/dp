@@ -6,7 +6,7 @@ namespace gateway{
 void Gateway::start() {
 	logger::Logger::logInfo("Starting gateway of type LoRa");
 	loraEndpoint_ = std::make_unique<device::LoraEndpoint>(context_);
-	csvWriter_ = std::make_unique<cloud::CsvWriter>("./");
+	csvWriter_ = std::make_unique<cloud::CsvWriter>("/home/nothrax/data");
 
 	if(!loraEndpoint_->initialize()){
 		logger::Logger::logError("Failed to initialize LoRa endpoint");
