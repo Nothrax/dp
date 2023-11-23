@@ -12,6 +12,13 @@ public:
 	[[nodiscard]] const std::shared_ptr<Settings> &getSettings() const;
 private:
 	std::shared_ptr<Settings> settings_;
+	std::string configPath_;
+
+	bool parseCmdArguments(int argc, char **argv);
+
+	bool parseConfig();
+
+	bool areSettingsValid();
 
 };
 }

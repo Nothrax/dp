@@ -27,11 +27,59 @@ void Settings::setBaudRate(unsigned int baudRate) {
 	baudRate_ = baudRate;
 }
 
-EDeviceProtocol Settings::getDeviceProtocol() const {
+EDeviceType Settings::getDeviceProtocol() const {
 	return deviceProtocol_;
 }
 
-void Settings::setDeviceProtocol(EDeviceProtocol deviceProtocol) {
+void Settings::setDeviceProtocol(EDeviceType deviceProtocol) {
 	deviceProtocol_ = deviceProtocol;
+}
+
+const std::string &Settings::getLogPath() const {
+	return logPath_;
+}
+
+void Settings::setLogPath(const std::string &logPath) {
+	logPath_ = logPath;
+}
+
+EOutputType Settings::getOutputType() const {
+	return outputType_;
+}
+
+void Settings::setOutputType(EOutputType outputType) {
+	outputType_ = outputType;
+}
+
+const std::filesystem::path &Settings::getCsvPath() const {
+	return csvPath_;
+}
+
+void Settings::setCsvPath(const std::filesystem::path &csvPath) {
+	csvPath_ = csvPath;
+}
+
+uint32_t Settings::getNumberOfCsvEntries() const {
+	return numberOfCsvEntries_;
+}
+
+void Settings::setNumberOfCsvEntries(uint32_t numberOfCsvEntries) {
+	numberOfCsvEntries_ = numberOfCsvEntries;
+}
+
+const std::string &Settings::getMqttBrokerAddress() const {
+	return mqttBrokerAddress_;
+}
+
+void Settings::setMqttBrokerAddress(const std::string &mqttBrokerAddress) {
+	mqttBrokerAddress_ = mqttBrokerAddress;
+}
+
+const std::string &Settings::getMqttTopic() const {
+	return mqttTopic_;
+}
+
+void Settings::setMqttTopic(const std::string &mqttTopic) {
+	mqttTopic_ = mqttTopic;
 }
 }

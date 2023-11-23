@@ -15,7 +15,6 @@ int main(int argc, char **argv) {
 	auto context = std::make_shared<structures::GlobalContext>();
 
 	if(!settingsParser.parseSettings(argc, argv)) {
-		std::cout << "Failed to parse settings\n";
 		return EXIT_FAILURE;
 	}
 

@@ -1,0 +1,27 @@
+{
+  "generic_settings": {
+    "verbose": true,
+    "log_path": "/home/nothrax/log"
+  },
+  "device_settings": {
+    "device_type": "LORA",
+    "lora_settings": {
+      "uart_device_path": "/dev/ttyS0",
+      "uart_baudrate": 9600
+    }
+  },
+  "output_settings": {
+    "output_type": "CSV",
+    "csv_settings": {
+      "csv_path": "/home/nothrax/data",
+      "number_of_entries": 60
+    },
+    "mqtt_settings": {
+      "mqtt_host": "localhost",
+      "mqtt_port": 1883,
+      "mqtt_topic": "lora",
+      "mqtt_username": "",
+      "mqtt_password": ""
+    }
+  }
+}
