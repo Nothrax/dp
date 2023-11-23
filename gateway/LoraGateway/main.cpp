@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 	context->settings = settingsParser.getSettings();
 
 	//todo from settings
-	logger::Logger::initLogger("/var/log/", true);
+	logger::Logger::initLogger("./", true);
 
 	try {
 		Gateway worker(context);

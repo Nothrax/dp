@@ -12,7 +12,6 @@ class Logger {
 public:
 	static bool initLogger(const std::filesystem::path &logPath, bool verbose);
 
-	//todo use std::format?
 	static void logInfo(const std::string &log);
 
 	static void logWarning(const std::string &log);

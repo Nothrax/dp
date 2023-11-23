@@ -2,14 +2,16 @@
 #include <gateway/settings/SettingsParser.hpp>
 
 namespace gateway::settings{
+//todo implement
 bool SettingsParser::parseSettings(int argc, char **argv){
-    bool verbose = false;
-    int c;
-    while ((c = getopt(argc, argv, "v")) != -1)
-        if (c == 'v') {
-            verbose = true;
-        }
-    return verbose;
+	settings_ = std::make_shared<Settings>();
+	settings_->setBaudRate(9600);
+	settings_->setDeviceProtocol(EDeviceProtocol::E_LORA);
+	settings_->setUartDevice("/dev/ttyS0");
+	settings_->setVerbose(true);
+
+
+    return true;
 }
 
 const std::shared_ptr<Settings> &SettingsParser::getSettings() const {

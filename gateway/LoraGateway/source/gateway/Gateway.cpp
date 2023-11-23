@@ -8,9 +8,13 @@ void Gateway::start() {
 	loraEndpoint_ = std::make_unique<device::LoraEndpoint>(context_);
 	csvWriter_ = std::make_unique<cloud::CsvWriter>("./");
 
+	if(!loraEndpoint_->initialize()){
+		logger::Logger::logError("Failed to initialize LoRa endpoint");
+		return;
+	}
 	uint8_t messageCounter = 0;
 	//todo boost context
-	while(true){
+	while(!context_->context.stopped()){
 		auto loRaMessage = loraEndpoint_->getMessage();
 
 
@@ -41,13 +45,15 @@ void Gateway::start() {
 			logger::Logger::logError("Wrong checksum");
 		}
 
-		//todo create factory for devices
-		float floatValues[2];
+		//todo create factory for devices that will output the data
+/*		float floatValues[2];
 		memcpy((void *)floatValues, (void *) loRaMessage.values, 8);
 		printf("version: %d, unit number: %d, flags: %02x, temp: %f hum: %f co2: %d sum: %d\n"
-				,loRaMessage.protocolVersion, loRaMessage.unitNumber, loRaMessage.flags, floatValues[0], floatValues[1], loRaMessage.values[2], loRaMessage.checkSum);
+				,loRaMessage.protocolVersion, loRaMessage.unitNumber, loRaMessage.flags, floatValues[0], floatValues[1], loRaMessage.values[2], loRaMessage.checkSum);*/
+		logger::Logger::logInfo("Received message from LoRa endpoint");
 		csvWriter_->write(loRaMessage);
 	}
+	logger::Logger::logInfo("Stopping gateway of type LoRa");
 }
 
 uint8_t Gateway::calculateCheckSum(const uint8_t *data, size_t dataSize) {
