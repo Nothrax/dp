@@ -1,5 +1,6 @@
 
 #include <gateway/settings/SettingsParser.hpp>
+#include <gateway/common_tools/EnumTools.hpp>
 
 #include <boost/program_options.hpp>
 #include <boost/json.hpp>
@@ -10,7 +11,6 @@
 
 
 namespace gateway::settings {
-//todo implement
 bool SettingsParser::parseSettings(int argc, char **argv) {
 	if(!parseCmdArguments(argc, argv)) {
 		return false;
@@ -90,9 +90,11 @@ bool SettingsParser::parseConfig() {
 	// Extract values from the JSON object
 	auto genericSettings = jv.at("generic_settings");
 	bool verbose = genericSettings.at("verbose").as_bool();
-	std::string log_path = genericSettings.at("log_path").as_string().c_str();
+	settings_->setLogPath(genericSettings.at("log_path").as_string().c_str());
 
 	auto device_settings = jv.at("device_settings");
+	//todo device type translation
+	settings_->setDeviceProtocol(common_tools::EnumTools::stringToEnum<EDeviceType>(device_settings.at("device_type").as_string().c_str()));
 	std::string device_type = device_settings.at("device_type").as_string().c_str();
 
 	auto loraSettings = device_settings.at("lora_settings");
