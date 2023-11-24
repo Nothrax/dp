@@ -10,18 +10,20 @@ namespace gateway::common_tools {
 class EnumTools {
 public:
 	/**
-	 * @brief Translate string to EDeviceType
-	 * @param deviceType string to be translated
+	 * @brief Translate string to given enum type
+	 * @param toEnum string to be translated
 	 * @return translated enum value, E_INVALID in case of an error
 	 */
-	static settings::EDeviceType stringToDeviceType(std::string toEnum);
+	template<typename T>
+	static T stringToEnum(std::string toEnum);
 
 	/**
-	 * @brief Translate string to EOutputType
-	 * @param deviceType string to be translated
-	 * @return translated enum value, E_INVALID in case of an error
+	 * @brief Translate enum to string representation
+	 * @tparam T enum type
+	 * @param toString enum value to be translated
+	 * @return value in case of success, empty if not successful
 	 */
-	static settings::EOutputType stringToOutputType(std::string toEnum);
-
+	template<typename T>
+	static std::string enumToString(T toString);
 };
 }

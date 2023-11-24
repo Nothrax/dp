@@ -20,8 +20,7 @@ int main(int argc, char **argv) {
 
 	context->settings = settingsParser.getSettings();
 
-	//todo from settings
-	logger::Logger::initLogger("./", true);
+	logger::Logger::initLogger(context->settings->getLogPath(), context->settings->isVerbose());
 
 	try {
 		Gateway worker(context);

@@ -35,9 +35,9 @@ public:
 
 	void setBaudRate(uint32_t baudRate);
 
-	[[nodiscard]] EDeviceType getDeviceProtocol() const;
+	[[nodiscard]] EDeviceType getDeviceType() const;
 
-	void setDeviceProtocol(EDeviceType deviceProtocol);
+	void setDeviceType(EDeviceType deviceType);
 
 	[[nodiscard]] const std::string &getLogPath() const;
 
@@ -63,26 +63,37 @@ public:
 
 	void setMqttTopic(const std::string &mqttTopic);
 
+	[[nodiscard]] uint32_t getMqttBrokerPort() const;
+
+	void setMqttBrokerPort(uint32_t mqttBrokerPort);
+
+	[[nodiscard]] const std::string &getMqttUsername() const;
+
+	void setMqttUsername(const std::string &mqttUsername);
+
+	[[nodiscard]] const std::string &getMqttPassword() const;
+
+	void setMqttPassword(const std::string &mqttPassword);
+
 private:
 	/// Print logs into console
 	bool verbose_;
 	/// Path to the log file
 	std::string logPath_;
-	/// Protocol of the device
-	EDeviceType deviceProtocol_{EDeviceType::E_INVALID};
-
+	/// Type of the device communication
+	EDeviceType deviceType_ { EDeviceType::E_INVALID };
 	/// Path to the uart device
 	std::string uartDevice_;
 	/// Baud rate of the uart device
 	uint32_t baudRate_ { 0 };
 
 	/// Output type
-	EOutputType outputType_{EOutputType::E_INVALID};
+	EOutputType outputType_ { EOutputType::E_INVALID };
 
 	/// Path to the output csv folder
 	std::filesystem::path csvPath_;
 	/// Number of entries in the csv file
-	uint32_t numberOfCsvEntries_{0};
+	uint32_t numberOfCsvEntries_ { 0 };
 
 	/// MQTT broker address
 	std::string mqttBrokerAddress_;
@@ -94,7 +105,6 @@ private:
 	std::string mqttUsername_;
 	/// MQTT broker port
 	std::string mqttPassword_;
-
 
 	//todo lora specific settings
 };

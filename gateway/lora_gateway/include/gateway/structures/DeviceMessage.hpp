@@ -6,7 +6,7 @@
 
 namespace gateway::structures {
 #pragma pack(push, 1)
-struct LoraMessage {
+struct DeviceMessage {
 	uint8_t protocolVersion { 0 };
 	uint16_t unitNumber { 0 };
 	uint8_t flags { 0 };

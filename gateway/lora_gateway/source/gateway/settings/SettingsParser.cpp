@@ -20,7 +20,7 @@ bool SettingsParser::parseSettings(int argc, char **argv) {
 		return false;
 	}
 
-	if(!areSettingsValid()) {
+	if(!isSettingValid()) {
 		std::cout << "Settings are not valid\n";
 		return false;
 	}
@@ -89,51 +89,48 @@ bool SettingsParser::parseConfig() {
 
 	// Extract values from the JSON object
 	auto genericSettings = jv.at("generic_settings");
-	bool verbose = genericSettings.at("verbose").as_bool();
 	settings_->setLogPath(genericSettings.at("log_path").as_string().c_str());
+	settings_->setVerbose(genericSettings.at("verbose").as_bool());
 
 	auto device_settings = jv.at("device_settings");
-	//todo device type translation
-	settings_->setDeviceProtocol(common_tools::EnumTools::stringToEnum<EDeviceType>(device_settings.at("device_type").as_string().c_str()));
+
+	settings_->setDeviceType(
+			common_tools::EnumTools::stringToEnum<EDeviceType>(device_settings.at("device_type").as_string().c_str()));
 	std::string device_type = device_settings.at("device_type").as_string().c_str();
 
 	auto loraSettings = device_settings.at("lora_settings");
-	std::string uart_device_path = loraSettings.at("uart_device_path").as_string().c_str();
-	int uart_baudrate = loraSettings.at("uart_baudrate").as_int64();
+	settings_->setUartDevice(loraSettings.at("uart_device_path").as_string().c_str());
+	settings_->setBaudRate(loraSettings.at("uart_baudrate").as_int64());
 
 	auto output_settings = jv.at("output_settings");
-	std::string output_type = output_settings.at("output_type").as_string().c_str();
+	settings_->setOutputType(common_tools::EnumTools::stringToEnum<EOutputType>(output_settings.at("output_type").as_string().c_str()));
 
 	auto csvSettings = output_settings.at("csv_settings");
-	std::string csv_path = csvSettings.at("csv_path").as_string().c_str();
-	int number_of_entries = csvSettings.at("number_of_entries").as_int64();
-
+	settings_->setCsvPath(csvSettings.at("csv_path").as_string().c_str());
+	settings_->setNumberOfCsvEntries(csvSettings.at("number_of_entries").as_int64());
 	auto mqttSettings = output_settings.at("mqtt_settings");
-	std::string mqtt_host = mqttSettings.at("mqtt_host").as_string().c_str();
-	int mqtt_port = mqttSettings.at("mqtt_port").as_int64();
-	std::string mqtt_topic = mqttSettings.at("mqtt_topic").as_string().c_str();
-	std::string mqtt_username = mqttSettings.at("mqtt_username").as_string().c_str();
-	std::string mqtt_password = mqttSettings.at("mqtt_password").as_string().c_str();
+	settings_->setMqttBrokerAddress(mqttSettings.at("mqtt_host").as_string().c_str());
+	settings_->setMqttBrokerPort(mqttSettings.at("mqtt_port").as_int64());
+	settings_->setMqttTopic(mqttSettings.at("mqtt_topic").as_string().c_str());
+	settings_->setMqttUsername(mqttSettings.at("mqtt_username").as_string().c_str());
+	settings_->setMqttPassword(mqttSettings.at("mqtt_password").as_string().c_str());
 
-	// Print the extracted values
-	std::cout << "verbose: " << verbose << std::endl;
-	std::cout << "log_path: " << log_path << std::endl;
-	std::cout << "device_type: " << device_type << std::endl;
-	std::cout << "uart_device_path: " << uart_device_path << std::endl;
-	std::cout << "uart_baudrate: " << uart_baudrate << std::endl;
-	std::cout << "output_type: " << output_type << std::endl;
-	std::cout << "csv_path: " << csv_path << std::endl;
-	std::cout << "number_of_entries: " << number_of_entries << std::endl;
-	std::cout << "mqtt_host: " << mqtt_host << std::endl;
-	std::cout << "mqtt_port: " << mqtt_port << std::endl;
-	std::cout << "mqtt_topic: " << mqtt_topic << std::endl;
-	std::cout << "mqtt_username: " << mqtt_username << std::endl;
-	std::cout << "mqtt_password: " << mqtt_password << std::endl;
 	return true;
 }
 
-bool SettingsParser::areSettingsValid() {
-	//todo
-	return false;
+bool SettingsParser::isSettingValid() {
+	bool isValid = true;
+
+	if(settings_->getDeviceType() == EDeviceType::E_INVALID) {
+		std::cout << "Device type is not valid\n";
+		isValid = false;
+	}
+
+	if(settings_->getOutputType() == EOutputType::E_INVALID) {
+		std::cout << "Output type is not valid\n";
+		isValid = false;
+	}
+
+	return isValid;
 }
 }

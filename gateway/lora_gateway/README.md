@@ -13,3 +13,9 @@ cd _build
 cmake ..
 make
 ```
+
+# Arguments
+* `--config|-c <string>` path to json configuration file
+
+# Config file
+TODO

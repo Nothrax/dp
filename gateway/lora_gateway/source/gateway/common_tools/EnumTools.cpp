@@ -5,7 +5,20 @@
 
 
 namespace gateway::common_tools {
-settings::EDeviceType EnumTools::stringToDeviceType(std::string toEnum) {
+
+template <>
+settings::EOutputType EnumTools::stringToEnum(std::string toEnum) {
+	std::transform(toEnum.begin(), toEnum.end(), toEnum.begin(), ::toupper);
+	if(toEnum == "CSV") {
+		return settings::EOutputType::E_CSV;
+	} else if(toEnum == "MQTT") {
+		return settings::EOutputType::E_MQTT;
+	}
+	return gateway::settings::EOutputType::E_INVALID;
+}
+
+template <>
+settings::EDeviceType EnumTools::stringToEnum(std::string toEnum) {
 	std::transform(toEnum.begin(), toEnum.end(), toEnum.begin(), ::toupper);
 	if(toEnum == "LORA") {
 		return settings::EDeviceType::E_LORA;
@@ -14,14 +27,26 @@ settings::EDeviceType EnumTools::stringToDeviceType(std::string toEnum) {
 	return gateway::settings::EDeviceType::E_INVALID;
 }
 
-settings::EOutputType EnumTools::stringToOutputType(std::string toEnum) {
-	std::transform(toEnum.begin(), toEnum.end(), toEnum.begin(), ::toupper);
-	if(toEnum == "CSV") {
-		return settings::EOutputType::E_CSV;
-	} else if(toEnum == "MQTT") {
-		return settings::EOutputType::E_MQTT;
+template <>
+std::string EnumTools::enumToString(settings::EOutputType toEnum) {
+	switch(toEnum) {
+		case settings::EOutputType::E_CSV:
+			return "CSV";
+		case settings::EOutputType::E_MQTT:
+			return "MQTT";
+		default:
+			return "INVALID";
 	}
-	return gateway::settings::EOutputType::E_INVALID;
+}
+
+template <>
+std::string EnumTools::enumToString(settings::EDeviceType toEnum) {
+	switch(toEnum) {
+		case settings::EDeviceType::E_LORA:
+			return "LORA";
+		default:
+			return "INVALID";
+	}
 }
 }
 

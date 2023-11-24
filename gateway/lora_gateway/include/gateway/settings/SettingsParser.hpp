@@ -7,6 +7,13 @@
 namespace gateway::settings{
 class SettingsParser {
 public:
+	/**
+	 * @brief Parse settings from command line arguments and config file
+	 * @param argc count of arguments
+	 * @param argv arguments
+	 * @return true if settings are valid
+	 * @return false if settings are not valid
+	 */
 	bool parseSettings(int argc, char **argv);
 
 	[[nodiscard]] const std::shared_ptr<Settings> &getSettings() const;
@@ -18,7 +25,7 @@ private:
 
 	bool parseConfig();
 
-	bool areSettingsValid();
+	bool isSettingValid();
 
 };
 }

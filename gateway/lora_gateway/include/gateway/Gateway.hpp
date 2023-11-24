@@ -6,10 +6,12 @@
 
 #include <cstdint>
 
-namespace gateway{
+
+
+namespace gateway {
 class Gateway {
 public:
-	explicit Gateway(const std::shared_ptr<structures::GlobalContext> &globalContext): context_(globalContext){};
+	explicit Gateway(const std::shared_ptr<structures::GlobalContext> &globalContext): context_(globalContext) {};
 
 	void start();
 
@@ -17,7 +19,12 @@ private:
 	std::shared_ptr<structures::GlobalContext> context_;
 	std::unique_ptr<device::LoraEndpoint> loraEndpoint_;
 	std::unique_ptr<cloud::CsvWriter> csvWriter_;
+	uint8_t messageCounter_ { 0 };
 
 	uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize);
+
+	bool initialize();
+
+	void processMessage(const structures::DeviceMessage &message);
 };
 }

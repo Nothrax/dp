@@ -3,7 +3,7 @@
 #include <cstring>
 
 namespace gateway::cloud {
-void CsvWriter::write(const gateway::structures::LoraMessage &data) {
+void CsvWriter::write(const gateway::structures::DeviceMessage &data) {
 	if(!file_.is_open()){
 		openFile();
 	}

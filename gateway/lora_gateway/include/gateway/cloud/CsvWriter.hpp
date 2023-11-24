@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gateway/structures/LoraMessage.hpp>
+#include <gateway/structures/DeviceMessage.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -11,7 +11,7 @@ class CsvWriter {
 public:
 	explicit CsvWriter(const std::filesystem::path &filePath): filePath_(filePath){};
 
-	void write(const structures::LoraMessage &data);
+	void write(const structures::DeviceMessage &data);
 
 	~CsvWriter();
 private:

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <gateway/structures/LoraMessage.hpp>
+#include <gateway/device/Endpoint.hpp>
+#include <gateway/structures/DeviceMessage.hpp>
 #include <gateway/device/UartManager.hpp>
 #include <gateway/structures/GlobalContext.hpp>
 
@@ -20,15 +21,15 @@ enum class ELoraMode {
 	E_END
 };
 
-class LoraEndpoint {
+class LoraEndpoint final: public Endpoint{
 public:
-	explicit LoraEndpoint(std::shared_ptr<structures::GlobalContext> &context): context_(context) {};
+	explicit LoraEndpoint(const std::shared_ptr<structures::GlobalContext> &context): Endpoint(context) {};
 
-	bool initialize();
+	bool initialize() override;
 
-	structures::LoraMessage getMessage() const;
+	std::shared_ptr<structures::DeviceMessage> getMessage(unsigned int timeoutMs) const override;
 
-	~LoraEndpoint();
+	~LoraEndpoint() override;
 
 private:
 	//todo pins from config ?
@@ -40,11 +41,10 @@ private:
 	static constexpr uint32_t LOW { 0 };
 	static constexpr uint32_t HIGH { 1 };
 
-	std::shared_ptr<structures::GlobalContext> &context_;
 	std::unique_ptr<UARTManager> uart_ { nullptr };
 	//todo naplnit z konstruktoru?
 	uint8_t settingsRegister_[6] { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0xa4 };
-	uint8_t receiveBuffer_[sizeof(structures::LoraMessage)];
+	uint8_t receiveBuffer_[sizeof(structures::DeviceMessage)];
 	bool initialized_;
 
 	//todo nastaveni jednotlivych parametru?

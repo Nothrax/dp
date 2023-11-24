@@ -1,7 +1,9 @@
 
 #include <gateway/settings/Settings.hpp>
 
-namespace gateway::settings{
+
+
+namespace gateway::settings {
 
 bool Settings::isVerbose() const {
 	return verbose_;
@@ -27,12 +29,12 @@ void Settings::setBaudRate(unsigned int baudRate) {
 	baudRate_ = baudRate;
 }
 
-EDeviceType Settings::getDeviceProtocol() const {
-	return deviceProtocol_;
+EDeviceType Settings::getDeviceType() const {
+	return deviceType_;
 }
 
-void Settings::setDeviceProtocol(EDeviceType deviceProtocol) {
-	deviceProtocol_ = deviceProtocol;
+void Settings::setDeviceType(EDeviceType deviceProtocol) {
+	deviceType_ = deviceProtocol;
 }
 
 const std::string &Settings::getLogPath() const {
@@ -81,5 +83,29 @@ const std::string &Settings::getMqttTopic() const {
 
 void Settings::setMqttTopic(const std::string &mqttTopic) {
 	mqttTopic_ = mqttTopic;
+}
+
+uint32_t Settings::getMqttBrokerPort() const {
+	return mqttBrokerPort_;
+}
+
+void Settings::setMqttBrokerPort(uint32_t mqttBrokerPort) {
+	mqttBrokerPort_ = mqttBrokerPort;
+}
+
+const std::string &Settings::getMqttUsername() const {
+	return mqttUsername_;
+}
+
+void Settings::setMqttUsername(const std::string &mqttUsername) {
+	mqttUsername_ = mqttUsername;
+}
+
+const std::string &Settings::getMqttPassword() const {
+	return mqttPassword_;
+}
+
+void Settings::setMqttPassword(const std::string &mqttPassword) {
+	mqttPassword_ = mqttPassword;
 }
 }
