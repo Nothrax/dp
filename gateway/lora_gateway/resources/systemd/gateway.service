@@ -1,4 +1,4 @@
-Unit]
+[Unit]
 Description=LoRa gateway
 After=network.target
 
@@ -6,7 +6,7 @@ After=network.target
 User=root
 Type=simple
 WorkingDirectory=/home/nothrax/dp/gateway/lora_gateway/
-ExecStart=/home/nothrax/dp/gateway/lora_gateway/_build/LoraGateway --config=/home/nothrax/dp/gateway/lora_gateway/resources/configuration/config.json
+ExecStart=/home/nothrax/dp/gateway/lora_gateway/_build/LoraGateway --config=/home/nothrax/dp/gateway/lora_gateway/resources/configuration/default.json
 Restart=always
 RestartSec=10
 
