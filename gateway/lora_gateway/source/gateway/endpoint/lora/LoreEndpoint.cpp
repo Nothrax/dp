@@ -28,17 +28,18 @@ bool LoraEndpoint::initialize() {
 }
 
 std::shared_ptr<structures::DeviceMessage> LoraEndpoint::getMessage(unsigned int timeoutMs) const {
-	std::shared_ptr<structures::DeviceMessage> message;
+	std::shared_ptr<structures::DeviceMessage> message { nullptr };
 	if(!initialized_) {
 		throw std::runtime_error("LoRa endpoint was not initialized");
 	}
 	uint8_t receiveBuffer[sizeof(structures::DeviceMessage)];
 
-	//todo timeout
-	uart_->readBuffer(receiveBuffer, sizeof(receiveBuffer));
+	if(!uart_->readBuffer(receiveBuffer, sizeof(receiveBuffer), timeoutMs)) {
+		return message;
+	}
 	message = std::make_shared<structures::DeviceMessage>();
-	//todo correct?
-	memcpy((void *)message.get(), (void *)receiveBuffer, sizeof(receiveBuffer));
+
+	std::memcpy((void *)message.get(), (void *)receiveBuffer, sizeof(receiveBuffer));
 
 	return message;
 }
@@ -94,7 +95,7 @@ bool LoraEndpoint::initializeLora() {
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	/// Send register with all parameters
 	uart_->sendBuffer(settingsRegister_, sizeof(settingsRegister_));
-	uart_->readBuffer(receiveRegister, sizeof(receiveRegister));
+	uart_->readBuffer(receiveRegister, sizeof(receiveRegister), 1000);
 
 	for(int i = 0; i < sizeof(settingsRegister_); i++) {
 		if(settingsRegister_[i] != receiveRegister[i]) {

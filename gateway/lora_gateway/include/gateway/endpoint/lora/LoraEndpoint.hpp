@@ -21,7 +21,7 @@ enum class ELoraMode {
 	E_END
 };
 
-class LoraEndpoint final: public Endpoint{
+class LoraEndpoint final: public Endpoint {
 public:
 	explicit LoraEndpoint(const std::shared_ptr<structures::GlobalContext> &context): Endpoint(context) {};
 
@@ -44,7 +44,6 @@ private:
 	std::unique_ptr<UARTManager> uart_ { nullptr };
 	//todo naplnit z konstruktoru?
 	uint8_t settingsRegister_[6] { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0xa4 };
-	uint8_t receiveBuffer_[sizeof(structures::DeviceMessage)]{0};
 
 	//todo nastaveni jednotlivych parametru?
 	bool initializeUart();

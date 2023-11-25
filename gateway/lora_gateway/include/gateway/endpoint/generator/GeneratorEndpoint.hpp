@@ -4,7 +4,7 @@
 
 
 
-namespace gateway::endpoint::generator{
+namespace gateway::endpoint::generator {
 /**
  * @brief Fake endpoint, endpoint class with no connection, generates predefined messages
  */

@@ -1,4 +1,6 @@
 #include <gateway/common_tools/EnumTools.hpp>
+#include <gateway/settings/Settings.hpp>
+#include <gateway/structures/DeviceMessage.hpp>
 
 #include <algorithm>
 
@@ -7,7 +9,7 @@
 namespace gateway::common_tools {
 
 template <>
-settings::EOutputType EnumTools::stringToEnum(std::string toEnum) {
+settings::EOutputType EnumTools::valueToEnum(std::string toEnum) {
 	std::transform(toEnum.begin(), toEnum.end(), toEnum.begin(), ::toupper);
 	if(toEnum == "CSV") {
 		return settings::EOutputType::E_CSV;
@@ -18,15 +20,27 @@ settings::EOutputType EnumTools::stringToEnum(std::string toEnum) {
 }
 
 template <>
-settings::EDeviceType EnumTools::stringToEnum(std::string toEnum) {
+settings::EDeviceCommunicationType EnumTools::valueToEnum(std::string toEnum) {
 	std::transform(toEnum.begin(), toEnum.end(), toEnum.begin(), ::toupper);
 	if(toEnum == "LORA") {
-		return settings::EDeviceType::E_LORA;
+		return settings::EDeviceCommunicationType::E_LORA;
 	} else if(toEnum == "GENERATOR") {
-		return settings::EDeviceType::E_GENERATOR;
+		return settings::EDeviceCommunicationType::E_GENERATOR;
 	}
 
-	return gateway::settings::EDeviceType::E_INVALID;
+	return gateway::settings::EDeviceCommunicationType::E_INVALID;
+}
+
+template <>
+structures::EDeviceType EnumTools::valueToEnum(uint32_t toEnum) {
+	switch(toEnum) {
+		case 1:
+			return structures::EDeviceType::E_WINE_CELLAR;
+		case 2:
+			return structures::EDeviceType::E_BEE_SCALE;
+		default:
+			return structures::EDeviceType::E_INVALID;
+	}
 }
 
 template <>
@@ -42,12 +56,24 @@ std::string EnumTools::enumToString(settings::EOutputType toEnum) {
 }
 
 template <>
-std::string EnumTools::enumToString(settings::EDeviceType toEnum) {
+std::string EnumTools::enumToString(settings::EDeviceCommunicationType toEnum) {
 	switch(toEnum) {
-		case settings::EDeviceType::E_LORA:
+		case settings::EDeviceCommunicationType::E_LORA:
 			return "LORA";
-		case settings::EDeviceType::E_GENERATOR:
+		case settings::EDeviceCommunicationType::E_GENERATOR:
 			return "GENERATOR";
+		default:
+			return "INVALID";
+	}
+}
+
+template <>
+std::string EnumTools::enumToString(structures::EDeviceType toEnum) {
+	switch(toEnum) {
+		case structures::EDeviceType::E_WINE_CELLAR:
+			return "WINE_CELLAR";
+		case structures::EDeviceType::E_BEE_SCALE:
+			return "BEE_SCALE";
 		default:
 			return "INVALID";
 	}

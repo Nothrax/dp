@@ -1,6 +1,5 @@
 #include <gateway/Gateway.hpp>
 #include <gateway/logger/Logger.hpp>
-#include <gateway/common_tools/MessageTools.hpp>
 #include <gateway/common_tools/EnumTools.hpp>
 #include <gateway/endpoint/EndpointFactory.hpp>
 #include <gateway/output/OutputFactory.hpp>
@@ -17,10 +16,9 @@ void Gateway::start() {
 		return;
 	}
 
-
 	while(!context_->context.stopped()) {
-		auto message = endpoint->getMessage(messageReceiveTimeoutMs_);
-		if(message){
+		auto message = endpoint_->getMessage(messageReceiveTimeoutMs_);
+		if(message) {
 			processMessage(*message);
 		}
 	}
@@ -28,46 +26,38 @@ void Gateway::start() {
 }
 
 bool Gateway::initialize() {
-	endpoint = endpoint::EndpointFactory::createEndpoint(context_);
-	csvWriter_ = std::make_unique<output::csv::CsvOutput>(context_->settings->getCsvPath(), context_->settings->getNumberOfCsvEntries());
+	endpoint_ = endpoint::EndpointFactory::createEndpoint(context_);
+	output_ = output::OutputFactory::createOutput(context_);
 
-	if(!endpoint->initialize()) {
-		logger::Logger::logError("Failed to initialize endpoint of type " + common_tools::EnumTools::enumToString(context_->settings->getDeviceType()));
+	if(!endpoint_->initialize()) {
+		logger::Logger::logError("Failed to initialize endpoint of type " +
+								 common_tools::EnumTools::enumToString(context_->settings->getDeviceType()));
+		return false;
+	}
+	if(!output_->initialize()) {
+		logger::Logger::logError("Failed to initialize output of type " +
+								 common_tools::EnumTools::enumToString(context_->settings->getOutputType()));
 		return false;
 	}
 	return true;
 }
 
 void Gateway::processMessage(const structures::DeviceMessage &message) {
-	///todo based on device type pass to specific device
-	if(message.flags & 0b10000000) {
-		logger::Logger::logError("Wrong check sum on 433MHZ RF radio");
+	if(devices_.count(message.deviceType) == 0) {
+		devices_[message.deviceType] = std::map<uint32_t, std::shared_ptr<device::Device>>();
 	}
-	if(message.flags & 0b01000000) {
-		logger::Logger::logError("Message got lost on 433MHZ RF radio");
+
+	if(devices_.at(message.deviceType).count(message.deviceNumber) == 0) {
+		devices_.at(message.deviceType)[message.deviceNumber] = std::make_shared<device::Device>(message.deviceType,
+																								 message.deviceNumber);
 	}
-	//todo message counter per device
-	if(messageCounter_ + 1 != (message.flags & 0b00001111)) {
-		//todo jinak
-		if(messageCounter_ != 0) {
-			logger::Logger::logError("Message got lost on Lora");
-		}
-		messageCounter_ = (message.flags & 0b00001111);
+
+	auto device = devices_.at(message.deviceType).at(message.deviceNumber);
+	if(device->parseMessage(message)) {
+		output_->writeFromDevice(device);
 	} else {
-		messageCounter_++;
-		if(messageCounter_ >= 15) {
-			messageCounter_ = 0;
-		}
+		logger::Logger::logError("Failed to parse message");
 	}
-
-	uint32_t checkSum = common_tools::MessageTools::calculateChecksum((uint8_t *)&message, sizeof(structures::DeviceMessage) - sizeof(uint32_t));
-	if(checkSum != message.checkSum) {
-		logger::Logger::logError("Wrong checksum");
-	}
-
-	logger::Logger::logInfo("Received message from LoRa endpoint");
-	csvWriter_->write(message);
-
 }
 
 

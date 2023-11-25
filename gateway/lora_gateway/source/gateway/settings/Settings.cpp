@@ -29,11 +29,11 @@ void Settings::setBaudRate(unsigned int baudRate) {
 	baudRate_ = baudRate;
 }
 
-EDeviceType Settings::getDeviceType() const {
+EDeviceCommunicationType Settings::getDeviceType() const {
 	return deviceType_;
 }
 
-void Settings::setDeviceType(EDeviceType deviceProtocol) {
+void Settings::setDeviceType(EDeviceCommunicationType deviceProtocol) {
 	deviceType_ = deviceProtocol;
 }
 

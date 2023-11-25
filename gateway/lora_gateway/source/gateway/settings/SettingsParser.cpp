@@ -94,21 +94,22 @@ bool SettingsParser::parseConfig() {
 
 	auto device_settings = jv.at("device_settings");
 
+	std::string deviceType = device_settings.at("device_type").as_string().c_str();
 	settings_->setDeviceType(
-			common_tools::EnumTools::stringToEnum<EDeviceType>(device_settings.at("device_type").as_string().c_str()));
-	std::string device_type = device_settings.at("device_type").as_string().c_str();
+			common_tools::EnumTools::valueToEnum<EDeviceCommunicationType>(deviceType));
 
 	auto loraSettings = device_settings.at("lora_settings");
 	settings_->setUartDevice(loraSettings.at("uart_device_path").as_string().c_str());
 	settings_->setBaudRate(loraSettings.at("uart_baudrate").as_int64());
 
-	auto output_settings = jv.at("output_settings");
-	settings_->setOutputType(common_tools::EnumTools::stringToEnum<EOutputType>(output_settings.at("output_type").as_string().c_str()));
+	auto outputSettings = jv.at("output_settings");
+	std::string outputType = outputSettings.at("output_type").as_string().c_str();
+	settings_->setOutputType(common_tools::EnumTools::valueToEnum<EOutputType>(outputType));
 
-	auto csvSettings = output_settings.at("csv_settings");
+	auto csvSettings = outputSettings.at("csv_settings");
 	settings_->setCsvPath(csvSettings.at("csv_path").as_string().c_str());
 	settings_->setNumberOfCsvEntries(csvSettings.at("number_of_entries").as_int64());
-	auto mqttSettings = output_settings.at("mqtt_settings");
+	auto mqttSettings = outputSettings.at("mqtt_settings");
 	settings_->setMqttBrokerAddress(mqttSettings.at("mqtt_host").as_string().c_str());
 	settings_->setMqttBrokerPort(mqttSettings.at("mqtt_port").as_int64());
 	settings_->setMqttTopic(mqttSettings.at("mqtt_topic").as_string().c_str());
@@ -121,7 +122,7 @@ bool SettingsParser::parseConfig() {
 bool SettingsParser::isSettingValid() {
 	bool isValid = true;
 
-	if(settings_->getDeviceType() == EDeviceType::E_INVALID) {
+	if(settings_->getDeviceType() == EDeviceCommunicationType::E_INVALID) {
 		std::cout << "Device type is not valid\n";
 		isValid = false;
 	}

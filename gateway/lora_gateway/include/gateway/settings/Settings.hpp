@@ -6,8 +6,8 @@
 
 
 namespace gateway::settings {
-enum class EDeviceType {
-	E_BEGIN = 0,
+enum class EDeviceCommunicationType {
+	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
 	E_LORA,
 	E_GENERATOR,
@@ -15,7 +15,7 @@ enum class EDeviceType {
 };
 
 enum class EOutputType {
-	E_BEGIN = 0,
+	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
 	E_CSV,
 	E_MQTT,
@@ -36,9 +36,9 @@ public:
 
 	void setBaudRate(uint32_t baudRate);
 
-	[[nodiscard]] EDeviceType getDeviceType() const;
+	[[nodiscard]] EDeviceCommunicationType getDeviceType() const;
 
-	void setDeviceType(EDeviceType deviceType);
+	void setDeviceType(EDeviceCommunicationType deviceType);
 
 	[[nodiscard]] const std::string &getLogPath() const;
 
@@ -82,7 +82,7 @@ private:
 	/// Path to the log file
 	std::string logPath_;
 	/// Type of the device communication
-	EDeviceType deviceType_ { EDeviceType::E_INVALID };
+	EDeviceCommunicationType deviceType_ { EDeviceCommunicationType::E_INVALID };
 	/// Path to the uart device
 	std::string uartDevice_;
 	/// Baud rate of the uart device

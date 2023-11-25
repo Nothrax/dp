@@ -4,7 +4,9 @@
 
 #include <memory>
 
-namespace gateway::settings{
+
+
+namespace gateway::settings {
 class SettingsParser {
 public:
 	/**
@@ -17,6 +19,7 @@ public:
 	bool parseSettings(int argc, char **argv);
 
 	[[nodiscard]] const std::shared_ptr<Settings> &getSettings() const;
+
 private:
 	std::shared_ptr<Settings> settings_;
 	std::string configPath_;

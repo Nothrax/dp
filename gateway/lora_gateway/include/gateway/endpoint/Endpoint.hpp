@@ -41,7 +41,7 @@ public:
 protected:
 	std::shared_ptr<structures::GlobalContext> context_;
 	/// Indication if the endpoint is initialized
-	bool initialized_{false};
+	bool initialized_ { false };
 
 };
 }
