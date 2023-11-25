@@ -1,11 +1,11 @@
-#include <gateway/device//UartManager.hpp>
+#include <gateway/endpoint/lora/UartManager.hpp>
 #include <gateway/logger/Logger.hpp>
 
 #include <wiringSerial.h>
 
 
 
-namespace gateway::device {
+namespace gateway::endpoint::lora {
 
 bool UARTManager::readBuffer(uint8_t *buffer, uint32_t bufferSize) {
 	//todo timeout

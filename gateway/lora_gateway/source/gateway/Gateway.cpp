@@ -1,5 +1,9 @@
 #include <gateway/Gateway.hpp>
 #include <gateway/logger/Logger.hpp>
+#include <gateway/common_tools/MessageTools.hpp>
+#include <gateway/common_tools/EnumTools.hpp>
+#include <gateway/endpoint/EndpointFactory.hpp>
+#include <gateway/output/OutputFactory.hpp>
 
 
 
@@ -9,14 +13,13 @@ void Gateway::start() {
 	logger::Logger::logInfo("Starting gateway of type LoRa");
 
 	if(!initialize()) {
-		logger::Logger::logError("Failed to initialize gateway of type LoRa");
+		logger::Logger::logError("Failed to initialize gateway");
 		return;
 	}
 
 
 	while(!context_->context.stopped()) {
-		//todo timeout as class member
-		auto message = loraEndpoint_->getMessage(1000);
+		auto message = endpoint->getMessage(messageReceiveTimeoutMs_);
 		if(message){
 			processMessage(*message);
 		}
@@ -24,21 +27,12 @@ void Gateway::start() {
 	logger::Logger::logInfo("Stopping gateway of type LoRa");
 }
 
-//todo move to utils
-uint8_t Gateway::calculateCheckSum(const uint8_t *data, size_t dataSize) {
-	uint8_t sum = 0;
-	for(int index = 0; index < dataSize; index++) {
-		sum += data[index];
-	}
-	return sum;
-}
-
 bool Gateway::initialize() {
-	loraEndpoint_ = std::make_unique<device::LoraEndpoint>(context_);
-	csvWriter_ = std::make_unique<cloud::CsvWriter>(context_->settings->getCsvPath());
+	endpoint = endpoint::EndpointFactory::createEndpoint(context_);
+	csvWriter_ = std::make_unique<output::csv::CsvOutput>(context_->settings->getCsvPath(), context_->settings->getNumberOfCsvEntries());
 
-	if(!loraEndpoint_->initialize()) {
-		logger::Logger::logError("Failed to initialize LoRa endpoint");
+	if(!endpoint->initialize()) {
+		logger::Logger::logError("Failed to initialize endpoint of type " + common_tools::EnumTools::enumToString(context_->settings->getDeviceType()));
 		return false;
 	}
 	return true;
@@ -66,16 +60,11 @@ void Gateway::processMessage(const structures::DeviceMessage &message) {
 		}
 	}
 
-	uint32_t checkSum = calculateCheckSum((uint8_t *)&message, sizeof(structures::DeviceMessage) - sizeof(uint32_t));
+	uint32_t checkSum = common_tools::MessageTools::calculateChecksum((uint8_t *)&message, sizeof(structures::DeviceMessage) - sizeof(uint32_t));
 	if(checkSum != message.checkSum) {
 		logger::Logger::logError("Wrong checksum");
 	}
 
-	//todo create factory for devices that will output the data
-/*		float floatValues[2];
-		memcpy((void *)floatValues, (void *) loRaMessage.values, 8);
-		printf("version: %d, unit number: %d, flags: %02x, temp: %f hum: %f co2: %d sum: %d\n"
-				,loRaMessage.protocolVersion, loRaMessage.unitNumber, loRaMessage.flags, floatValues[0], floatValues[1], loRaMessage.values[2], loRaMessage.checkSum);*/
 	logger::Logger::logInfo("Received message from LoRa endpoint");
 	csvWriter_->write(message);
 

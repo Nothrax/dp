@@ -1,4 +1,4 @@
-#include <gateway/device/LoraEndpoint.hpp>
+#include <gateway/endpoint/lora/LoraEndpoint.hpp>
 #include <gateway/logger/Logger.hpp>
 
 #include <wiringPi.h>
@@ -8,8 +8,9 @@
 
 
 
-namespace gateway::device {
+namespace gateway::endpoint::lora {
 bool LoraEndpoint::initialize() {
+	//todo flush uart buffer?
 	if(!initializeUart()) {
 		logger::Logger::logError("Failed to initialize UART");
 		return false;

@@ -22,6 +22,8 @@ settings::EDeviceType EnumTools::stringToEnum(std::string toEnum) {
 	std::transform(toEnum.begin(), toEnum.end(), toEnum.begin(), ::toupper);
 	if(toEnum == "LORA") {
 		return settings::EDeviceType::E_LORA;
+	} else if(toEnum == "GENERATOR") {
+		return settings::EDeviceType::E_GENERATOR;
 	}
 
 	return gateway::settings::EDeviceType::E_INVALID;
@@ -44,6 +46,8 @@ std::string EnumTools::enumToString(settings::EDeviceType toEnum) {
 	switch(toEnum) {
 		case settings::EDeviceType::E_LORA:
 			return "LORA";
+		case settings::EDeviceType::E_GENERATOR:
+			return "GENERATOR";
 		default:
 			return "INVALID";
 	}

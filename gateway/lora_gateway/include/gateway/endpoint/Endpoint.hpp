@@ -7,7 +7,7 @@
 
 
 
-namespace gateway::device {
+namespace gateway::endpoint {
 /**
  * @brief Base class for all endpoints
  */
@@ -31,7 +31,7 @@ public:
 	 * @param timeout timeout in milliseconds
 	 * @return received message or nullptr if timeout occurred
 	 */
-	virtual std::shared_ptr<structures::DeviceMessage> getMessage(unsigned int timeoutMs) const = 0;
+	[[nodiscard]] virtual std::shared_ptr<structures::DeviceMessage> getMessage(unsigned int timeoutMs) const = 0;
 
 	/**
 	 * @brief Destroy the Endpoint object
@@ -40,6 +40,8 @@ public:
 
 protected:
 	std::shared_ptr<structures::GlobalContext> context_;
+	/// Indication if the endpoint is initialized
+	bool initialized_{false};
 
 };
 }

@@ -4,7 +4,7 @@
 
 
 
-namespace gateway::device {
+namespace gateway::endpoint::lora {
 class UARTManager {
 public:
 	bool startUart(const std::string &device, uint32_t baudRate);

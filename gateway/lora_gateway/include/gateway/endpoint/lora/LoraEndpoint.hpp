@@ -1,8 +1,8 @@
 #pragma once
 
-#include <gateway/device/Endpoint.hpp>
+#include <gateway/endpoint/Endpoint.hpp>
 #include <gateway/structures/DeviceMessage.hpp>
-#include <gateway/device/UartManager.hpp>
+#include <gateway/endpoint/lora/UartManager.hpp>
 #include <gateway/structures/GlobalContext.hpp>
 
 
@@ -10,7 +10,7 @@
 
 
 
-namespace gateway::device {
+namespace gateway::endpoint::lora {
 enum class ELoraMode {
 	E_BEGIN = 0,
 	E_INVALID = E_BEGIN,
@@ -27,7 +27,7 @@ public:
 
 	bool initialize() override;
 
-	std::shared_ptr<structures::DeviceMessage> getMessage(unsigned int timeoutMs) const override;
+	[[nodiscard]] std::shared_ptr<structures::DeviceMessage> getMessage(unsigned int timeoutMs) const override;
 
 	~LoraEndpoint() override;
 
@@ -44,8 +44,7 @@ private:
 	std::unique_ptr<UARTManager> uart_ { nullptr };
 	//todo naplnit z konstruktoru?
 	uint8_t settingsRegister_[6] { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0xa4 };
-	uint8_t receiveBuffer_[sizeof(structures::DeviceMessage)];
-	bool initialized_;
+	uint8_t receiveBuffer_[sizeof(structures::DeviceMessage)]{0};
 
 	//todo nastaveni jednotlivych parametru?
 	bool initializeUart();

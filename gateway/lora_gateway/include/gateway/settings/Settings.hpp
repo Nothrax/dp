@@ -10,6 +10,7 @@ enum class EDeviceType {
 	E_BEGIN = 0,
 	E_INVALID = E_BEGIN,
 	E_LORA,
+	E_GENERATOR,
 	E_END
 };
 

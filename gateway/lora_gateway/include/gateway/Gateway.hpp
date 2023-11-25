@@ -1,8 +1,8 @@
 #pragma once
 
 #include <gateway/structures/GlobalContext.hpp>
-#include <gateway/device/LoraEndpoint.hpp>
-#include <gateway/cloud/CsvWriter.hpp>
+#include <gateway/endpoint/Endpoint.hpp>
+#include <gateway/output/csv/CsvOutput.hpp>
 
 #include <cstdint>
 
@@ -17,11 +17,10 @@ public:
 
 private:
 	std::shared_ptr<structures::GlobalContext> context_;
-	std::unique_ptr<device::LoraEndpoint> loraEndpoint_;
-	std::unique_ptr<cloud::CsvWriter> csvWriter_;
+	std::shared_ptr<endpoint::Endpoint> endpoint;
+	std::shared_ptr<output::csv::CsvOutput> csvWriter_;
 	uint8_t messageCounter_ { 0 };
-
-	uint8_t calculateCheckSum(const uint8_t *data, size_t dataSize);
+	static constexpr uint32_t messageReceiveTimeoutMs_ { 5000 };
 
 	bool initialize();
 

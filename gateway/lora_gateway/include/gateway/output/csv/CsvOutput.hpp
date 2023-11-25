@@ -6,14 +6,14 @@
 #include <fstream>
 
 //todo common writer class
-namespace gateway::cloud {
-class CsvWriter {
+namespace gateway::output::csv{
+class CsvOutput {
 public:
-	explicit CsvWriter(const std::filesystem::path &filePath): filePath_(filePath){};
+	explicit CsvOutput(const std::filesystem::path &filePath, uint32_t maxEntries): filePath_(filePath), maxEntries_(maxEntries){};
 
 	void write(const structures::DeviceMessage &data);
 
-	~CsvWriter();
+	~CsvOutput();
 private:
 	std::filesystem::path filePath_;
 	uint32_t entryCounter_ { 0 };
