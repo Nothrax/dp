@@ -48,8 +48,10 @@ struct RFMessage {
 struct LoRaMessage {
 	/// Version number of protocl
 	uint8_t protocolVersion;
+  /// Unit type
+  uint8_t unitType;
 	/// Unit identification number
-	uint16_t unitNumber;
+	uint8_t unitNumber;
 	/// Flags
 	uint8_t flags { 0 };
 	/// Measured values
@@ -70,8 +72,9 @@ struct LoRaMessage {
 uint8_t loraSettings[] = { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0x24 };
 
 /// LoRa Gateway protocol values
-#define PROTOCOL_VERSION 1;
+#define PROTOCOL_VERSION 3;
 #define UNIT_NUMBER 1;
+#define UNIT_TYPE 1;
 
 /// Can be edited end
 
@@ -169,6 +172,7 @@ void sendLoRaMessage(const RFMessage &rfMessage) {
 	LoRaMessage loraMessage;
 	loraMessage.protocolVersion = PROTOCOL_VERSION;
 	loraMessage.unitNumber = UNIT_NUMBER;
+  loraMessage.unitType = UNIT_TYPE;
 	loraMessage.flags = 0;
 	/// Adding message counter to flags
 	loraMessage.flags = loraCounter & 0b00001111;
