@@ -6,6 +6,9 @@
 
 namespace gateway::structures {
 
+/**
+ * @brief Enum representing device types
+ */
 enum class EDeviceType {
 	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
@@ -15,7 +18,9 @@ enum class EDeviceType {
 };
 
 #pragma pack(push, 1)
-/// v2
+/**
+ * @brief Struct representing transmitted message from device
+ */
 struct DeviceMessage {
 	uint8_t protocolVersion { 0 };
 	uint8_t deviceType { 0 };

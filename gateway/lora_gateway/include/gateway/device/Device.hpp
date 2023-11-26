@@ -48,12 +48,28 @@ public:
 	 */
 	[[nodiscard]] std::string getMqttData() const;
 
+	/**
+	 * @brief Get the type of the device
+	 * @return device type
+	 */
 	[[nodiscard]] structures::EDeviceType getDeviceType() const;
 
+	/**
+	 * @brief Get the number of the device
+	 * @return device number
+	 */
 	[[nodiscard]] uint32_t getDeviceNumber() const;
 
+	/**
+	 * @brief Had last message wrong checksum?
+	 * @return true for yes, false for no
+	 */
 	[[nodiscard]] bool isWrongChecksum() const;
 
+	/**
+	 * @brief Was message before last lost?
+	 * @return true for yes, false for no
+	 */
 	[[nodiscard]] bool isMessageLost() const;
 
 private:

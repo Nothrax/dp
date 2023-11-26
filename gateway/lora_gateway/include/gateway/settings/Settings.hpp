@@ -6,6 +6,9 @@
 
 
 namespace gateway::settings {
+/**
+ * @brief Enum with all possible device communication types
+ */
 enum class EDeviceCommunicationType {
 	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
@@ -14,6 +17,9 @@ enum class EDeviceCommunicationType {
 	E_END
 };
 
+/**
+ * @brief Enum with all possible output types
+ */
 enum class EOutputType {
 	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
@@ -22,6 +28,9 @@ enum class EOutputType {
 	E_END
 };
 
+/**
+ * @brief Class with all settings needed for the gateway
+ */
 class Settings {
 public:
 	[[nodiscard]] bool isVerbose() const;

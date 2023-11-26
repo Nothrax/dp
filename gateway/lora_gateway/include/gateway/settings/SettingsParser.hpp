@@ -18,6 +18,10 @@ public:
 	 */
 	bool parseSettings(int argc, char **argv);
 
+	/**
+	 * @brief Get the Settings object
+	 * @return settings
+	 */
 	[[nodiscard]] const std::shared_ptr<Settings> &getSettings() const;
 
 private:
