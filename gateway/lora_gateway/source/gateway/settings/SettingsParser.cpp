@@ -15,8 +15,13 @@ bool SettingsParser::parseSettings(int argc, char **argv) {
 	if(!parseCmdArguments(argc, argv)) {
 		return false;
 	}
-	if(!parseConfig()) {
-		std::cout << "Failed to pars json file with arguments\n";
+	try{
+		if(!parseConfig()) {
+			std::cout << "Failed to parse json file with settings\n";
+			return false;
+		}
+	}catch(...){
+		std::cout << "Failed to parse json file with settings\n";
 		return false;
 	}
 
@@ -83,7 +88,6 @@ bool SettingsParser::parseConfig() {
 	std::string json_str((std::istreambuf_iterator<char>(ifs)),
 						 (std::istreambuf_iterator<char>()));
 
-	//todo fill the settings
 	settings_ = std::make_shared<Settings>();
 	boost::json::value jv = boost::json::parse(json_str);
 
@@ -94,13 +98,17 @@ bool SettingsParser::parseConfig() {
 
 	auto device_settings = jv.at("device_settings");
 
-	std::string deviceType = device_settings.at("device_type").as_string().c_str();
+	std::string deviceType = device_settings.at("device_communication_type").as_string().c_str();
 	settings_->setDeviceType(
 			common_tools::EnumTools::valueToEnum<EDeviceCommunicationType>(deviceType));
 
 	auto loraSettings = device_settings.at("lora_settings");
 	settings_->setUartDevice(loraSettings.at("uart_device_path").as_string().c_str());
 	settings_->setBaudRate(loraSettings.at("uart_baudrate").as_int64());
+	settings_->setM0Pin(loraSettings.at("m0_pin").as_int64());
+	settings_->setM1Pin(loraSettings.at("m1_pin").as_int64());
+	settings_->setLoraAddress(loraSettings.at("lora_address").as_int64());
+	settings_->setLoraChannel(loraSettings.at("lora_channel").as_int64());
 
 	auto outputSettings = jv.at("output_settings");
 	std::string outputType = outputSettings.at("output_type").as_string().c_str();

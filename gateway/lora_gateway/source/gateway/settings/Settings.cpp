@@ -108,4 +108,36 @@ const std::string &Settings::getMqttPassword() const {
 void Settings::setMqttPassword(const std::string &mqttPassword) {
 	mqttPassword_ = mqttPassword;
 }
+
+int32_t Settings::getM0Pin() const {
+	return m0Pin_;
+}
+
+void Settings::setM0Pin(int32_t m0Pin) {
+	m0Pin_ = m0Pin;
+}
+
+int32_t Settings::getM1Pin() const {
+	return m1Pin_;
+}
+
+void Settings::setM1Pin(int32_t m1Pin) {
+	m1Pin_ = m1Pin;
+}
+
+uint16_t Settings::getLoraAddress() const {
+	return loraAddress_;
+}
+
+void Settings::setLoraAddress(uint16_t loraAddress) {
+	loraAddress_ = loraAddress;
+}
+
+uint8_t Settings::getLoraChannel() const {
+	return loraChannel_;
+}
+
+void Settings::setLoraChannel(uint8_t loraChannel) {
+	loraChannel_ = loraChannel;
+}
 }

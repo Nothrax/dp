@@ -22,7 +22,7 @@ private:
 	std::shared_ptr<endpoint::Endpoint> endpoint_;
 	std::shared_ptr<output::Output> output_;
 	std::map<uint32_t, std::map<uint32_t, std::shared_ptr<device::Device>>> devices_;
-	static constexpr uint32_t messageReceiveTimeoutMs_ { 5000 };
+	static constexpr uint32_t messageReceiveTimeoutMs_ { 2000 };
 
 	bool initialize();
 

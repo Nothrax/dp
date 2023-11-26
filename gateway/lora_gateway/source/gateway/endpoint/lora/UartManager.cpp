@@ -10,9 +10,9 @@
 
 namespace gateway::endpoint::lora {
 
-bool UARTManager::readBuffer(uint8_t *buffer, uint32_t bufferSize, uint32_t timeoutMs) {
+bool UARTManager::readBuffer(std::vector<uint8_t>& buffer, uint32_t timeoutMs) const {
 	auto startTime = common_tools::TimeTools::getUnixTimestampMs();
-	while(int dataAvailable = serialDataAvail(fileDescriptor_) < bufferSize) {
+	while(int dataAvailable = serialDataAvail(fileDescriptor_) < buffer.capacity()) {
 		if(dataAvailable < 0) {
 			logger::Logger::logError("Failed reading ttyS0");
 			return false;
@@ -23,15 +23,16 @@ bool UARTManager::readBuffer(uint8_t *buffer, uint32_t bufferSize, uint32_t time
 			return false;
 		}
 	}
-	for(int i = 0; i < bufferSize; i++) {
-		buffer[i] = serialGetchar(fileDescriptor_);
+	for(auto& byte : buffer) {
+		byte = serialGetchar(fileDescriptor_);
 	}
+
 	return true;
 }
 
-bool UARTManager::sendBuffer(const uint8_t *buffer, uint32_t bufferSize) {
-	for(int i = 0; i < bufferSize; i++) {
-		serialPutchar(fileDescriptor_, buffer[i]);
+bool UARTManager::sendBuffer(std::vector<uint8_t>& buffer) const {
+	for(const auto& byte : buffer) {
+		serialPutchar(fileDescriptor_, byte);
 	}
 	return true;
 }
@@ -40,12 +41,17 @@ UARTManager::~UARTManager() {
 	serialClose(fileDescriptor_);
 }
 
-bool UARTManager::startUart(const std::string &device, uint32_t baudRate) {
+bool UARTManager::startUart(const std::string &device, int baudRate) {
 	fileDescriptor_ = serialOpen(device.c_str(), baudRate);
 	if(fileDescriptor_ < 0) {
 		logger::Logger::logError("Cannot open device " + device);
 		return false;
 	}
+	/// FLush the buffer
+	while(serialDataAvail(fileDescriptor_) > 0) {
+		serialGetchar(fileDescriptor_);
+	}
+	logger::Logger::logInfo("Uart device " + device + " successfully opened");
 	return true;
 }
 }
