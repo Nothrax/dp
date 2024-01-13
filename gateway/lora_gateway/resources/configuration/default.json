@@ -4,10 +4,14 @@
     "log_path": "/home/nothrax/log"
   },
   "device_settings": {
-    "device_type": "LORA",
+    "device_communication_type": "LORA",
     "lora_settings": {
       "uart_device_path": "/dev/ttyS0",
-      "uart_baudrate": 9600
+      "lora_channel": 2,
+      "m0_pin": 4,
+      "m1_pin": 5,
+      "uart_baudrate": 9600,
+      "lora_address": 5156
     }
   },
   "output_settings": {

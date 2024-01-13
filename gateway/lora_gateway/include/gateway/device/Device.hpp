@@ -31,43 +31,56 @@ public:
 	[[nodiscard]] std::string getCsvHeader() const;
 
 	/**
-	 * @brief Get the Csv entry of this instance
+	 * @brief Get the Csv entry of this instances device type
 	 * @return csv entry
 	 */
 	[[nodiscard]] std::string getCsvEntry() const;
 
 	/**
-	 * @brief Get the device number
-	 * @return device number
+	 * @brief Get topic of the device to publish data to
+	 * @return publishing topic of the device
 	 */
-	[[nodiscard]] uint32_t getDeviceNumber() const;
+	[[nodiscard]] std::string getMqttTopic() const;
 
 	/**
-	 * @brief Get the device type
+	 * @brief Get data of the device to publish
+	 * @return
+	 */
+	[[nodiscard]] std::string getMqttData() const;
+
+	/**
+	 * @brief Get the type of the device
 	 * @return device type
 	 */
 	[[nodiscard]] structures::EDeviceType getDeviceType() const;
 
 	/**
-	 * @brief Get the last parsed message checksum status
-	 * @return true, if the checksum on last parsed message was wrong, false otherwise
+	 * @brief Get the number of the device
+	 * @return device number
+	 */
+	[[nodiscard]] uint32_t getDeviceNumber() const;
+
+	/**
+	 * @brief Had last message wrong checksum?
+	 * @return true for yes, false for no
 	 */
 	[[nodiscard]] bool isWrongChecksum() const;
 
 	/**
-	 * @brief Get the last parsed message lost status
-	 * @return true, if the message was lost between current and last message, false otherwise
+	 * @brief Was message before last lost?
+	 * @return true for yes, false for no
 	 */
 	[[nodiscard]] bool isMessageLost() const;
-	//todo get mqtt data + topic
 
 private:
 	/// Mask for the message lost flag
-	static constexpr uint8_t messageLostMask_ { 0b01000000 };
+	static constexpr uint8_t MESSAGE_LOST_MASK { 0b01000000 };
 	/// Mask for the wrong checksum flag
-	static constexpr uint8_t wrongChecksumMask_ { 0b10000000 };
+	static constexpr uint8_t WRONG_CHECKSUM_MASK { 0b10000000 };
 	/// Mask for the stamp
-	static constexpr uint8_t stampMask_ { 0b00001111 };
+	static constexpr uint8_t STAMP_MASK { 0b00001111 };
+	/// Maximum index of the message
+	static constexpr uint32_t MAX_MESSAGE_INDEX { 15 };
 	/// Type of the device
 	structures::EDeviceType deviceType_ { structures::EDeviceType::E_INVALID };
 	/// ID of the device

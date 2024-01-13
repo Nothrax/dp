@@ -6,6 +6,9 @@
 
 
 namespace gateway::settings {
+/**
+ * @brief Enum with all possible device communication types
+ */
 enum class EDeviceCommunicationType {
 	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
@@ -14,6 +17,9 @@ enum class EDeviceCommunicationType {
 	E_END
 };
 
+/**
+ * @brief Enum with all possible output types
+ */
 enum class EOutputType {
 	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
@@ -22,6 +28,9 @@ enum class EOutputType {
 	E_END
 };
 
+/**
+ * @brief Class with all settings needed for the gateway
+ */
 class Settings {
 public:
 	[[nodiscard]] bool isVerbose() const;
@@ -76,6 +85,22 @@ public:
 
 	void setMqttPassword(const std::string &mqttPassword);
 
+	[[nodiscard]] int32_t getM0Pin() const;
+
+	void setM0Pin(int32_t m0Pin);
+
+	[[nodiscard]] int32_t getM1Pin() const;
+
+	void setM1Pin(int32_t m1Pin);
+
+	[[nodiscard]] uint16_t getLoraAddress() const;
+
+	void setLoraAddress(uint16_t loraAddress);
+
+	[[nodiscard]] uint8_t getLoraChannel() const;
+
+	void setLoraChannel(uint8_t loraChannel);
+
 private:
 	/// Print logs into console
 	bool verbose_;
@@ -107,6 +132,14 @@ private:
 	/// MQTT broker port
 	std::string mqttPassword_;
 
-	//todo lora specific settings
+	/// LoRa settings
+	/// Index of the M0 pin
+	int32_t m0Pin_;
+	/// Index of the M1 pin
+	int32_t m1Pin_;
+	/// Address of the LoRa device
+	uint16_t loraAddress_;
+	/// Channel of the LoRa device
+	uint8_t loraChannel_;
 };
 }

@@ -23,20 +23,24 @@ bool Device::parseMessage(const structures::DeviceMessage &message) {
 	isWrongChecksum_ = false;
 	isMessageLost_ = false;
 
-	if(message.flags & wrongChecksumMask_) {
+	if(message.flags & WRONG_CHECKSUM_MASK) {
 		logger::Logger::logError("Wrong check sum on 433MHZ RF radio");
 		isWrongChecksum_ = true;
 	}
 
-	if(message.flags & messageLostMask_) {
+	if(message.flags & MESSAGE_LOST_MASK) {
 		logger::Logger::logError("Message got lost on 433MHZ RF radio");
 		isMessageLost_ = true;
 	}
 
-	uint8_t stamp = (message.flags & stampMask_);
+	uint8_t stamp = (message.flags & STAMP_MASK);
 
 	if(lastStamp_ != -1) {
-		if(lastStamp_ + 1 != stamp) {
+		uint32_t nextStamp = lastStamp_ + 1;
+		if(nextStamp > MAX_MESSAGE_INDEX) {
+			nextStamp = 0;
+		}
+		if(nextStamp != stamp) {
 			logger::Logger::logError("Message got lost on LoRa radio");
 			isMessageLost_ = true;
 		}
@@ -63,6 +67,16 @@ std::string Device::getCsvHeader() const {
 		default:
 			return "";
 	}
+}
+
+std::string Device::getMqttTopic() const {
+	throw std::runtime_error("Device::getMqttTopic(): Mqtt not implemented)");
+	return "";
+}
+
+std::string Device::getMqttData() const {
+	throw std::runtime_error("Device::getMqttData(): Mqtt not implemented)");
+	return "";
 }
 
 std::string Device::getCsvEntry() const {

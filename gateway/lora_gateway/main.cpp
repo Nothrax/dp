@@ -22,6 +22,7 @@ int main(int argc, char **argv) {
 
 	logger::Logger::initLogger(context->settings->getLogPath(), context->settings->isVerbose());
 
+
 	try {
 		Gateway worker(context);
 		boost::asio::signal_set signals { context->context, SIGINT, SIGTERM, SIGHUP };

@@ -54,6 +54,8 @@ void Gateway::processMessage(const structures::DeviceMessage &message) {
 
 	auto device = devices_.at(message.deviceType).at(message.deviceNumber);
 	if(device->parseMessage(message)) {
+		logger::Logger::logInfo("Parsed message from device " + std::to_string(message.deviceNumber) + " of type " +
+								 common_tools::EnumTools::enumToString(device->getDeviceType()));
 		output_->writeFromDevice(device);
 	} else {
 		logger::Logger::logError("Failed to parse message");

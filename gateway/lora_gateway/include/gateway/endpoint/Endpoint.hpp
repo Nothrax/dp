@@ -31,7 +31,7 @@ public:
 	 * @param timeout timeout in milliseconds
 	 * @return received message or nullptr if timeout occurred
 	 */
-	[[nodiscard]] virtual std::shared_ptr<structures::DeviceMessage> getMessage(unsigned int timeoutMs) const = 0;
+	[[nodiscard]] virtual std::shared_ptr<structures::DeviceMessage> getMessage(unsigned int timeoutMs) = 0;
 
 	/**
 	 * @brief Destroy the Endpoint object

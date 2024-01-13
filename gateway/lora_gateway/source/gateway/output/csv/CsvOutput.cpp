@@ -22,7 +22,6 @@ bool CsvOutput::writeFromDevice(const std::shared_ptr<device::Device> &device) {
 		outputsEntries_.at(device->getDeviceType()).file_ << device->getCsvHeader();
 	}
 
-	std::cout << device->getCsvEntry();
 	outputsEntries_.at(device->getDeviceType()).file_ << device->getCsvEntry();
 	outputsEntries_.at(device->getDeviceType()).entryCounter_++;
 	return true;
