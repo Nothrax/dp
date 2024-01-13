@@ -7,11 +7,11 @@ namespace gateway::output::mqtt {
 
 bool Mqtt::initialize() {
 	logger::Logger::logError("Mqtt output is not implemented");
-	return false;
+	return true;
 }
 
 bool Mqtt::writeFromDevice(const std::shared_ptr<device::Device> &device) {
 	logger::Logger::logError("Mqtt output is not implemented");
-	return false;
+	return true;
 }
 }

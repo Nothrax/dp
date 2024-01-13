@@ -39,7 +39,7 @@ const std::shared_ptr<Settings> &SettingsParser::getSettings() const {
 
 bool SettingsParser::parseCmdArguments(int argc, char **argv) {
 	namespace po = boost::program_options;
-	po::variables_map variablesMap;
+	po::variables_map vm;
 
 	po::options_description optionsDescription { "Allowed options" };
 
@@ -50,15 +50,13 @@ bool SettingsParser::parseCmdArguments(int argc, char **argv) {
 								   "Path to JSON configuration file");
 
 
-		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, optionsDescription), vm);
 		po::notify(vm);
 
-		if(variablesMap.count("help")) {
+		if(vm.count("help")) {
 			std::cout << optionsDescription << std::endl;
 			return false;
 		}
-
 	}
 	catch(const boost::program_options::required_option &e) {
 		std::cerr << "Wrong startup arguments: " << e.what() << std::endl;
@@ -75,7 +73,6 @@ bool SettingsParser::parseCmdArguments(int argc, char **argv) {
 	}
 
 	return true;
-
 }
 
 bool SettingsParser::parseConfig() {

@@ -3,6 +3,7 @@ services:
   # InfluxDB: https://hub.docker.com/_/influxdb
   influxdb:
     image: influxdb:2.1
+    profiles: ["all", "database"]
     ports:
       - 8069:8069
     volumes:
@@ -16,5 +17,22 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=test_bucket
       - INFLUXD_CONFIG_PATH=/etc/influx/config.yaml
     restart: on-failure:10
+    networks:
+      - iot-emulator
+  mosquitto:
+    image: eclipse-mosquitto:2.0.18
+    profiles: ["all", "mosquitto"]
+    volumes:
+      - ./storage/mosquitto/log:/mosquitto/log
+      - ./storage/mosquitto/data:/mosquitto/data
+      - ./configs/mosquitto:/mosquitto/config/
+    ports:
+      - 1883:1883
+      - 8883:8883
+    restart: on-failure:10
+    networks:
+      - iot-emulator
  
-
+networks:
+  iot-emulator:
+    name: iot-emulator
