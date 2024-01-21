@@ -28,6 +28,7 @@
       "username": "test1",
       "password": "test2",
       "ssl": false,
+      "ca-file" : "",
       "client-cert": "",
       "client-key": ""
     }

@@ -4,6 +4,8 @@
 
 #include <mqtt/async_client.h>
 
+#include <memory>
+
 
 
 namespace gateway::output::mqtt_protocol {
@@ -17,7 +19,7 @@ public:
 	 * @brief Construct a new Mqtt object
 	 * @param context context of the gateway
 	 */
-	explicit Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(context) {};
+	explicit Mqtt(const std::shared_ptr<structures::GlobalContext> &context);
 
 	/**
 	 * @brief Initialize the output, must be called before writeFromDevice
@@ -33,6 +35,13 @@ public:
 	 */
 	bool writeFromDevice(const std::shared_ptr<device::Device> &device) override;
 private:
+	static constexpr int QOS{0};
 	std::unique_ptr<mqtt::async_client> client_ { nullptr };
+	std::string publishTopic_;
+	std::string serverAddress_;
+
+
+	bool connect();
+	void disconnect();
 };
 }

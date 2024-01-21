@@ -172,4 +172,12 @@ const std::string &Settings::getGatewayId() const {
 void Settings::setGatewayId(const std::string &gatewayId) {
 	gatewayId_ = gatewayId;
 }
+
+const std::filesystem::path &Settings::getCaFile() const {
+	return caFile_;
+}
+
+void Settings::setCaFile(const std::filesystem::path &caFile) {
+	caFile_ = caFile;
+}
 }

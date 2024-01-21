@@ -69,9 +69,9 @@ public:
 
 	void setMqttBrokerAddress(const std::string &mqttBrokerAddress);
 
-	[[nodiscard]] const std::string &getMqttTopic() const;
+	[[nodiscard]] const std::filesystem::path &getCaFile() const;
 
-	void setMqttTopic(const std::string &mqttTopic);
+	void setCaFile(const std::filesystem::path &caFile);
 
 	[[nodiscard]] uint32_t getMqttBrokerPort() const;
 
@@ -158,6 +158,8 @@ private:
 	std::filesystem::path clientKey_;
 	/// Path to client key
 	std::filesystem::path clientCertificate_;
+	/// CA file path
+	std::filesystem::path caFile_;
 
 	/// LoRa settings
 	/// Index of the M0 pin

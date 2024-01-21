@@ -128,6 +128,7 @@ bool SettingsParser::parseConfig() {
 	settings_->setSslEnable(mqttSettings.at("ssl").as_bool());
 	settings_->setClientCertificate(mqttSettings.at("client-cert").as_string().c_str());
 	settings_->setClientKey(mqttSettings.at("client-key").as_string().c_str());
+	settings_->setCaFile(mqttSettings.at("ca-file").as_string().c_str());
 
 	return true;
 }

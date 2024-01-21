@@ -9,6 +9,8 @@ SET(Boost_USE_STATIC_LIBS ON)
 SET(Boost_USE_MULTITHREADED ON)
 
 FIND_PACKAGE(PahoMqttCpp REQUIRED)
+FIND_PACKAGE(eclipse-paho-mqtt-c REQUIRED)
+FIND_PACKAGE(OpenSSL REQUIRED)
 FIND_PACKAGE(Boost 1.79.0 REQUIRED COMPONENTS program_options json)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
@@ -21,10 +23,16 @@ ADD_LIBRARY(lora_gateway_lib STATIC ${source_files})
 TARGET_INCLUDE_DIRECTORIES(lora_gateway_lib PUBLIC "include/" "libs")
 
 
-TARGET_LINK_LIBRARIES(lora_gateway_lib ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(lora_gateway_lib
+        ${Boost_LIBRARIES}
+        PahoMqttCpp::paho-mqttpp3
+        eclipse-paho-mqtt-c::paho-mqtt3as
+        OpenSSL::SSL
+)
 
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
-    TARGET_LINK_LIBRARIES(lora_gateway_lib wiringPi PahoMqttCpp::paho-mqttpp3)
+    TARGET_LINK_LIBRARIES(lora_gateway_lib
+            wiringPi )
 ENDIF()
 
 ADD_EXECUTABLE(LoraGateway main.cpp)
