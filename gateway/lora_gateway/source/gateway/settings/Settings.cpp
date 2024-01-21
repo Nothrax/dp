@@ -77,14 +77,6 @@ void Settings::setMqttBrokerAddress(const std::string &mqttBrokerAddress) {
 	mqttBrokerAddress_ = mqttBrokerAddress;
 }
 
-const std::string &Settings::getMqttTopic() const {
-	return mqttTopic_;
-}
-
-void Settings::setMqttTopic(const std::string &mqttTopic) {
-	mqttTopic_ = mqttTopic;
-}
-
 uint32_t Settings::getMqttBrokerPort() const {
 	return mqttBrokerPort_;
 }
@@ -139,5 +131,45 @@ uint8_t Settings::getLoraChannel() const {
 
 void Settings::setLoraChannel(uint8_t loraChannel) {
 	loraChannel_ = loraChannel;
+}
+
+bool Settings::isSslEnable() const {
+	return sslEnable_;
+}
+
+void Settings::setSslEnable(bool sslEnable) {
+	sslEnable_ = sslEnable;
+}
+
+const std::filesystem::path &Settings::getClientKey() const {
+	return clientKey_;
+}
+
+void Settings::setClientKey(const std::filesystem::path &clientKey) {
+	clientKey_ = clientKey;
+}
+
+const std::filesystem::path &Settings::getClientCertificate() const {
+	return clientCertificate_;
+}
+
+void Settings::setClientCertificate(const std::filesystem::path &clientCertificate) {
+	clientCertificate_ = clientCertificate;
+}
+
+const std::string &Settings::getUser() const {
+	return user_;
+}
+
+void Settings::setUser(const std::string &user) {
+	user_ = user;
+}
+
+const std::string &Settings::getGatewayId() const {
+	return gatewayId_;
+}
+
+void Settings::setGatewayId(const std::string &gatewayId) {
+	gatewayId_ = gatewayId;
 }
 }

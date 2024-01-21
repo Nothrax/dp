@@ -1,9 +1,9 @@
-#include <gateway/output/mqtt/Mqtt.hpp>
+#include <gateway/output/mqtt_protocol/Mqtt.hpp>
 #include <gateway/logger/Logger.hpp>
 
 
 
-namespace gateway::output::mqtt {
+namespace gateway::output::mqtt_protocol {
 
 bool Mqtt::initialize() {
 	logger::Logger::logError("Mqtt output is not implemented");

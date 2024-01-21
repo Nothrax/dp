@@ -8,6 +8,7 @@ SET(LoraGateway_VERSION 1.0.0)
 SET(Boost_USE_STATIC_LIBS ON)
 SET(Boost_USE_MULTITHREADED ON)
 
+FIND_PACKAGE(PahoMqttCpp REQUIRED)
 FIND_PACKAGE(Boost 1.79.0 REQUIRED COMPONENTS program_options json)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
@@ -23,7 +24,7 @@ TARGET_INCLUDE_DIRECTORIES(lora_gateway_lib PUBLIC "include/" "libs")
 TARGET_LINK_LIBRARIES(lora_gateway_lib ${Boost_LIBRARIES})
 
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
-    TARGET_LINK_LIBRARIES(lora_gateway_lib wiringPi)
+    TARGET_LINK_LIBRARIES(lora_gateway_lib wiringPi PahoMqttCpp::paho-mqttpp3)
 ENDIF()
 
 ADD_EXECUTABLE(LoraGateway main.cpp)

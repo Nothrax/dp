@@ -101,6 +101,25 @@ public:
 
 	void setLoraChannel(uint8_t loraChannel);
 
+	[[nodiscard]] bool isSslEnable() const;
+
+	void setSslEnable(bool sslEnable);
+
+	[[nodiscard]] const std::filesystem::path &getClientKey() const;
+
+	void setClientKey(const std::filesystem::path &clientKey);
+
+	[[nodiscard]] const std::filesystem::path &getClientCertificate() const;
+
+	void setClientCertificate(const std::filesystem::path &clientCertificate);
+
+	[[nodiscard]] const std::string &getUser() const;
+
+	void setUser(const std::string &user);
+
+	[[nodiscard]] const std::string &getGatewayId() const;
+
+	void setGatewayId(const std::string &gatewayId);
 private:
 	/// Print logs into console
 	bool verbose_;
@@ -115,6 +134,10 @@ private:
 
 	/// Output type
 	EOutputType outputType_ { EOutputType::E_INVALID };
+	/// Owner of gateway
+	std::string user_;
+	/// ID of the gateway
+	std::string gatewayId_;
 
 	/// Path to the output csv folder
 	std::filesystem::path csvPath_;
@@ -126,11 +149,15 @@ private:
 	/// MQTT broker port
 	uint32_t mqttBrokerPort_;
 	/// MQTT broker port
-	std::string mqttTopic_;
-	/// MQTT broker port
 	std::string mqttUsername_;
 	/// MQTT broker port
 	std::string mqttPassword_;
+	/// SSL enabled
+	bool sslEnable_{false};
+	/// Path to client certificate
+	std::filesystem::path clientKey_;
+	/// Path to client key
+	std::filesystem::path clientCertificate_;
 
 	/// LoRa settings
 	/// Index of the M0 pin

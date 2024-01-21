@@ -15,12 +15,16 @@ bool SettingsParser::parseSettings(int argc, char **argv) {
 	if(!parseCmdArguments(argc, argv)) {
 		return false;
 	}
-	try{
+	try {
 		if(!parseConfig()) {
 			std::cout << "Failed to parse json file with settings\n";
 			return false;
 		}
-	}catch(...){
+	} catch(std::exception &e) {
+		std::cout << "Failed to parse json file with settings:" << e.what() <<
+		"\n";
+		return false;
+	} catch(...) {
 		std::cout << "Failed to parse json file with settings\n";
 		return false;
 	}
@@ -89,37 +93,41 @@ bool SettingsParser::parseConfig() {
 	boost::json::value jv = boost::json::parse(json_str);
 
 	// Extract values from the JSON object
-	auto genericSettings = jv.at("generic_settings");
-	settings_->setLogPath(genericSettings.at("log_path").as_string().c_str());
+	auto genericSettings = jv.at("generic-settings");
+	settings_->setLogPath(genericSettings.at("log-path").as_string().c_str());
 	settings_->setVerbose(genericSettings.at("verbose").as_bool());
 
-	auto device_settings = jv.at("device_settings");
+	auto device_settings = jv.at("device-settings");
 
-	std::string deviceType = device_settings.at("device_communication_type").as_string().c_str();
+	std::string deviceType = device_settings.at("device-communication-type").as_string().c_str();
 	settings_->setDeviceType(
 			common_tools::EnumTools::valueToEnum<EDeviceCommunicationType>(deviceType));
 
-	auto loraSettings = device_settings.at("lora_settings");
-	settings_->setUartDevice(loraSettings.at("uart_device_path").as_string().c_str());
-	settings_->setBaudRate(loraSettings.at("uart_baudrate").as_int64());
-	settings_->setM0Pin(loraSettings.at("m0_pin").as_int64());
-	settings_->setM1Pin(loraSettings.at("m1_pin").as_int64());
-	settings_->setLoraAddress(loraSettings.at("lora_address").as_int64());
-	settings_->setLoraChannel(loraSettings.at("lora_channel").as_int64());
+	auto loraSettings = device_settings.at("lora-settings");
+	settings_->setUartDevice(loraSettings.at("uart-device-path").as_string().c_str());
+	settings_->setBaudRate(loraSettings.at("uart-baudrate").as_int64());
+	settings_->setM0Pin(loraSettings.at("m0-pin").as_int64());
+	settings_->setM1Pin(loraSettings.at("m1-pin").as_int64());
+	settings_->setLoraAddress(loraSettings.at("lora-address").as_int64());
+	settings_->setLoraChannel(loraSettings.at("lora-channel").as_int64());
 
-	auto outputSettings = jv.at("output_settings");
-	std::string outputType = outputSettings.at("output_type").as_string().c_str();
+	auto outputSettings = jv.at("output-settings");
+	std::string outputType = outputSettings.at("output-type").as_string().c_str();
 	settings_->setOutputType(common_tools::EnumTools::valueToEnum<EOutputType>(outputType));
+	settings_->setUser(outputSettings.at("user").as_string().c_str());
+	settings_->setGatewayId(outputSettings.at("gateway-id").as_string().c_str());
 
-	auto csvSettings = outputSettings.at("csv_settings");
-	settings_->setCsvPath(csvSettings.at("csv_path").as_string().c_str());
-	settings_->setNumberOfCsvEntries(csvSettings.at("number_of_entries").as_int64());
-	auto mqttSettings = outputSettings.at("mqtt_settings");
-	settings_->setMqttBrokerAddress(mqttSettings.at("mqtt_host").as_string().c_str());
-	settings_->setMqttBrokerPort(mqttSettings.at("mqtt_port").as_int64());
-	settings_->setMqttTopic(mqttSettings.at("mqtt_topic").as_string().c_str());
-	settings_->setMqttUsername(mqttSettings.at("mqtt_username").as_string().c_str());
-	settings_->setMqttPassword(mqttSettings.at("mqtt_password").as_string().c_str());
+	auto csvSettings = outputSettings.at("csv-settings");
+	settings_->setCsvPath(csvSettings.at("csv-path").as_string().c_str());
+	settings_->setNumberOfCsvEntries(csvSettings.at("number-of-entries").as_int64());
+	auto mqttSettings = outputSettings.at("mqtt-settings");
+	settings_->setMqttBrokerAddress(mqttSettings.at("hostname").as_string().c_str());
+	settings_->setMqttBrokerPort(mqttSettings.at("port").as_int64());
+	settings_->setMqttUsername(mqttSettings.at("username").as_string().c_str());
+	settings_->setMqttPassword(mqttSettings.at("password").as_string().c_str());
+	settings_->setSslEnable(mqttSettings.at("ssl").as_bool());
+	settings_->setClientCertificate(mqttSettings.at("client-cert").as_string().c_str());
+	settings_->setClientKey(mqttSettings.at("client-key").as_string().c_str());
 
 	return true;
 }

@@ -2,9 +2,11 @@
 
 #include <gateway/output/Output.hpp>
 
+#include <mqtt/async_client.h>
 
 
-namespace gateway::output::mqtt {
+
+namespace gateway::output::mqtt_protocol {
 /**
  * @brief Output data to MQTT broker
 
@@ -30,5 +32,7 @@ public:
 	 * @return true if the publish was successful
 	 */
 	bool writeFromDevice(const std::shared_ptr<device::Device> &device) override;
+private:
+	std::unique_ptr<mqtt::async_client> client_ { nullptr };
 };
 }
