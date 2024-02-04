@@ -1,7 +1,7 @@
 {
   "generic_settings": {
     "verbose": true,
-    "log_path": "./log",
+    "log_path": "./",
     "gateway_id": "gateway1",
     "company": "company"
   },
@@ -16,7 +16,7 @@
         "device_number": 1
       }
     ],
-    "device_communication_type": "LORA",
+    "device_communication_type": "GENERATOR",
     "generator_settings": {
       "device_type": 1,
       "device_number": 1
@@ -31,13 +31,13 @@
     }
   },
   "output_settings": {
-    "output_type": "CSV",
+    "output_type": "MQTT",
     "csv_settings": {
       "csv_path": "/home/nothrax/data",
       "number_of_entries": 60
     },
     "mqtt_settings": {
-      "hostname": "localhost",
+      "hostname": "127.0.0.1",
       "port": 1883,
       "username": "test1",
       "password": "test2",
