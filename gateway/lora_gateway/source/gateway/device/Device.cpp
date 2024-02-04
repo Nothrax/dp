@@ -3,8 +3,6 @@
 #include <gateway/common_tools/MessageTools.hpp>
 #include <gateway/logger/Logger.hpp>
 
-#include <cstring>
-
 
 
 namespace gateway::device {
@@ -19,9 +17,9 @@ bool Device::parseMessage(const structures::DeviceMessage &message) {
 		return false;
 	}
 
-	message_ = message;
 	isWrongChecksum_ = false;
 	isMessageLost_ = false;
+	currentTimestampMs_ = common_tools::TimeTools::getUnixTimestampMs();
 
 	if(message.flags & WRONG_CHECKSUM_MASK) {
 		logger::Logger::logError("Wrong check sum on 433MHZ RF radio");
@@ -34,6 +32,8 @@ bool Device::parseMessage(const structures::DeviceMessage &message) {
 	}
 
 	uint8_t stamp = (message.flags & STAMP_MASK);
+
+	flags_ = message.flags;
 
 	if(lastStamp_ != -1) {
 		uint32_t nextStamp = lastStamp_ + 1;
@@ -55,52 +55,9 @@ bool Device::parseMessage(const structures::DeviceMessage &message) {
 		logger::Logger::logError("Wrong checksum");
 	}
 
+	parseData(message);
+
 	return !isWrongChecksum_;
-}
-
-std::string Device::getCsvHeader() const {
-	switch(deviceType_) {
-		case structures::EDeviceType::E_WINE_CELLAR:
-			return "timestamp_ms,protocol_version,device_type,device_number,flags,temperature,humidity,co2,check_sum\n";
-		case structures::EDeviceType::E_BEE_SCALE:
-			return "not implemented";
-		default:
-			return "";
-	}
-}
-
-std::string Device::getMqttTopic() const {
-	throw std::runtime_error("Device::getMqttTopic(): Mqtt not implemented)");
-	return "";
-}
-
-std::string Device::getMqttData() const {
-	throw std::runtime_error("Device::getMqttData(): Mqtt not implemented)");
-	return "";
-}
-
-std::string Device::getCsvEntry() const {
-	std::string entry;
-	if(message_.deviceType == 1) {
-		entry += std::to_string(common_tools::TimeTools::getUnixTimestampMs());
-		entry += "," + std::to_string(message_.protocolVersion);
-		entry += "," + std::to_string(message_.deviceType);
-		entry += "," + std::to_string(message_.deviceNumber);
-		entry += "," + std::to_string(message_.flags);
-
-		float floatValues[2];
-		std::memcpy((void *)floatValues, (void *)message_.values, 8);
-
-		entry += "," + std::to_string(floatValues[0]);
-		entry += "," + std::to_string(floatValues[1]);
-		entry += "," + std::to_string(message_.values[2]);
-		entry += "," + std::to_string(message_.checkSum);
-		entry += "\n";
-	} else if(message_.deviceType == 2) {
-		return "not implemented";
-	}
-
-	return entry;
 }
 
 structures::EDeviceType Device::getDeviceType() const {

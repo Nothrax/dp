@@ -3,6 +3,8 @@
 #include <gateway/structures/DeviceMessage.hpp>
 #include <gateway/common_tools/EnumTools.hpp>
 
+#include <boost/json.hpp>
+
 #include <cstdint>
 #include <string>
 
@@ -15,7 +17,8 @@ namespace gateway::device {
  */
 class Device {
 public:
-	Device(structures::EDeviceType deviceType, uint32_t deviceNumber): deviceType_(deviceType), deviceNumber_(deviceNumber) {};
+	Device(structures::EDeviceType deviceType, uint32_t deviceNumber): deviceType_(deviceType),
+																	   deviceNumber_(deviceNumber) {};
 
 	/**
 	 * @brief Parse given message
@@ -28,25 +31,19 @@ public:
 	 * @brief Get the Csv header of this instances device type
 	 * @return csv header
 	 */
-	[[nodiscard]] std::string getCsvHeader() const;
+	[[nodiscard]] virtual std::string getCsvHeader() const = 0;
 
 	/**
 	 * @brief Get the Csv entry of this instances device type
 	 * @return csv entry
 	 */
-	[[nodiscard]] std::string getCsvEntry() const;
-
-	/**
-	 * @brief Get topic of the device to publish data to
-	 * @return publishing topic of the device
-	 */
-	[[nodiscard]] std::string getMqttTopic() const;
+	[[nodiscard]]virtual std::string getCsvEntry() const = 0;
 
 	/**
 	 * @brief Get data of the device to publish
 	 * @return
 	 */
-	[[nodiscard]] std::string getMqttData() const;
+	[[nodiscard]]virtual boost::json::object getOutputProtocolEntry() const = 0;
 
 	/**
 	 * @brief Get the type of the device
@@ -72,7 +69,7 @@ public:
 	 */
 	[[nodiscard]] bool isMessageLost() const;
 
-private:
+protected:
 	/// Mask for the message lost flag
 	static constexpr uint8_t MESSAGE_LOST_MASK { 0b01000000 };
 	/// Mask for the wrong checksum flag
@@ -85,13 +82,15 @@ private:
 	structures::EDeviceType deviceType_;
 	/// ID of the device
 	uint32_t deviceNumber_ { 0 };
-	/// Current device message
-	structures::DeviceMessage message_;
 	/// Stamp of the last received message
 	int64_t lastStamp_ { -1 };
 	/// Is the checksum on last parsed message wrong
 	bool isWrongChecksum_ { false };
 	/// Is the message lost
 	bool isMessageLost_ { false };
+	uint64_t currentTimestampMs_{0};
+	uint8_t flags_{0};
+
+	virtual bool parseData(const structures::DeviceMessage &message) = 0;
 };
 }

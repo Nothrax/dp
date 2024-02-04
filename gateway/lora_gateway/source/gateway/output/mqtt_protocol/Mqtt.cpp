@@ -27,10 +27,10 @@ bool Mqtt::writeFromDevice(const std::shared_ptr<device::Device> &device) {
 		logger::Logger::logError("Mqtt client is not initialized or connected to the server");
 		return false;
 	}
-	std::string todo = "test";
-	const auto size = todo.size();
+	std::string payload = boost::json::serialize(device->getOutputProtocolEntry());
+	const auto size = payload.size();
 
-	client_->publish(publishTopic_, todo.c_str(), size, QOS, false);
+	client_->publish(publishTopic_, payload.c_str(), size, QOS, false);
 	return true;
 }
 
