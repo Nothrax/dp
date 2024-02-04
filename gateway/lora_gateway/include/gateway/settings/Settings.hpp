@@ -28,9 +28,12 @@ enum class EOutputType {
 	E_END
 };
 
+/**
+ * @brief
+ */
 struct DeviceIdentification {
-	std::string deviceType;
-	std::string deviceNumber;
+	int deviceType;
+	int deviceNumber;
 };
 
 /**

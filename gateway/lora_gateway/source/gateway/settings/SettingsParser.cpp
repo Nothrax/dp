@@ -105,10 +105,11 @@ bool SettingsParser::parseConfig() {
 	std::vector<DeviceIdentification> devices;
 	for(auto &device : supportedDevices.as_array()) {
 		DeviceIdentification identification;
-		identification.deviceType = device.at("device_type").as_string().c_str();
-		identification.deviceNumber = device.at("device_number").as_string().c_str();
+		identification.deviceType = device.at("device_type").as_int64();
+		identification.deviceNumber = device.at("device_type").as_int64();
 		devices.push_back(identification);
 	}
+	settings_->setSupportedDevices(devices);
 
 	std::string deviceType = device_settings.at("device_communication_type").as_string().c_str();
 	settings_->setDeviceType(

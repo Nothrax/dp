@@ -24,7 +24,8 @@ TARGET_INCLUDE_DIRECTORIES(lora_gateway_lib PUBLIC "include/" "libs")
 
 
 TARGET_LINK_LIBRARIES(lora_gateway_lib
-        ${Boost_LIBRARIES}
+        Boost::program_options
+        Boost::json
         PahoMqttCpp::paho-mqttpp3
         eclipse-paho-mqtt-c::paho-mqtt3as
         OpenSSL::SSL
