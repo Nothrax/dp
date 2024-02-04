@@ -23,5 +23,5 @@ make
 # Config file
 TODO
 
-# TODO
-Add docker build and docker compose file
+# Docker
+Build docker `docker build -t gateway .` and run it `docker run --rm --network host gateway /gateway/docker_build/LoraGateway --config=/gateway/resources/configuration/for_docker.json`

@@ -63,5 +63,4 @@ RUN mkdir -p /gateway/docker_build && \
 
 WORKDIR /gateway
 
-CMD ["/gateway/docker_build/LoraGateway --config=/gateway/resources/configuration/for_docker.json"]
 
