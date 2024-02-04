@@ -1,9 +1,10 @@
 #include <gateway/Gateway.hpp>
 #include <gateway/logger/Logger.hpp>
 #include <gateway/common_tools/EnumTools.hpp>
-#include <gateway/endpoint/EndpointFactory.hpp>
-#include <gateway/output/OutputFactory.hpp>
+#include <gateway/input_protocol/EndpointFactory.hpp>
+#include <gateway/output_protocol/OutputFactory.hpp>
 #include <gateway/device/DeviceFactory.hpp>
+
 
 
 namespace gateway {
@@ -26,22 +27,24 @@ void Gateway::start() {
 }
 
 bool Gateway::initialize() {
-	endpoint_ = endpoint::EndpointFactory::createEndpoint(context_);
-	output_ = output::OutputFactory::createOutput(context_);
+	endpoint_ = input_protocol::EndpointFactory::createEndpoint(context_);
+	output_ = output_protocol::OutputFactory::createOutput(context_);
 
-	for(const auto& supportedDevice: context_->settings->getSupportedDevices()) {
+	for(const auto &supportedDevice: context_->settings->getSupportedDevices()) {
 		if(devices_.count(supportedDevice.deviceType) == 0) {
 			devices_[supportedDevice.deviceType] = std::map<uint32_t, std::shared_ptr<device::Device>>();
 		}
 
 		if(devices_.at(supportedDevice.deviceType).count(supportedDevice.deviceNumber) == 0) {
-			devices_.at(supportedDevice.deviceType)[supportedDevice.deviceNumber] = device::DeviceFactory::createDevice(supportedDevice.deviceType,
-																													 supportedDevice.deviceNumber);
+			devices_.at(supportedDevice.deviceType)[supportedDevice.deviceNumber] = device::DeviceFactory::createDevice(
+					supportedDevice.deviceType,
+					supportedDevice.deviceNumber);
 		}
 	}
 
 	if(!endpoint_->initialize()) {
-		logger::Logger::logError("Failed to initialize endpoint of type {}", common_tools::EnumTools::enumToString(context_->settings->getDeviceType()));
+		logger::Logger::logError("Failed to initialize endpoint of type {}",
+								 common_tools::EnumTools::enumToString(context_->settings->getDeviceType()));
 		return false;
 	}
 	if(!output_->initialize()) {
@@ -52,19 +55,22 @@ bool Gateway::initialize() {
 	return true;
 }
 
-void Gateway::processMessage(const structures::DeviceMessage &message) {
+void Gateway::processMessage(const input_protocol::InputProtocolMessage &message) {
 	if(devices_.count(message.deviceType) == 0 || devices_.at(message.deviceType).count(message.deviceNumber) == 0) {
-		logger::Logger::logError("Received message from unsupported device {} of type {}", message.deviceNumber, message.deviceType);
+		logger::Logger::logError("Received message from unsupported device {} of type {}", message.deviceNumber,
+								 message.deviceType);
 		return;
 	}
 
 	auto device = devices_.at(message.deviceType).at(message.deviceNumber);
-	if(device->parseMessage(message)) {
+	auto parsedMessage = device->parseMessage(message);
+	if(parsedMessage) {
 		logger::Logger::logInfo("Parsed message from device {} of type {}", message.deviceNumber,
-								 common_tools::EnumTools::enumToString(device->getDeviceType()));
-		output_->writeFromDevice(device);
+								common_tools::EnumTools::enumToString(device->getDeviceType()));
+		output_->writeMessage(parsedMessage);
 	} else {
-		logger::Logger::logError("Failed to parse message");
+		logger::Logger::logError("Failed to parse message from device {} of type {}", message.deviceNumber,
+								 message.deviceType);
 	}
 }
 

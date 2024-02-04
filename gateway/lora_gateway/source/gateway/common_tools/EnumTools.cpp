@@ -1,6 +1,6 @@
 #include <gateway/common_tools/EnumTools.hpp>
 #include <gateway/settings/Settings.hpp>
-#include <gateway/structures/DeviceMessage.hpp>
+#include "gateway/input_protocol/InputProtocolMessage.hpp"
 
 #include <algorithm>
 
@@ -32,12 +32,12 @@ settings::EDeviceCommunicationType EnumTools::valueToEnum(std::string toEnum) {
 }
 
 template <>
-structures::EDeviceType EnumTools::valueToEnum(uint32_t toEnum) {
+input_protocol::EDeviceType EnumTools::valueToEnum(uint32_t toEnum) {
 	switch(toEnum) {
 		case 1:
-			return structures::EDeviceType::E_WINE_CELLAR;
+			return input_protocol::EDeviceType::E_WINE_CELLAR;
 		case 2:
-			return structures::EDeviceType::E_BEE_SCALE;
+			return input_protocol::EDeviceType::E_BEE_SCALE;
 	}
 }
 
@@ -66,11 +66,11 @@ std::string EnumTools::enumToString(settings::EDeviceCommunicationType toEnum) {
 }
 
 template <>
-std::string EnumTools::enumToString(structures::EDeviceType toEnum) {
+std::string EnumTools::enumToString(input_protocol::EDeviceType toEnum) {
 	switch(toEnum) {
-		case structures::EDeviceType::E_WINE_CELLAR:
+		case input_protocol::EDeviceType::E_WINE_CELLAR:
 			return "WINE_CELLAR";
-		case structures::EDeviceType::E_BEE_SCALE:
+		case input_protocol::EDeviceType::E_BEE_SCALE:
 			return "BEE_SCALE";
 		default:
 			return "INVALID";
