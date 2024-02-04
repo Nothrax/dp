@@ -1,5 +1,7 @@
 #include <gateway/device/cellar/CellarMessage.hpp>
 
+
+
 namespace gateway::device::cellar {
 std::string CellarMessage::getCsvHeader() const {
 	return "timestamp_ms,flags,temperature,humidity,co2\n";
@@ -11,12 +13,12 @@ std::string CellarMessage::getCsvEntry() const {
 }
 
 boost::json::object CellarMessage::getOutputProtocolEntry() const {
-	boost::json::object obj{
-			{"timestamp_ms", currentTimestampMs_},
-			{"flags", flags_},
-			{"temperature", temperature_},
-			{"humidity", humidity_},
-			{"co2", co2_}
+	boost::json::object obj {
+			{ "timestamp_ms", currentTimestampMs_ },
+			{ "flags",        flags_ },
+			{ "temperature",  temperature_ },
+			{ "humidity",     humidity_ },
+			{ "co2",          co2_ }
 	};
 
 	return obj;

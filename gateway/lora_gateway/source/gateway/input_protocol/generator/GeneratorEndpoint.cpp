@@ -3,6 +3,7 @@
 #include <gateway/common_tools/EnumTools.hpp>
 
 
+
 namespace gateway::input_protocol::generator {
 
 bool GeneratorEndpoint::initialize() {
@@ -20,7 +21,7 @@ std::shared_ptr<input_protocol::InputProtocolMessage> GeneratorEndpoint::getMess
 	message->deviceNumber = context_->settings->getGeneratorDeviceNumber();
 	message->flags = messageCounter_;
 
-	auto deviceType = common_tools::EnumTools::valueToEnum<input_protocol::EDeviceType>((uint32_t )message->deviceType);
+	auto deviceType = common_tools::EnumTools::valueToEnum<input_protocol::EDeviceType>((uint32_t)message->deviceType);
 	if(deviceType == input_protocol::EDeviceType::E_WINE_CELLAR) {
 		std::memcpy(&message->values[0], &temperatureCellar_, sizeof(temperatureCellar_));
 		std::memcpy(&message->values[1], &humidityCellar_, sizeof(humidityCellar_));

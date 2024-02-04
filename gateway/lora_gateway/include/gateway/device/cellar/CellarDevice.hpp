@@ -2,8 +2,10 @@
 
 #include <gateway/device/Device.hpp>
 
+
+
 namespace gateway::device::cellar {
-class CellarDevice final: public Device{
+class CellarDevice final: public Device {
 public:
 	explicit CellarDevice(uint32_t deviceNumber): Device(input_protocol::EDeviceType::E_WINE_CELLAR, deviceNumber) {};
 

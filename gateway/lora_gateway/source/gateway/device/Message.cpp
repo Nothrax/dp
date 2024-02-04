@@ -1,6 +1,7 @@
 #include <gateway/device/Message.hpp>
 
 
+
 namespace gateway::device {
 
 const input_protocol::EDeviceType &Message::getDeviceType() const {

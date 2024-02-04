@@ -22,7 +22,7 @@ bool SettingsParser::parseSettings(int argc, char **argv) {
 		}
 	} catch(std::exception &e) {
 		std::cout << "Failed to parse json file with settings:" << e.what() <<
-		"\n";
+				  "\n";
 		return false;
 	} catch(...) {
 		std::cout << "Failed to parse json file with settings\n";
@@ -103,7 +103,7 @@ bool SettingsParser::parseConfig() {
 
 	auto supportedDevices = device_settings.at("supported_devices");
 	std::vector<DeviceIdentification> devices;
-	for(auto &device : supportedDevices.as_array()) {
+	for(auto &device: supportedDevices.as_array()) {
 		DeviceIdentification identification;
 		identification.deviceType = device.at("device_type").as_int64();
 		identification.deviceNumber = device.at("device_number").as_int64();
@@ -115,7 +115,7 @@ bool SettingsParser::parseConfig() {
 	settings_->setDeviceType(
 			common_tools::EnumTools::valueToEnum<EDeviceCommunicationType>(deviceType));
 
-	if(settings_->getDeviceType() == EDeviceCommunicationType::E_LORA){
+	if(settings_->getDeviceType() == EDeviceCommunicationType::E_LORA) {
 		auto loraSettings = device_settings.at("lora_settings");
 		settings_->setUartDevice(loraSettings.at("uart_device_path").as_string().c_str());
 		settings_->setBaudRate(loraSettings.at("uart_baudrate").as_int64());
@@ -123,7 +123,7 @@ bool SettingsParser::parseConfig() {
 		settings_->setM1Pin(loraSettings.at("m1_pin").as_int64());
 		settings_->setLoraAddress(loraSettings.at("lora_address").as_int64());
 		settings_->setLoraChannel(loraSettings.at("lora_channel").as_int64());
-	}else if(settings_->getDeviceType() == EDeviceCommunicationType::E_GENERATOR){
+	} else if(settings_->getDeviceType() == EDeviceCommunicationType::E_GENERATOR) {
 		auto generatorSettings = device_settings.at("generator_settings");
 		settings_->setGeneratorDeviceType(generatorSettings.at("device_type").as_int64());
 		settings_->setGeneratorDeviceNumber(generatorSettings.at("device_number").as_int64());

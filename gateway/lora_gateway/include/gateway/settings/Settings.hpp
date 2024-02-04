@@ -5,6 +5,7 @@
 #include <vector>
 
 
+
 namespace gateway::settings {
 /**
  * @brief Enum with all possible device communication types
@@ -140,6 +141,7 @@ public:
 	[[nodiscard]] int getGeneratorDeviceNumber() const;
 
 	void setGeneratorDeviceNumber(int generatorDeviceNumber);
+
 private:
 	/// Print logs into console
 	bool verbose_;
@@ -178,7 +180,7 @@ private:
 	/// MQTT broker port
 	std::string mqttPassword_;
 	/// SSL enabled
-	bool sslEnable_{false};
+	bool sslEnable_ { false };
 	/// Path to client certificate
 	std::filesystem::path clientKey_;
 	/// Path to client key

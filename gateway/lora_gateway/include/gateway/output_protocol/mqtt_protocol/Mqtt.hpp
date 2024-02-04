@@ -34,14 +34,15 @@ public:
 	 * @return true if the publish was successful
 	 */
 	bool writeMessage(const std::shared_ptr<device::Message> &message) override;
+
 private:
-	static constexpr int QOS{0};
+	static constexpr int QOS { 0 };
 	std::unique_ptr<mqtt::async_client> client_ { nullptr };
 	std::string publishTopic_;
 	std::string serverAddress_;
 
-
 	bool connect();
+
 	void disconnect();
 };
 }

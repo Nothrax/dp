@@ -4,7 +4,7 @@
 
 
 
-namespace gateway::input_protocol{
+namespace gateway::input_protocol {
 
 /**
  * @brief Enum representing device types

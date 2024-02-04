@@ -4,6 +4,7 @@
 #include <vector>
 
 
+
 namespace gateway::input_protocol::lora {
 class UARTManager {
 public:
@@ -22,7 +23,7 @@ public:
 	 * @param bufferSize size of the buffer
 	 * @return true if successful, false otherwise
 	 */
-	bool sendBuffer(std::vector<uint8_t>& buffer) const;
+	bool sendBuffer(std::vector<uint8_t> &buffer) const;
 
 	/**
 	 * @brief read buffer from UART with timeout - wait for bufferSize to be available on UART, if timeout occurs return false and no bytes are read
@@ -31,7 +32,7 @@ public:
 	 * @param timeoutMs timeout in milliseconds
 	 * @return
 	 */
-	bool readBuffer(std::vector<uint8_t>& buffer, uint32_t timeoutMs) const;
+	bool readBuffer(std::vector<uint8_t> &buffer, uint32_t timeoutMs) const;
 
 	/**
 	 * @brief Destroy the UARTManager object

@@ -5,7 +5,7 @@
 
 
 namespace gateway::output_protocol {
-std::shared_ptr<Output>  OutputFactory::createOutput(const std::shared_ptr<structures::GlobalContext> &context) {
+std::shared_ptr<Output> OutputFactory::createOutput(const std::shared_ptr<structures::GlobalContext> &context) {
 	switch(context->settings->getOutputType()) {
 		case settings::EOutputType::E_CSV:
 			return std::make_shared<csv::CsvOutput>(context);

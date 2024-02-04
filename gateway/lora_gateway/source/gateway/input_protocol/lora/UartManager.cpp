@@ -10,7 +10,7 @@
 
 namespace gateway::input_protocol::lora {
 
-bool UARTManager::readBuffer(std::vector<uint8_t>& buffer, uint32_t timeoutMs) const {
+bool UARTManager::readBuffer(std::vector<uint8_t> &buffer, uint32_t timeoutMs) const {
 	auto startTime = common_tools::TimeTools::getUnixTimestampMs();
 	while(int dataAvailable = serialDataAvail(fileDescriptor_) < buffer.capacity()) {
 		if(dataAvailable < 0) {
@@ -23,15 +23,15 @@ bool UARTManager::readBuffer(std::vector<uint8_t>& buffer, uint32_t timeoutMs) c
 			return false;
 		}
 	}
-	for(auto& byte : buffer) {
+	for(auto &byte: buffer) {
 		byte = serialGetchar(fileDescriptor_);
 	}
 
 	return true;
 }
 
-bool UARTManager::sendBuffer(std::vector<uint8_t>& buffer) const {
-	for(const auto& byte : buffer) {
+bool UARTManager::sendBuffer(std::vector<uint8_t> &buffer) const {
+	for(const auto &byte: buffer) {
 		serialPutchar(fileDescriptor_, byte);
 	}
 	return true;

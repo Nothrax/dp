@@ -4,6 +4,8 @@
 
 #include <memory>
 
+
+
 namespace gateway::device {
 class DeviceFactory {
 public:

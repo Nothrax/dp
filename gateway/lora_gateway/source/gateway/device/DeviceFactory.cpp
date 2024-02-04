@@ -3,6 +3,8 @@
 #include <gateway/device/cellar/CellarDevice.hpp>
 #include <gateway/common_tools/EnumTools.hpp>
 
+
+
 namespace gateway::device {
 std::shared_ptr<Device> DeviceFactory::createDevice(uint32_t deviceType, uint32_t deviceNumber) {
 	auto deviceEnum = common_tools::EnumTools::valueToEnum<input_protocol::EDeviceType>(deviceType);

@@ -6,6 +6,7 @@
 #include <fmt/format.h>
 
 
+
 namespace gateway::logger {
 /**
  * @brief Logger class using spdlog as implementation

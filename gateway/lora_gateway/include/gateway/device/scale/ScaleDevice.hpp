@@ -2,8 +2,10 @@
 
 #include <gateway/device/Device.hpp>
 
+
+
 namespace gateway::device::scale {
-class ScaleDevice final: public Device{
+class ScaleDevice final: public Device {
 public:
 	explicit ScaleDevice(uint32_t deviceNumber): Device(input_protocol::EDeviceType::E_BEE_SCALE, deviceNumber) {};
 

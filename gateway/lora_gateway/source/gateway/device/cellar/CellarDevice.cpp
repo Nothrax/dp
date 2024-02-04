@@ -5,6 +5,8 @@
 
 #include <cstring>
 
+
+
 namespace gateway::device::cellar {
 
 
@@ -13,7 +15,7 @@ bool CellarDevice::parseDeviceSpecificFlags(const uint8_t &flags) {
 		logger::Logger::logError("Message got lost on 433MHZ RF radio");
 		isMessageLost_ = true;
 	}
-	if(flags& WRONG_CHECKSUM_MASK) {
+	if(flags & WRONG_CHECKSUM_MASK) {
 		logger::Logger::logError("Wrong check sum on 433MHZ RF radio");
 		isCorrectChecksum_ = false;
 	}
@@ -25,10 +27,10 @@ std::shared_ptr<Message> CellarDevice::parseMessage(const input_protocol::InputP
 	isCorrectChecksum_ = true;
 	isMessageLost_ = false;
 
-	if(!parseCommonHeader(message)){
+	if(!parseCommonHeader(message)) {
 		return nullptr;
 	}
-	if(!parseDeviceSpecificFlags(message.flags)){
+	if(!parseDeviceSpecificFlags(message.flags)) {
 		return nullptr;
 	}
 
@@ -36,8 +38,8 @@ std::shared_ptr<Message> CellarDevice::parseMessage(const input_protocol::InputP
 	cellarMessage->setFlags(message.flags);
 
 	float temperature, humidity;
-	std::memcpy((void*)&temperature, (void *)&message.values[0], sizeof(float));
-	std::memcpy((void*)&humidity, (void *)&message.values[1], sizeof(float));
+	std::memcpy((void *)&temperature, (void *)&message.values[0], sizeof(float));
+	std::memcpy((void *)&humidity, (void *)&message.values[1], sizeof(float));
 	cellarMessage->setTemperature(temperature);
 	cellarMessage->setHumidity(humidity);
 	cellarMessage->setCo2(message.values[2]);

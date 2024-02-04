@@ -23,7 +23,6 @@ boost::json::object ScaleMessage::getOutputProtocolEntry() const {
 	return obj;
 }
 
-
 void ScaleMessage::setWeight(float weight) {
 	weight_ = weight;
 }
