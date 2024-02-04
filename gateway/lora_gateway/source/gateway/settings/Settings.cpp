@@ -157,14 +157,6 @@ void Settings::setClientCertificate(const std::filesystem::path &clientCertifica
 	clientCertificate_ = clientCertificate;
 }
 
-const std::string &Settings::getUser() const {
-	return user_;
-}
-
-void Settings::setUser(const std::string &user) {
-	user_ = user;
-}
-
 const std::string &Settings::getGatewayId() const {
 	return gatewayId_;
 }
@@ -179,5 +171,21 @@ const std::filesystem::path &Settings::getCaFile() const {
 
 void Settings::setCaFile(const std::filesystem::path &caFile) {
 	caFile_ = caFile;
+}
+
+const std::vector<DeviceIdentification> &Settings::getSupportedDevices() const {
+	return supportedDevices_;
+}
+
+void Settings::setSupportedDevices(const std::vector<DeviceIdentification> &supportedDevices) {
+	supportedDevices_ = supportedDevices;
+}
+
+const std::string &Settings::getCompany() const {
+	return company_;
+}
+
+void Settings::setCompany(const std::string &company) {
+	company_ = company;
 }
 }

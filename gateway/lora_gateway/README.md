@@ -21,3 +21,6 @@ make
 
 # Config file
 TODO
+
+# TODO
+Add docker build and docker compose file

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <filesystem>
-
+#include <vector>
 
 
 namespace gateway::settings {
@@ -26,6 +26,11 @@ enum class EOutputType {
 	E_CSV,
 	E_MQTT,
 	E_END
+};
+
+struct DeviceIdentification {
+	std::string deviceType;
+	std::string deviceNumber;
 };
 
 /**
@@ -113,10 +118,6 @@ public:
 
 	void setClientCertificate(const std::filesystem::path &clientCertificate);
 
-	[[nodiscard]] const std::string &getUser() const;
-
-	void setUser(const std::string &user);
-
 	[[nodiscard]] const std::string &getGatewayId() const;
 
 	void setGatewayId(const std::string &gatewayId);
@@ -127,17 +128,29 @@ private:
 	std::string logPath_;
 	/// Type of the device communication
 	EDeviceCommunicationType deviceType_ { EDeviceCommunicationType::E_INVALID };
+	/// Vector of supported devices
+	std::vector<DeviceIdentification> supportedDevices_;
 	/// Path to the uart device
 	std::string uartDevice_;
 	/// Baud rate of the uart device
 	uint32_t baudRate_ { 0 };
+	/// ID of the gateway
+	std::string gatewayId_;
+	/// Owner of the gateway
+	std::string company_;
+public:
+	const std::vector<DeviceIdentification> &getSupportedDevices() const;
+
+	void setSupportedDevices(const std::vector<DeviceIdentification> &supportedDevices);
+
+	const std::string &getCompany() const;
+
+	void setCompany(const std::string &company);
+
+private:
 
 	/// Output type
 	EOutputType outputType_ { EOutputType::E_INVALID };
-	/// Owner of gateway
-	std::string user_;
-	/// ID of the gateway
-	std::string gatewayId_;
 
 	/// Path to the output csv folder
 	std::filesystem::path csvPath_;

@@ -6,7 +6,7 @@
 namespace gateway::output::mqtt_protocol {
 
 Mqtt::Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(context) {
-	publishTopic_ = context->settings->getUser() + "/" + context->settings->getGatewayId();
+	publishTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId();
 	serverAddress_ =
 			context->settings->getMqttBrokerAddress() + ":" + std::to_string(context->settings->getMqttBrokerPort());
 }
@@ -36,7 +36,7 @@ bool Mqtt::writeFromDevice(const std::shared_ptr<device::Device> &device) {
 
 bool Mqtt::connect() {
 	//todo ssl
-	client_ = std::make_unique<mqtt::async_client>(serverAddress_, context_->settings->getUser(),
+	client_ = std::make_unique<mqtt::async_client>(serverAddress_, context_->settings->getMqttUsername(),
 												   mqtt::create_options(MQTTVERSION_5));
 	if(!client_) {
 		return false;
