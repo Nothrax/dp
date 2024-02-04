@@ -9,13 +9,13 @@
 
 
 namespace gateway::device {
+
 /**
  * @brief Class representing a unique device
  */
 class Device {
 public:
-	Device(uint32_t deviceType, uint32_t deviceNumber): deviceType_(
-			common_tools::EnumTools::valueToEnum<structures::EDeviceType>(deviceType)), deviceNumber_(deviceNumber) {};
+	Device(structures::EDeviceType deviceType, uint32_t deviceNumber): deviceType_(deviceType), deviceNumber_(deviceNumber) {};
 
 	/**
 	 * @brief Parse given message
@@ -82,7 +82,7 @@ private:
 	/// Maximum index of the message
 	static constexpr uint32_t MAX_MESSAGE_INDEX { 15 };
 	/// Type of the device
-	structures::EDeviceType deviceType_ { structures::EDeviceType::E_INVALID };
+	structures::EDeviceType deviceType_;
 	/// ID of the device
 	uint32_t deviceNumber_ { 0 };
 	/// Current device message

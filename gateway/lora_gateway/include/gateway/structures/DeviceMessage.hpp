@@ -10,11 +10,8 @@ namespace gateway::structures {
  * @brief Enum representing device types
  */
 enum class EDeviceType {
-	E_BEGIN = -1,
-	E_INVALID = E_BEGIN,
-	E_WINE_CELLAR,
-	E_BEE_SCALE,
-	E_END
+	E_WINE_CELLAR = 1,
+	E_BEE_SCALE = 2
 };
 
 #pragma pack(push, 1)

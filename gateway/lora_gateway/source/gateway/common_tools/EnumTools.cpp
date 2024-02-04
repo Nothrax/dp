@@ -38,8 +38,6 @@ structures::EDeviceType EnumTools::valueToEnum(uint32_t toEnum) {
 			return structures::EDeviceType::E_WINE_CELLAR;
 		case 2:
 			return structures::EDeviceType::E_BEE_SCALE;
-		default:
-			return structures::EDeviceType::E_INVALID;
 	}
 }
 

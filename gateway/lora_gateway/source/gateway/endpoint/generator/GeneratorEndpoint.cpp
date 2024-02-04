@@ -1,6 +1,6 @@
 #include <gateway/endpoint/generator/GeneratorEndpoint.hpp>
 #include <gateway/common_tools/MessageTools.hpp>
-
+#include <gateway/common_tools/EnumTools.hpp>
 
 
 namespace gateway::endpoint::generator {
@@ -16,13 +16,23 @@ std::shared_ptr<structures::DeviceMessage> GeneratorEndpoint::getMessage(unsigne
 	}
 	auto message = std::make_shared<structures::DeviceMessage>();
 	message->protocolVersion = 3;
-	message->deviceType = 1;
-	message->deviceNumber = 1;
+	message->deviceType = context_->settings->getGeneratorDeviceType();
+	message->deviceNumber = context_->settings->getGeneratorDeviceNumber();
 	message->flags = messageCounter_;
 
-	std::memcpy(&message->values[0], &temperature_, sizeof(temperature_));
-	std::memcpy(&message->values[1], &humidity_, sizeof(humidity_));
-	message->values[2] = co2_;
+	auto deviceType = common_tools::EnumTools::valueToEnum<structures::EDeviceType>((uint32_t )message->deviceType);
+	if(deviceType == structures::EDeviceType::E_WINE_CELLAR) {
+		std::memcpy(&message->values[0], &temperatureCellar_, sizeof(temperatureCellar_));
+		std::memcpy(&message->values[1], &humidityCellar_, sizeof(humidityCellar_));
+		message->values[2] = co2Cellar_;
+	} else if(deviceType == structures::EDeviceType::E_BEE_SCALE) {
+		std::memcpy(&message->values[0], &temperatureBee_, sizeof(temperatureBee_));
+		std::memcpy(&message->values[1], &humidityBee_, sizeof(humidityBee_));
+		std::memcpy(&message->values[2], &weightBee_, sizeof(weightBee_));
+	} else {
+		throw std::runtime_error("Unsupported device type");
+	}
+
 
 	messageCounter_++;
 	if(messageCounter_ > MAX_MESSAGE_INDEX) {

@@ -188,4 +188,20 @@ const std::string &Settings::getCompany() const {
 void Settings::setCompany(const std::string &company) {
 	company_ = company;
 }
+
+int Settings::getGeneratorDeviceType() const {
+	return generatorDeviceType_;
+}
+
+void Settings::setGeneratorDeviceType(int generatorDeviceType) {
+	generatorDeviceType_ = generatorDeviceType;
+}
+
+int Settings::getGeneratorDeviceNumber() const {
+	return generatorDeviceNumber_;
+}
+
+void Settings::setGeneratorDeviceNumber(int generatorDeviceNumber) {
+	generatorDeviceNumber_ = generatorDeviceNumber;
+}
 }

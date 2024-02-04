@@ -36,10 +36,14 @@ private:
 	/// Message counter - index of the current message
 	uint8_t messageCounter_ { 0 };
 	/// Temperature to be set in the message
-	float temperature_ { 20.5f };
+	float temperatureCellar_ { 20.5f };
 	/// Humidity to be set in the message
-	float humidity_ { 50.5f };
+	float humidityCellar_ { 50.5f };
 	/// CO2 to be set in the message
-	uint32_t co2_ { 656 };
+	uint32_t co2Cellar_ { 656 };
+
+	float humidityBee_ { 80.5f };
+	float temperatureBee_ { 15.5f };
+	float weightBee_ { 109.5f };
 };
 }

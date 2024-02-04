@@ -124,6 +124,22 @@ public:
 	[[nodiscard]] const std::string &getGatewayId() const;
 
 	void setGatewayId(const std::string &gatewayId);
+
+	[[nodiscard]] const std::vector<DeviceIdentification> &getSupportedDevices() const;
+
+	void setSupportedDevices(const std::vector<DeviceIdentification> &supportedDevices);
+
+	[[nodiscard]] const std::string &getCompany() const;
+
+	void setCompany(const std::string &company);
+
+	[[nodiscard]] int getGeneratorDeviceType() const;
+
+	void setGeneratorDeviceType(int generatorDeviceType);
+
+	[[nodiscard]] int getGeneratorDeviceNumber() const;
+
+	void setGeneratorDeviceNumber(int generatorDeviceNumber);
 private:
 	/// Print logs into console
 	bool verbose_;
@@ -141,19 +157,12 @@ private:
 	std::string gatewayId_;
 	/// Owner of the gateway
 	std::string company_;
-public:
-	const std::vector<DeviceIdentification> &getSupportedDevices() const;
-
-	void setSupportedDevices(const std::vector<DeviceIdentification> &supportedDevices);
-
-	const std::string &getCompany() const;
-
-	void setCompany(const std::string &company);
-
-private:
-
 	/// Output type
 	EOutputType outputType_ { EOutputType::E_INVALID };
+
+	/// For generator input set device
+	int generatorDeviceType_;
+	int generatorDeviceNumber_;
 
 	/// Path to the output csv folder
 	std::filesystem::path csvPath_;

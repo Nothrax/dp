@@ -17,6 +17,10 @@
       }
     ],
     "device_communication_type": "LORA",
+    "generator_settings": {
+      "device_type": 1,
+      "device_number": 1
+    },
     "lora_settings": {
       "uart_device_path": "/dev/ttyS0",
       "lora_channel": 2,
@@ -38,7 +42,7 @@
       "username": "test1",
       "password": "test2",
       "ssl": false,
-      "ca_file" : "",
+      "ca_file": "",
       "client_cert": "",
       "client_key": ""
     }

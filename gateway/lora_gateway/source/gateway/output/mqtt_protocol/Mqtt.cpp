@@ -50,7 +50,7 @@ bool Mqtt::connect() {
 				.private_key(context_->settings->getClientKey())
 				.key_store(context_->settings->getClientCertificate())
 				.error_handler([](const std::string &msg) {
-					logger::Logger::logError("MQTT SSL Error: " + msg);
+					logger::Logger::logError("MQTT SSL Error {}", msg);
 				})
 				.finalize();
 		connopts_.set_ssl(sslopts);
@@ -59,7 +59,7 @@ bool Mqtt::connect() {
 	client_->start_consuming();
 	mqtt::token_ptr conntok = client_->connect(connopts_);
 	conntok->wait();
-	logger::Logger::logInfo("Connected to MQTT server" + serverAddress_);
+	logger::Logger::logInfo("Connected to MQTT server {}", serverAddress_);
 
 	return client_->is_connected();
 }

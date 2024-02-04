@@ -7,6 +7,7 @@ Gateway for LoRaWAN.
 [wiringPi](http://wiringpi.com/) >= 2.46.0
 [Paho MQTT c](https://github.com/eclipse/paho.mqtt.c.git) = 1.3.13
 [Paho MQTT c++](https://github.com/eclipse/paho.mqtt.cpp) = 1.3.2
+fmt
 
 # Build
 ```
