@@ -24,7 +24,6 @@ enum class EDeviceCommunicationType {
 enum class EOutputType {
 	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
-	E_CSV,
 	E_MQTT,
 	E_END
 };
@@ -69,10 +68,6 @@ public:
 	[[nodiscard]] const std::filesystem::path &getCsvPath() const;
 
 	void setCsvPath(const std::filesystem::path &csvPath);
-
-	[[nodiscard]] uint32_t getNumberOfCsvEntries() const;
-
-	void setNumberOfCsvEntries(uint32_t numberOfCsvEntries);
 
 	[[nodiscard]] const std::string &getMqttBrokerAddress() const;
 
@@ -168,8 +163,6 @@ private:
 
 	/// Path to the output csv folder
 	std::filesystem::path csvPath_;
-	/// Number of entries in the csv file
-	uint32_t numberOfCsvEntries_ { 0 };
 
 	/// MQTT broker address
 	std::string mqttBrokerAddress_;

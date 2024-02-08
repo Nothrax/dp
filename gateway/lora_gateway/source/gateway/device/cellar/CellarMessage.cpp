@@ -3,7 +3,7 @@
 
 
 namespace gateway::device::cellar {
-std::string CellarMessage::getCsvHeader() const {
+std::string CellarMessage::getCsvHeader() {
 	return "timestamp_ms,flags,temperature,humidity,co2\n";
 }
 

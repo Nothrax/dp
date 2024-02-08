@@ -17,6 +17,7 @@ RUN apt-get update && \
 
 RUN mkdir /gateway/
 COPY . /gateway/
+RUN mkdir /gateway/data
 
 RUN mkdir -p /tmp/libs
 

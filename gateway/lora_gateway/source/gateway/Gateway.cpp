@@ -48,9 +48,8 @@ bool Gateway::initialize() {
 		return false;
 	}
 	if(!output_->initialize()) {
-		logger::Logger::logError("Failed to initialize output of type {}",
+		logger::Logger::logError("Failed to initialize output of type {}, reconnect will be attempted",
 								 common_tools::EnumTools::enumToString(context_->settings->getOutputType()));
-		return false;
 	}
 	return true;
 }
@@ -67,7 +66,7 @@ void Gateway::processMessage(const input_protocol::InputProtocolMessage &message
 	if(parsedMessage) {
 		logger::Logger::logInfo("Parsed message from device {} of type {}", message.deviceNumber,
 								common_tools::EnumTools::enumToString(device->getDeviceType()));
-		output_->writeMessage(parsedMessage);
+		output_->sendMessage(parsedMessage);
 	} else {
 		logger::Logger::logError("Failed to parse message from device {} of type {}", message.deviceNumber,
 								 message.deviceType);

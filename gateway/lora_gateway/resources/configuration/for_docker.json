@@ -32,10 +32,7 @@
   },
   "output_settings": {
     "output_type": "MQTT",
-    "csv_settings": {
-      "csv_path": "/home/nothrax/data",
-      "number_of_entries": 60
-    },
+    "csv_path": "/gateway/data",
     "mqtt_settings": {
       "hostname": "127.0.0.1",
       "port": 1883,

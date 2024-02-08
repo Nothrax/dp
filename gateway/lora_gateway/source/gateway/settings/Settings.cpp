@@ -61,14 +61,6 @@ void Settings::setCsvPath(const std::filesystem::path &csvPath) {
 	csvPath_ = csvPath;
 }
 
-uint32_t Settings::getNumberOfCsvEntries() const {
-	return numberOfCsvEntries_;
-}
-
-void Settings::setNumberOfCsvEntries(uint32_t numberOfCsvEntries) {
-	numberOfCsvEntries_ = numberOfCsvEntries;
-}
-
 const std::string &Settings::getMqttBrokerAddress() const {
 	return mqttBrokerAddress_;
 }

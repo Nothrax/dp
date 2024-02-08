@@ -9,7 +9,7 @@ class CellarMessage final: public Message {
 public:
 	explicit CellarMessage(uint32_t deviceNumber): Message(input_protocol::EDeviceType::E_WINE_CELLAR, deviceNumber) {};
 
-	[[nodiscard]] std::string getCsvHeader() const override;
+	[[nodiscard]] static std::string getCsvHeader();
 
 	[[nodiscard]] std::string getCsvEntry() const override;
 

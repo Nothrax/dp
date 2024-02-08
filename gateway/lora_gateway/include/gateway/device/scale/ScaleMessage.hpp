@@ -9,7 +9,7 @@ class ScaleMessage final: public Message {
 public:
 	explicit ScaleMessage(uint32_t deviceNumber): Message(input_protocol::EDeviceType::E_BEE_SCALE, deviceNumber) {};
 
-	[[nodiscard]] std::string getCsvHeader() const override;
+	[[nodiscard]] static std::string getCsvHeader();
 
 	[[nodiscard]] std::string getCsvEntry() const override;
 

@@ -132,10 +132,8 @@ bool SettingsParser::parseConfig() {
 	auto outputSettings = jv.at("output_settings");
 	std::string outputType = outputSettings.at("output_type").as_string().c_str();
 	settings_->setOutputType(common_tools::EnumTools::valueToEnum<EOutputType>(outputType));
+	settings_->setCsvPath(outputSettings.at("csv_path").as_string().c_str());
 
-	auto csvSettings = outputSettings.at("csv_settings");
-	settings_->setCsvPath(csvSettings.at("csv_path").as_string().c_str());
-	settings_->setNumberOfCsvEntries(csvSettings.at("number_of_entries").as_int64());
 	auto mqttSettings = outputSettings.at("mqtt_settings");
 	settings_->setMqttBrokerAddress(mqttSettings.at("hostname").as_string().c_str());
 	settings_->setMqttBrokerPort(mqttSettings.at("port").as_int64());

@@ -3,7 +3,7 @@
 
 
 namespace gateway::device::scale {
-std::string ScaleMessage::getCsvHeader() const {
+std::string ScaleMessage::getCsvHeader() {
 	return "timestamp_ms,flags,temperature,humidity,weight\n";
 }
 

@@ -34,7 +34,7 @@ public:
 	 * @return true if successful
 	 * @return false if failed
 	 */
-	virtual bool writeMessage(const std::shared_ptr<device::Message> &message) = 0;
+	virtual bool sendMessage(const std::shared_ptr<device::Message> &message) = 0;
 
 	/**
 	 * @brief Destroy the Output object

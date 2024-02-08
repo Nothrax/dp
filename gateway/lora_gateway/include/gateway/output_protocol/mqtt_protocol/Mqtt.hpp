@@ -1,10 +1,12 @@
 #pragma once
 
 #include <gateway/output_protocol/Output.hpp>
+#include <gateway/output_protocol/CsvManager.hpp>
 
 #include <mqtt/async_client.h>
 
 #include <memory>
+#include <chrono>
 
 
 
@@ -33,13 +35,17 @@ public:
 	 * @param message message to write
 	 * @return true if the publish was successful
 	 */
-	bool writeMessage(const std::shared_ptr<device::Message> &message) override;
+	bool sendMessage(const std::shared_ptr<device::Message> &message) override;
 
 private:
 	static constexpr int QOS { 0 };
+	static constexpr int RECONNECT_PERIOD { 30 };
 	std::unique_ptr<mqtt::async_client> client_ { nullptr };
 	std::string publishTopic_;
 	std::string serverAddress_;
+	uint64_t lastReconnectAttempt_ { 0 };
+	uint32_t dataId_{0};
+	std::unique_ptr<CsvManager> csvManager_;
 
 	bool connect();
 

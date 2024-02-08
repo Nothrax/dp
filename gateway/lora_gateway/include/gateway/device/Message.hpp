@@ -16,12 +16,6 @@ public:
 																			deviceNumber_(deviceNumber) {};
 
 	/**
-	 * @brief Get the Csv header of this instances device type
-	 * @return csv header
-	 */
-	[[nodiscard]] virtual std::string getCsvHeader() const = 0;
-
-	/**
 	 * @brief Get the Csv entry of this instances device type
 	 * @return csv entry
 	 */

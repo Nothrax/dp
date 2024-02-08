@@ -1,4 +1,6 @@
 #include <gateway/output_protocol/mqtt_protocol/Mqtt.hpp>
+#include <gateway/common_tools/OutputProtocolTools.hpp>
+#include <gateway/common_tools/TimeTools.hpp>
 #include <gateway/logger/Logger.hpp>
 
 
@@ -9,9 +11,17 @@ Mqtt::Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(co
 	publishTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId();
 	serverAddress_ =
 			context->settings->getMqttBrokerAddress() + ":" + std::to_string(context->settings->getMqttBrokerPort());
+	csvManager_ = std::make_unique<CsvManager>(context);
+	csvManager_->initialize();
 }
 
 bool Mqtt::initialize() {
+	auto currentTime = common_tools::TimeTools::getUnixTimestampS();
+	if(currentTime - lastReconnectAttempt_ < RECONNECT_PERIOD) {
+		return false;
+	}
+	lastReconnectAttempt_ = currentTime;
+	logger::Logger::logInfo("Initializing MQTT connection");
 	if(client_ && client_->is_connected()) {
 		return true;
 	}
@@ -22,15 +32,32 @@ bool Mqtt::initialize() {
 	return connect();
 }
 
-bool Mqtt::writeMessage(const std::shared_ptr<device::Message> &message) {
+bool Mqtt::sendMessage(const std::shared_ptr<device::Message> &message) {
 	if(client_ == nullptr || not client_->is_connected()) {
-		logger::Logger::logError("Mqtt client is not initialized or connected to the server");
+		initialize();
+		csvManager_->storeMessage(message);
 		return false;
 	}
-	std::string payload = boost::json::serialize(message->getOutputProtocolEntry());
-	const auto size = payload.size();
 
-	client_->publish(publishTopic_, payload.c_str(), size, QOS, false);
+	std::vector<std::shared_ptr<device::Message>> messages;
+	messages.push_back(message);
+	auto storedMessages = csvManager_->areStoredMessages(message->getDeviceType(), message->getDeviceNumber());
+	auto dataMessage = common_tools::OutputProtocolTools::generateDataMessage(messages, dataId_, storedMessages,
+																			  message->getDeviceType(),
+																			  message->getDeviceNumber());
+	if(dataMessage.empty()) {
+		logger::Logger::logError(
+				"Cannot create DATA message, device number or type does not correspond to other messages.");
+		csvManager_->storeMessage(message);
+		return false;
+	}
+	dataId_++;
+	//todo map with timeout check
+	//todo check timeouted messages
+
+	const auto size = dataMessage.size();
+
+	client_->publish(publishTopic_, dataMessage.c_str(), size, QOS, false);
 	return true;
 }
 
@@ -42,24 +69,30 @@ bool Mqtt::connect() {
 		return false;
 	}
 
-	mqtt::connect_options connopts_;
-	if(context_->settings->isSslEnable()) {
-		serverAddress_ = "ssl://" + serverAddress_;
-		auto sslopts = mqtt::ssl_options_builder()
-				.trust_store(context_->settings->getCaFile())
-				.private_key(context_->settings->getClientKey())
-				.key_store(context_->settings->getClientCertificate())
-				.error_handler([](const std::string &msg) {
-					logger::Logger::logError("MQTT SSL Error {}", msg);
-				})
-				.finalize();
-		connopts_.set_ssl(sslopts);
+	try {
+		mqtt::connect_options connopts_;
+		if(context_->settings->isSslEnable()) {
+			serverAddress_ = "ssl://" + serverAddress_;
+			auto sslopts = mqtt::ssl_options_builder()
+					.trust_store(context_->settings->getCaFile())
+					.private_key(context_->settings->getClientKey())
+					.key_store(context_->settings->getClientCertificate())
+					.error_handler([](const std::string &msg) {
+						logger::Logger::logError("MQTT SSL Error {}", msg);
+					})
+					.finalize();
+			connopts_.set_ssl(sslopts);
+		}
+
+		client_->start_consuming();
+		mqtt::token_ptr conntok = client_->connect(connopts_);
+		conntok->wait();
+		logger::Logger::logInfo("Connected to MQTT server {}", serverAddress_);
+	} catch(const std::exception &e) {
+		logger::Logger::logError("Failed to connect to MQTT server: {}", e.what());
+		return false;
 	}
 
-	client_->start_consuming();
-	mqtt::token_ptr conntok = client_->connect(connopts_);
-	conntok->wait();
-	logger::Logger::logInfo("Connected to MQTT server {}", serverAddress_);
 
 	return client_->is_connected();
 }
@@ -72,6 +105,7 @@ void Mqtt::disconnect() {
 		client_->disconnect();
 	}
 	client_.reset();
+	//todo store the messages into file
 }
 
 }

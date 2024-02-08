@@ -21,7 +21,9 @@ IF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
 ENDIF()
 
 FILE(GLOB_RECURSE source_files "source/*")
-ADD_LIBRARY(lora_gateway_lib STATIC ${source_files})
+ADD_LIBRARY(lora_gateway_lib STATIC ${source_files}
+        source/gateway/common_tools/OutputProtocolTools.cpp
+        include/gateway/common_tools/OutputProtocolTools.hpp)
 TARGET_INCLUDE_DIRECTORIES(lora_gateway_lib PUBLIC "include/" "libs")
 
 
