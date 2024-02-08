@@ -47,7 +47,8 @@ public:
 	 * @param message message to write
 	 * @return true if the write was successful
 	 */
-	bool storeMessage(const std::shared_ptr<device::Message> &message);
+	void storeMessage(const std::shared_ptr<device::Message> &message);
+	void storeMessages(const std::vector<std::shared_ptr<device::Message>> &message);
 
 	std::vector<std::shared_ptr<device::Message>> getStoredMessages(input_protocol::EDeviceType deviceType, uint32_t deviceNumber);
 

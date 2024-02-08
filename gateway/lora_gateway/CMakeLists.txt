@@ -23,7 +23,9 @@ ENDIF()
 FILE(GLOB_RECURSE source_files "source/*")
 ADD_LIBRARY(lora_gateway_lib STATIC ${source_files}
         source/gateway/common_tools/OutputProtocolTools.cpp
-        include/gateway/common_tools/OutputProtocolTools.hpp)
+        include/gateway/common_tools/OutputProtocolTools.hpp
+        source/gateway/output_protocol/MessageAckTimer.cpp
+        include/gateway/output_protocol/MessageAckTimer.hpp)
 TARGET_INCLUDE_DIRECTORIES(lora_gateway_lib PUBLIC "include/" "libs")
 
 

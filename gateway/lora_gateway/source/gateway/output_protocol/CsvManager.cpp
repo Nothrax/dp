@@ -23,11 +23,10 @@ bool CsvManager::initialize() {
 	return true;
 }
 
-bool CsvManager::storeMessage(const std::shared_ptr<device::Message> &message) {
+void CsvManager::storeMessage(const std::shared_ptr<device::Message> &message) {
 	std::scoped_lock lock(outputsEntries_.at(message->getDeviceType()).at(message->getDeviceNumber()).fileMutex_);
 	outputsEntries_.at(message->getDeviceType()).at(message->getDeviceNumber()).file_ << message->getCsvEntry();
 	outputsEntries_.at(message->getDeviceType()).at(message->getDeviceNumber()).entryCounter_++;
-	return true;
 }
 
 void CsvManager::initializeDeviceEntry(input_protocol::EDeviceType deviceType, uint32_t deviceNumber) {
@@ -84,5 +83,11 @@ CsvManager::getStoredMessages(input_protocol::EDeviceType deviceType, uint32_t d
 	std::scoped_lock lock(outputsEntries_.at(deviceType).at(deviceNumber).fileMutex_);
 	//todo
 	return {};
+}
+
+void CsvManager::storeMessages(const std::vector<std::shared_ptr<device::Message>> &message) {
+	for(const auto &msg: message) {
+		storeMessage(msg);
+	}
 }
 }

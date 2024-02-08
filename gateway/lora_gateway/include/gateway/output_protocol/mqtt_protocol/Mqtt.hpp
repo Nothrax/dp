@@ -2,6 +2,7 @@
 
 #include <gateway/output_protocol/Output.hpp>
 #include <gateway/output_protocol/CsvManager.hpp>
+#include <gateway/output_protocol/MessageAckTimer.hpp>
 
 #include <mqtt/async_client.h>
 
@@ -40,12 +41,15 @@ public:
 private:
 	static constexpr int QOS { 0 };
 	static constexpr int RECONNECT_PERIOD { 30 };
+	static constexpr int TIMEOUT { 30 };
 	std::unique_ptr<mqtt::async_client> client_ { nullptr };
 	std::string publishTopic_;
 	std::string serverAddress_;
 	uint64_t lastReconnectAttempt_ { 0 };
-	uint32_t dataId_{0};
-	std::unique_ptr<CsvManager> csvManager_;
+	uint32_t dataId_ { 0 };
+	std::shared_ptr<CsvManager> csvManager_;
+
+	std::unique_ptr<MessageAckTimer> messageAckTimer_;
 
 	bool connect();
 

@@ -7,12 +7,16 @@
 
 namespace gateway::output_protocol::mqtt_protocol {
 
+//todo subscribe thread for deleting acked messages
+
 Mqtt::Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(context) {
 	publishTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId();
 	serverAddress_ =
 			context->settings->getMqttBrokerAddress() + ":" + std::to_string(context->settings->getMqttBrokerPort());
 	csvManager_ = std::make_unique<CsvManager>(context);
 	csvManager_->initialize();
+	messageAckTimer_ = std::make_unique<MessageAckTimer>(csvManager_, TIMEOUT);
+	messageAckTimer_->startTimer();
 }
 
 bool Mqtt::initialize() {
@@ -45,19 +49,17 @@ bool Mqtt::sendMessage(const std::shared_ptr<device::Message> &message) {
 	auto dataMessage = common_tools::OutputProtocolTools::generateDataMessage(messages, dataId_, storedMessages,
 																			  message->getDeviceType(),
 																			  message->getDeviceNumber());
+	const auto size = dataMessage.size();
 	if(dataMessage.empty()) {
 		logger::Logger::logError(
 				"Cannot create DATA message, device number or type does not correspond to other messages.");
 		csvManager_->storeMessage(message);
 		return false;
 	}
-	dataId_++;
-	//todo map with timeout check
-	//todo check timeouted messages
-
-	const auto size = dataMessage.size();
 
 	client_->publish(publishTopic_, dataMessage.c_str(), size, QOS, false);
+	messageAckTimer_->addTimer(messages, dataId_);
+	dataId_++;
 	return true;
 }
 
@@ -105,7 +107,6 @@ void Mqtt::disconnect() {
 		client_->disconnect();
 	}
 	client_.reset();
-	//todo store the messages into file
 }
 
 }
