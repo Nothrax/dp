@@ -25,7 +25,11 @@ ADD_LIBRARY(lora_gateway_lib STATIC ${source_files}
         source/gateway/common_tools/OutputProtocolTools.cpp
         include/gateway/common_tools/OutputProtocolTools.hpp
         source/gateway/output_protocol/MessageAckTimer.cpp
-        include/gateway/output_protocol/MessageAckTimer.hpp)
+        include/gateway/output_protocol/MessageAckTimer.hpp
+        source/gateway/output_protocol/message/DataAck.cpp
+        include/gateway/output_protocol/message/DataAck.hpp
+        source/gateway/output_protocol/OutputProtocolMessage.cpp
+        include/gateway/output_protocol/OutputProtocolMessage.hpp)
 TARGET_INCLUDE_DIRECTORIES(lora_gateway_lib PUBLIC "include/" "libs")
 
 

@@ -2,7 +2,9 @@
 #include <gateway/common_tools/OutputProtocolTools.hpp>
 #include <gateway/common_tools/TimeTools.hpp>
 #include <gateway/logger/Logger.hpp>
+#include <gateway/output_protocol/message/DataAck.hpp>
 
+#include <boost/json.hpp>
 
 
 namespace gateway::output_protocol::mqtt_protocol {
@@ -11,12 +13,14 @@ namespace gateway::output_protocol::mqtt_protocol {
 
 Mqtt::Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(context) {
 	publishTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId() + "/gateway";
+	subscribeTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId() + "/uploader";
 	serverAddress_ =
 			context->settings->getMqttBrokerAddress() + ":" + std::to_string(context->settings->getMqttBrokerPort());
 	csvManager_ = std::make_unique<CsvManager>(context);
 	csvManager_->initialize();
 	messageAckTimer_ = std::make_unique<MessageAckTimer>(csvManager_, TIMEOUT);
 	messageAckTimer_->startTimer();
+
 }
 
 bool Mqtt::initialize() {
@@ -33,11 +37,15 @@ bool Mqtt::initialize() {
 		disconnect();
 	}
 
-	return connect();
+	auto ret = connect();
+
+	listenerThread_ = std::thread(&Mqtt::listenerLoop, this);
+
+	return ret;
 }
 
 bool Mqtt::sendMessage(const std::shared_ptr<device::Message> &message) {
-	if(client_ == nullptr || not client_->is_connected()) {
+	if(!client_ || !client_->is_connected()) {
 		initialize();
 		csvManager_->storeMessage(message);
 		return false;
@@ -58,6 +66,7 @@ bool Mqtt::sendMessage(const std::shared_ptr<device::Message> &message) {
 	}
 
 	client_->publish(publishTopic_, dataMessage.c_str(), size, QOS, false);
+	logger::Logger::logInfo("Published message with id: {}", dataId_);
 	messageAckTimer_->addTimer(messages, dataId_);
 	dataId_++;
 	return true;
@@ -90,11 +99,13 @@ bool Mqtt::connect() {
 		mqtt::token_ptr conntok = client_->connect(connopts_);
 		conntok->wait();
 		logger::Logger::logInfo("Connected to MQTT server {}", serverAddress_);
+		client_->subscribe(subscribeTopic_, QOS);
+		logger::Logger::logInfo("Subscribed to topic {}", subscribeTopic_);
+		logger::Logger::logInfo("Publishing to topic {}", publishTopic_);
 	} catch(const std::exception &e) {
 		logger::Logger::logError("Failed to connect to MQTT server: {}", e.what());
 		return false;
 	}
-
 
 	return client_->is_connected();
 }
@@ -104,9 +115,69 @@ void Mqtt::disconnect() {
 		return;
 	}
 	if(client_->is_connected()) {
+		client_->unsubscribe(subscribeTopic_);
 		client_->disconnect();
 	}
 	client_.reset();
+}
+
+Mqtt::~Mqtt() {
+	if(listenerThread_.joinable()) {
+		listenerThread_.join();
+	}
+}
+
+void Mqtt::listenerLoop() {
+	while(!context_->context.stopped()) {
+		if(!client_ || !client_->is_connected()) {
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+			continue;
+		}
+
+		auto message = client_->try_consume_message_for(std::chrono::seconds(5));
+		if(message) {
+			auto payload = message->to_string();
+			try{
+				handleUploaderMessage(payload);
+			} catch(const std::exception &e) {
+				logger::Logger::logError("Error handling uploader message: {}", e.what());
+			}catch(...) {
+				logger::Logger::logError("Error handling uploader message");
+			}
+		}
+	}
+
+}
+
+void Mqtt::handleUploaderMessage(const std::string &message) {
+	auto parsedMessage = boost::json::parse(message).as_object();
+
+	auto messageType = common_tools::OutputProtocolTools::getMessageType(parsedMessage);
+
+	switch(messageType) {
+		case EMessageType::E_DATA_ACK:
+			handleAckMessage(parsedMessage);
+			break;
+		case EMessageType::E_DATA_READ:
+			//todo
+			break;
+		case EMessageType::E_DATA_READ_RESPONSE_ACK:
+			//todo
+			break;
+		default:
+			logger::Logger::logError("Unsupported uploader message type");
+	}
+}
+
+void Mqtt::handleAckMessage(const boost::json::object &message) {
+	message::DataAck dataAck;
+	dataAck.parse(message);
+	if(dataAck.getResponseType() == EResponseType::E_OK) {
+		messageAckTimer_->removeTimer(dataAck.getId());
+		logger::Logger::logInfo("Ack message received for message id: {}", dataAck.getId());
+	} else {
+		logger::Logger::logError("Error handling ack message: {}", dataAck.getError());
+	}
 }
 
 }

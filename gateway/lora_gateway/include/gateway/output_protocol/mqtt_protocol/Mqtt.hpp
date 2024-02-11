@@ -38,21 +38,31 @@ public:
 	 */
 	bool sendMessage(const std::shared_ptr<device::Message> &message) override;
 
+	~Mqtt() override;
+
 private:
 	static constexpr int QOS { 0 };
 	static constexpr int RECONNECT_PERIOD { 30 };
 	static constexpr int TIMEOUT { 30 };
 	std::unique_ptr<mqtt::async_client> client_ { nullptr };
 	std::string publishTopic_;
+	std::string subscribeTopic_;
 	std::string serverAddress_;
 	uint64_t lastReconnectAttempt_ { 0 };
 	uint32_t dataId_ { 0 };
 	std::shared_ptr<CsvManager> csvManager_;
+	std::thread listenerThread_;
 
 	std::unique_ptr<MessageAckTimer> messageAckTimer_;
 
 	bool connect();
 
 	void disconnect();
+
+	void listenerLoop();
+
+	void handleUploaderMessage(const std::string& message);
+
+	void handleAckMessage(const boost::json::object& message);
 };
 }

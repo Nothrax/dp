@@ -23,7 +23,6 @@ void MessageAckTimer::addTimer(const std::vector<std::shared_ptr<device::Message
 
 void MessageAckTimer::removeTimer(uint32_t dataId) {
 	std::scoped_lock lock(mutex_);
-	std::cout << "Removing timer for dataId " << dataId << std::endl;
 	timers_.erase(dataId);
 }
 
