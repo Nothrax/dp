@@ -160,9 +160,11 @@ void Mqtt::handleUploaderMessage(const std::string &message) {
 			break;
 		case EMessageType::E_DATA_READ:
 			//todo
+			logger::Logger::logError("Data read not implemented");
 			break;
 		case EMessageType::E_DATA_READ_RESPONSE_ACK:
 			//todo
+			logger::Logger::logError("Data read response ack not implemented");
 			break;
 		default:
 			logger::Logger::logError("Unsupported uploader message type");
