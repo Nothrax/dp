@@ -10,7 +10,7 @@ namespace gateway::output_protocol::mqtt_protocol {
 //todo subscribe thread for deleting acked messages
 
 Mqtt::Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(context) {
-	publishTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId();
+	publishTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId() + "/gateway";
 	serverAddress_ =
 			context->settings->getMqttBrokerAddress() + ":" + std::to_string(context->settings->getMqttBrokerPort());
 	csvManager_ = std::make_unique<CsvManager>(context);

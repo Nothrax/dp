@@ -30,6 +30,10 @@ void MessageAckTimer::removeTimer(uint32_t dataId) {
 MessageAckTimer::~MessageAckTimer() {
 	running_ = false;
 	timerThread_.join();
+	for(const auto &[id_, timer]: timers_) {
+		logger::Logger::logInfo("Storing {} messages from data with {}", timer.messages.size(), id_);
+		csvManager_->storeMessages(timer.messages);
+	}
 }
 
 void MessageAckTimer::timerLoop() {
