@@ -3,7 +3,8 @@ import ssl
 import paho.mqtt.client as mqtt
 from queue import Queue, Empty
 
-from uploader.output_protocol import Message
+from uploader.output_protocol import GatewayMessage
+from uploader.output_protocol import UploaderMessage
 from uploader.config import Config
 
 
@@ -11,7 +12,7 @@ class MqttClient:
     def __init__(self, config: Config) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._config = config
-        self._received_msgs: Queue[Message] = Queue()
+        self._received_msgs: Queue[GatewayMessage] = Queue()
         self._mqtt_client = mqtt.Client(
             client_id="uploader",
             protocol=mqtt.MQTTv311,
@@ -44,9 +45,8 @@ class MqttClient:
         if len(split_topic) != 3:
             return
         company, gateway_id, direction = split_topic
-        if direction != "/gateway":
-            message = Message(company, gateway_id)
-            message.parse_message(mqtt_message.payload.decode("utf-8"))
+        if direction == "gateway":
+            message = GatewayMessage(company, gateway_id, mqtt_message.payload.decode("utf-8"))
             self._received_msgs.put(message)
 
     def connect(self) -> bool:
@@ -64,12 +64,12 @@ class MqttClient:
         self._mqtt_client.loop_stop()
         self._is_connected = False
 
-    def publish(self, message: Message) -> None:
-        topic = f"{message.company}/{message.gateway_id}/uploader"
+    def publish(self, message: UploaderMessage) -> None:
+        topic = f"{message.company_name}/{message.gateway_id}/uploader"
         self._mqtt_client.publish(topic=topic, payload=message.get_output_protocol_message(), qos=0,
                                   retain=False)
 
-    def get(self, timeout: int | None = None) -> Message | None:
+    def get(self, timeout: int | None = None) -> GatewayMessage | None:
         try:
             return self._received_msgs.get(block=True, timeout=timeout)
         except Empty:

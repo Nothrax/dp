@@ -13,6 +13,6 @@ public:
 	 * @param length length of data
 	 * @return checksum
 	 */
-	static uint8_t calculateChecksum(uint8_t *data, uint8_t length);
+	static uint8_t calculateChecksum(const uint8_t *data, uint8_t length);
 };
 }

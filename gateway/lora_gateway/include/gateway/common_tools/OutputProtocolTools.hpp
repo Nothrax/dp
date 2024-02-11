@@ -6,6 +6,13 @@
 #include <string>
 #include <memory>
 
+//todo static check if the enum is the same as in the input protocol
+enum class EMessageType{
+	E_DATA = 1,
+	E_DATA_ACK = 2,
+	E_DATA_READ = 3,
+	E_DATA_READ_RES = 4,
+};
 
 namespace gateway::common_tools {
 class OutputProtocolTools {
