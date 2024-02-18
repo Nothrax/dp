@@ -1,5 +1,5 @@
 #include <gateway/device/scale/ScaleDevice.hpp>
-#include <gateway/device/scale/ScaleMessage.hpp>
+#include <gateway/device/scale/ScaleEntry.hpp>
 #include <gateway/common_tools/TimeTools.hpp>
 
 #include <cstring>
@@ -11,8 +11,8 @@ bool ScaleDevice::parseDeviceSpecificFlags(const uint8_t &flags) {
 	return true;
 }
 
-std::shared_ptr<Message> ScaleDevice::parseMessage(const input_protocol::InputProtocolMessage &message) {
-	auto scaleMessage = std::make_shared<ScaleMessage>(message.deviceNumber);
+std::shared_ptr<Entry> ScaleDevice::parseMessage(const input_protocol::InputProtocolMessage &message) {
+	auto scaleMessage = std::make_shared<ScaleEntry>(message.deviceNumber);
 	isCorrectChecksum_ = true;
 	isMessageLost_ = false;
 

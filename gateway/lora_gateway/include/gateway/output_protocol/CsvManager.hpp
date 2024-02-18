@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gateway/device/Message.hpp>
+#include <gateway/device/Entry.hpp>
 #include <gateway/structures/GlobalContext.hpp>
 #include <gateway/input_protocol/InputProtocolMessage.hpp>
 
@@ -47,10 +47,10 @@ public:
 	 * @param message message to write
 	 * @return true if the write was successful
 	 */
-	void storeMessage(const std::shared_ptr<device::Message> &message);
-	void storeMessages(const std::vector<std::shared_ptr<device::Message>> &message);
+	void storeMessage(const std::shared_ptr<device::Entry> &message);
+	void storeMessages(const std::vector<std::shared_ptr<device::Entry>> &message);
 
-	std::vector<std::shared_ptr<device::Message>> getStoredMessages(input_protocol::EDeviceType deviceType, uint32_t deviceNumber);
+	std::vector<std::shared_ptr<device::Entry>> getStoredMessages(input_protocol::EDeviceType deviceType, uint32_t deviceNumber);
 
 	~CsvManager();
 

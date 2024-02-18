@@ -9,11 +9,11 @@
 
 
 namespace gateway::device {
-class Message {
+class Entry {
 public:
 
-	Message(input_protocol::EDeviceType deviceType, uint32_t deviceNumber): deviceType_(deviceType),
-																			deviceNumber_(deviceNumber) {};
+	Entry(input_protocol::EDeviceType deviceType, uint32_t deviceNumber): deviceType_(deviceType),
+																		  deviceNumber_(deviceNumber) {};
 
 	/**
 	 * @brief Get the Csv entry of this instances device type
@@ -28,6 +28,8 @@ public:
 	[[nodiscard]] virtual boost::json::object getOutputProtocolEntry() const = 0;
 
 	[[nodiscard]] const input_protocol::EDeviceType &getDeviceType() const;
+
+	virtual void setFromCsvEntry(const std::string &csvEntry) = 0;
 
 	[[nodiscard]] uint32_t getDeviceNumber() const;
 

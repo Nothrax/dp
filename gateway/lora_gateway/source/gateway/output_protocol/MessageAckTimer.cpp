@@ -12,7 +12,7 @@ void MessageAckTimer::startTimer() {
 	timerThread_ = std::thread(&MessageAckTimer::timerLoop, this);
 }
 
-void MessageAckTimer::addTimer(const std::vector<std::shared_ptr<device::Message>> &messages, uint32_t dataId) {
+void MessageAckTimer::addTimer(const std::vector<std::shared_ptr<device::Entry>> &messages, uint32_t dataId) {
 	std::scoped_lock lock(mutex_);
 	TimerData timerData;
 	timerData.messages = messages;

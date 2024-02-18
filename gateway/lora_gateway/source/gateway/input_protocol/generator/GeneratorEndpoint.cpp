@@ -43,7 +43,7 @@ std::shared_ptr<input_protocol::InputProtocolMessage> GeneratorEndpoint::getMess
 	message->checkSum = common_tools::MessageTools::calculateChecksum((uint8_t *)message.get(),
 																	  sizeof(input_protocol::InputProtocolMessage) -
 																	  sizeof(uint32_t));
-	std::this_thread::sleep_for(std::chrono::milliseconds(timeoutMs/2));
+	std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	return message;
 }
 }

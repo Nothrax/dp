@@ -9,4 +9,6 @@ class TimeseriesManager:
 
     def store_data_points(self, message: GatewayMessage) -> None:
         # todo store data points
+        for data_point in message._data_points:
+            print(f"Storing data point {data_point}")
         return

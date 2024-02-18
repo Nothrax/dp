@@ -36,7 +36,7 @@ public:
 	 * @param message message to write
 	 * @return true if the publish was successful
 	 */
-	bool sendMessage(const std::shared_ptr<device::Message> &message) override;
+	bool sendMessage(const std::shared_ptr<device::Entry> &message) override;
 
 	~Mqtt() override;
 
@@ -54,6 +54,7 @@ private:
 	std::thread listenerThread_;
 
 	std::unique_ptr<MessageAckTimer> messageAckTimer_;
+	std::unique_ptr<MessageAckTimer> dataMessageAckTimer_;
 
 	bool connect();
 
@@ -64,5 +65,9 @@ private:
 	void handleUploaderMessage(const std::string& message);
 
 	void handleAckMessage(const boost::json::object& message);
+
+	void handleDataReadMessage(const boost::json::object& message);
+
+	void handleDataReadResponseMessage(const boost::json::object& message);
 };
 }

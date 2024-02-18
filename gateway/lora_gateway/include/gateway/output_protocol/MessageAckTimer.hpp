@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gateway/device/Message.hpp>
+#include <gateway/device/Entry.hpp>
 #include <gateway/output_protocol/CsvManager.hpp>
 
 #include <map>
@@ -14,7 +14,7 @@ namespace gateway::output_protocol {
 class MessageAckTimer {
 private:
 	struct TimerData {
-		std::vector<std::shared_ptr<device::Message>> messages;
+		std::vector<std::shared_ptr<device::Entry>> messages;
 		uint32_t dataId;
 		uint32_t startTime;
 	};
@@ -24,7 +24,7 @@ public:
 
 	void startTimer();
 
-	void addTimer(const std::vector<std::shared_ptr<device::Message>> &messages, uint32_t dataId);
+	void addTimer(const std::vector<std::shared_ptr<device::Entry>> &messages, uint32_t dataId);
 
 	void removeTimer(uint32_t dataId);
 

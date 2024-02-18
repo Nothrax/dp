@@ -2,7 +2,7 @@
 
 #include <gateway/input_protocol/InputProtocolMessage.hpp>
 #include <gateway/common_tools/EnumTools.hpp>
-#include <gateway/device/Message.hpp>
+#include <gateway/device/Entry.hpp>
 
 #include <cstdint>
 #include <string>
@@ -18,14 +18,14 @@ namespace gateway::device {
 class Device {
 public:
 	Device(input_protocol::EDeviceType deviceType, uint32_t deviceNumber): deviceType_(deviceType),
-																	   deviceNumber_(deviceNumber) {};
+																		   deviceNumber_(deviceNumber) {};
 
 	/**
 	 * @brief Parse given message
 	 * @param message input protocol raw binary message to be parsed
 	 * @return true if message was parsed successfully, false otherwise
 	 */
-	virtual std::shared_ptr<Message> parseMessage(const input_protocol::InputProtocolMessage &message) = 0;
+	virtual std::shared_ptr<Entry> parseMessage(const input_protocol::InputProtocolMessage &message) = 0;
 
 	[[nodiscard]] uint32_t getDeviceNumber() const;
 

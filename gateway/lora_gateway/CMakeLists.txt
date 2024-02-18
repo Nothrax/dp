@@ -29,7 +29,11 @@ ADD_LIBRARY(lora_gateway_lib STATIC ${source_files}
         source/gateway/output_protocol/message/DataAck.cpp
         include/gateway/output_protocol/message/DataAck.hpp
         source/gateway/output_protocol/OutputProtocolMessage.cpp
-        include/gateway/output_protocol/OutputProtocolMessage.hpp)
+        include/gateway/output_protocol/OutputProtocolMessage.hpp
+        source/gateway/output_protocol/message/DataRead.cpp
+        include/gateway/output_protocol/message/DataRead.hpp
+        source/gateway/output_protocol/message/DataReadResponseAck.cpp
+        include/gateway/output_protocol/message/DataReadResponseAck.hpp)
 TARGET_INCLUDE_DIRECTORIES(lora_gateway_lib PUBLIC "include/" "libs")
 
 

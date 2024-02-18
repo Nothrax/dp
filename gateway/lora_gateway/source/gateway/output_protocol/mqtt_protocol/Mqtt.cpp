@@ -3,8 +3,11 @@
 #include <gateway/common_tools/TimeTools.hpp>
 #include <gateway/logger/Logger.hpp>
 #include <gateway/output_protocol/message/DataAck.hpp>
+#include <gateway/output_protocol/message/DataRead.hpp>
+#include <gateway/output_protocol/message/DataReadResponseAck.hpp>
 
 #include <boost/json.hpp>
+
 
 
 namespace gateway::output_protocol::mqtt_protocol {
@@ -20,7 +23,8 @@ Mqtt::Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(co
 	csvManager_->initialize();
 	messageAckTimer_ = std::make_unique<MessageAckTimer>(csvManager_, TIMEOUT);
 	messageAckTimer_->startTimer();
-
+	dataMessageAckTimer_ = std::make_unique<MessageAckTimer>(csvManager_, TIMEOUT);
+	dataMessageAckTimer_->startTimer();
 }
 
 bool Mqtt::initialize() {
@@ -44,14 +48,14 @@ bool Mqtt::initialize() {
 	return ret;
 }
 
-bool Mqtt::sendMessage(const std::shared_ptr<device::Message> &message) {
+bool Mqtt::sendMessage(const std::shared_ptr<device::Entry> &message) {
 	if(!client_ || !client_->is_connected()) {
 		initialize();
 		csvManager_->storeMessage(message);
 		return false;
 	}
 
-	std::vector<std::shared_ptr<device::Message>> messages;
+	std::vector<std::shared_ptr<device::Entry>> messages;
 	messages.push_back(message);
 	auto storedMessages = csvManager_->areStoredMessages(message->getDeviceType(), message->getDeviceNumber());
 	auto dataMessage = common_tools::OutputProtocolTools::generateDataMessage(messages, dataId_, storedMessages,
@@ -137,11 +141,11 @@ void Mqtt::listenerLoop() {
 		auto message = client_->try_consume_message_for(std::chrono::seconds(5));
 		if(message) {
 			auto payload = message->to_string();
-			try{
+			try {
 				handleUploaderMessage(payload);
 			} catch(const std::exception &e) {
 				logger::Logger::logError("Error handling uploader message: {}", e.what());
-			}catch(...) {
+			} catch(...) {
 				logger::Logger::logError("Error handling uploader message");
 			}
 		}
@@ -159,12 +163,10 @@ void Mqtt::handleUploaderMessage(const std::string &message) {
 			handleAckMessage(parsedMessage);
 			break;
 		case EMessageType::E_DATA_READ:
-			//todo
-			logger::Logger::logError("Data read not implemented");
+			handleDataReadMessage(parsedMessage);
 			break;
 		case EMessageType::E_DATA_READ_RESPONSE_ACK:
-			//todo
-			logger::Logger::logError("Data read response ack not implemented");
+			handleDataReadResponseMessage(parsedMessage);
 			break;
 		default:
 			logger::Logger::logError("Unsupported uploader message type");
@@ -179,6 +181,46 @@ void Mqtt::handleAckMessage(const boost::json::object &message) {
 		logger::Logger::logInfo("Ack message received for message id: {}", dataAck.getId());
 	} else {
 		logger::Logger::logError("Error handling ack message: {}", dataAck.getError());
+	}
+}
+
+void Mqtt::handleDataReadMessage(const boost::json::object &message) {
+	message::DataRead dataRead;
+	dataRead.parse(message);
+	auto messages = csvManager_->getStoredMessages(dataRead.getDeviceType(), dataRead.getDeviceNumber());
+
+	if(!client_ || !client_->is_connected()) {
+		initialize();
+		return;
+	}
+
+	auto storedMessages = csvManager_->areStoredMessages(dataRead.getDeviceType(), dataRead.getDeviceNumber());
+	auto dataReadResponseMessage = common_tools::OutputProtocolTools::generateDataReadResponseMessage(messages,
+																									  dataRead.getId(),
+																									  storedMessages,
+																									  dataRead.getDeviceType(),
+																									  dataRead.getDeviceNumber());
+	const auto size = dataReadResponseMessage.size();
+	if(dataReadResponseMessage.empty()) {
+		logger::Logger::logError(
+				"Cannot create DATA message, device number or type does not correspond to other messages.");
+		csvManager_->storeMessages(messages);
+		return;
+	}
+
+	client_->publish(publishTopic_, dataReadResponseMessage.c_str(), size, QOS, false);
+	logger::Logger::logInfo("Published DATA_READ_RESPONSE message with id: {}", dataRead.getId());
+	dataMessageAckTimer_->addTimer(messages, dataRead.getId());
+}
+
+void Mqtt::handleDataReadResponseMessage(const boost::json::object &message) {
+	message::DataReadResponseAck dataAck;
+	dataAck.parse(message);
+	if(dataAck.getResponseType() == EResponseType::E_OK) {
+		dataMessageAckTimer_->removeTimer(dataAck.getId());
+		logger::Logger::logInfo("Data response ack message received for message id: {}", dataAck.getId());
+	} else {
+		logger::Logger::logError("Error handling data response ack message: {}", dataAck.getError());
 	}
 }
 

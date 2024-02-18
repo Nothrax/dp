@@ -1,5 +1,5 @@
 #include <gateway/device/cellar/CellarDevice.hpp>
-#include <gateway/device/cellar/CellarMessage.hpp>
+#include <gateway/device/cellar/CellarEntry.hpp>
 #include <gateway/common_tools/TimeTools.hpp>
 #include <gateway/logger/Logger.hpp>
 
@@ -22,8 +22,8 @@ bool CellarDevice::parseDeviceSpecificFlags(const uint8_t &flags) {
 	return isCorrectChecksum_;
 }
 
-std::shared_ptr<Message> CellarDevice::parseMessage(const input_protocol::InputProtocolMessage &message) {
-	auto cellarMessage = std::make_shared<CellarMessage>(message.deviceNumber);
+std::shared_ptr<Entry> CellarDevice::parseMessage(const input_protocol::InputProtocolMessage &message) {
+	auto cellarMessage = std::make_shared<CellarEntry>(message.deviceNumber);
 	isCorrectChecksum_ = true;
 	isMessageLost_ = false;
 

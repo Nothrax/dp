@@ -1,13 +1,13 @@
 #pragma once
 
-#include <gateway/device/Message.hpp>
+#include <gateway/device/Entry.hpp>
 
 
 
-namespace gateway::device::cellar {
-class CellarMessage final: public Message {
+namespace gateway::device::scale {
+class ScaleEntry final: public Entry {
 public:
-	explicit CellarMessage(uint32_t deviceNumber): Message(input_protocol::EDeviceType::E_WINE_CELLAR, deviceNumber) {};
+	explicit ScaleEntry(uint32_t deviceNumber): Entry(input_protocol::EDeviceType::E_BEE_SCALE, deviceNumber) {};
 
 	[[nodiscard]] static std::string getCsvHeader();
 
@@ -15,14 +15,16 @@ public:
 
 	[[nodiscard]] boost::json::object getOutputProtocolEntry() const override;
 
-	void setCo2(uint32_t co2);
+	void setFromCsvEntry(const std::string &csvEntry) override;
+
+	void setWeight(float weight);
 
 	void setTemperature(float temperature);
 
 	void setHumidity(float humidity);
 
 private:
-	uint32_t co2_ { 0 };
+	float weight_ { 0 };
 	float temperature_ { 0 };
 	float humidity_ { 0 };
 };
