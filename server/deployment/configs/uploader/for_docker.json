@@ -1,0 +1,10 @@
+{
+  "mqtt_settings": {
+    "address": "mosquitto",
+    "port": 1883,
+    "ssl": false,
+    "ca_cert": "./ca.pem",
+    "cert_file": "./cert.pem",
+    "keyfile": "./key.pem"
+  }
+}

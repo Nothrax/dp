@@ -1,10 +1,26 @@
 {
   "generic_settings": {
     "verbose": true,
-    "log_path": "/home/nothrax/log"
+    "log_path": "./log",
+    "gateway_id": "gateway1",
+    "company": "company"
   },
   "device_settings": {
+    "supported_devices": [
+      {
+        "device_type": 1,
+        "device_number": 1
+      },
+      {
+        "device_type": 2,
+        "device_number": 1
+      }
+    ],
     "device_communication_type": "LORA",
+    "generator_settings": {
+      "device_type": 1,
+      "device_number": 1
+    },
     "lora_settings": {
       "uart_device_path": "/dev/ttyS0",
       "lora_channel": 2,
@@ -15,17 +31,17 @@
     }
   },
   "output_settings": {
-    "output_type": "CSV",
-    "csv_settings": {
-      "csv_path": "/home/nothrax/data",
-      "number_of_entries": 60
-    },
+    "output_type": "MQTT",
+    "csv_path": "/home/nothrax/data",
     "mqtt_settings": {
-      "mqtt_host": "localhost",
-      "mqtt_port": 1883,
-      "mqtt_topic": "lora",
-      "mqtt_username": "test1",
-      "mqtt_password": "test2"
+      "hostname": "localhost",
+      "port": 1883,
+      "username": "test1",
+      "password": "test2",
+      "ssl": false,
+      "ca_file": "",
+      "client_cert": "",
+      "client_key": ""
     }
   }
 }

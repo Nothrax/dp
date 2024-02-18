@@ -61,28 +61,12 @@ void Settings::setCsvPath(const std::filesystem::path &csvPath) {
 	csvPath_ = csvPath;
 }
 
-uint32_t Settings::getNumberOfCsvEntries() const {
-	return numberOfCsvEntries_;
-}
-
-void Settings::setNumberOfCsvEntries(uint32_t numberOfCsvEntries) {
-	numberOfCsvEntries_ = numberOfCsvEntries;
-}
-
 const std::string &Settings::getMqttBrokerAddress() const {
 	return mqttBrokerAddress_;
 }
 
 void Settings::setMqttBrokerAddress(const std::string &mqttBrokerAddress) {
 	mqttBrokerAddress_ = mqttBrokerAddress;
-}
-
-const std::string &Settings::getMqttTopic() const {
-	return mqttTopic_;
-}
-
-void Settings::setMqttTopic(const std::string &mqttTopic) {
-	mqttTopic_ = mqttTopic;
 }
 
 uint32_t Settings::getMqttBrokerPort() const {
@@ -139,5 +123,77 @@ uint8_t Settings::getLoraChannel() const {
 
 void Settings::setLoraChannel(uint8_t loraChannel) {
 	loraChannel_ = loraChannel;
+}
+
+bool Settings::isSslEnable() const {
+	return sslEnable_;
+}
+
+void Settings::setSslEnable(bool sslEnable) {
+	sslEnable_ = sslEnable;
+}
+
+const std::filesystem::path &Settings::getClientKey() const {
+	return clientKey_;
+}
+
+void Settings::setClientKey(const std::filesystem::path &clientKey) {
+	clientKey_ = clientKey;
+}
+
+const std::filesystem::path &Settings::getClientCertificate() const {
+	return clientCertificate_;
+}
+
+void Settings::setClientCertificate(const std::filesystem::path &clientCertificate) {
+	clientCertificate_ = clientCertificate;
+}
+
+const std::string &Settings::getGatewayId() const {
+	return gatewayId_;
+}
+
+void Settings::setGatewayId(const std::string &gatewayId) {
+	gatewayId_ = gatewayId;
+}
+
+const std::filesystem::path &Settings::getCaFile() const {
+	return caFile_;
+}
+
+void Settings::setCaFile(const std::filesystem::path &caFile) {
+	caFile_ = caFile;
+}
+
+const std::vector<DeviceIdentification> &Settings::getSupportedDevices() const {
+	return supportedDevices_;
+}
+
+void Settings::setSupportedDevices(const std::vector<DeviceIdentification> &supportedDevices) {
+	supportedDevices_ = supportedDevices;
+}
+
+const std::string &Settings::getCompany() const {
+	return company_;
+}
+
+void Settings::setCompany(const std::string &company) {
+	company_ = company;
+}
+
+int Settings::getGeneratorDeviceType() const {
+	return generatorDeviceType_;
+}
+
+void Settings::setGeneratorDeviceType(int generatorDeviceType) {
+	generatorDeviceType_ = generatorDeviceType;
+}
+
+int Settings::getGeneratorDeviceNumber() const {
+	return generatorDeviceNumber_;
+}
+
+void Settings::setGeneratorDeviceNumber(int generatorDeviceNumber) {
+	generatorDeviceNumber_ = generatorDeviceNumber;
 }
 }

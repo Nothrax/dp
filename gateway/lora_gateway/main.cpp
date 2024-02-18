@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 		worker.start();
 
 	} catch(std::exception &e) {
-		logger::Logger::logError(std::string("Exception occurred ") + e.what());
+		logger::Logger::logError("Exception occurred {}", e.what());
 	} catch(...) {
 		logger::Logger::logError("Unknown exception caught");
 	}
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 	}
 
 	contextThread.join();
-
+	logger::Logger::destroyLogger();
 
 	return EXIT_SUCCESS;
 }

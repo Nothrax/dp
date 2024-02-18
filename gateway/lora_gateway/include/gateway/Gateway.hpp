@@ -1,8 +1,8 @@
 #pragma once
 
 #include <gateway/structures/GlobalContext.hpp>
-#include <gateway/endpoint/Endpoint.hpp>
-#include <gateway/output/Output.hpp>
+#include <gateway/input_protocol/Endpoint.hpp>
+#include <gateway/output_protocol/Output.hpp>
 #include <gateway/device/Device.hpp>
 
 #include <cstdint>
@@ -27,9 +27,9 @@ private:
 	/// Global context of the gateway
 	std::shared_ptr<structures::GlobalContext> context_;
 	/// Endpoint of the gateway, receiving messages from devices
-	std::shared_ptr<endpoint::Endpoint> endpoint_;
+	std::shared_ptr<input_protocol::Endpoint> endpoint_;
 	/// Output of the gateway, outputting messages to desired output
-	std::shared_ptr<output::Output> output_;
+	std::shared_ptr<output_protocol::Output> output_;
 	/// Devices of the gateway mapped by type and number, each device has its own device::Device instance
 	std::map<uint32_t, std::map<uint32_t, std::shared_ptr<device::Device>>> devices_;
 	/// Timeout for receiving messages from devices
@@ -37,6 +37,6 @@ private:
 
 	bool initialize();
 
-	void processMessage(const structures::DeviceMessage &message);
+	void processMessage(const input_protocol::InputProtocolMessage &message);
 };
 }

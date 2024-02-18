@@ -2,6 +2,7 @@
 
 #include <string>
 #include <filesystem>
+#include <vector>
 
 
 
@@ -23,9 +24,16 @@ enum class EDeviceCommunicationType {
 enum class EOutputType {
 	E_BEGIN = -1,
 	E_INVALID = E_BEGIN,
-	E_CSV,
 	E_MQTT,
 	E_END
+};
+
+/**
+ * @brief
+ */
+struct DeviceIdentification {
+	int deviceType;
+	int deviceNumber;
 };
 
 /**
@@ -61,17 +69,13 @@ public:
 
 	void setCsvPath(const std::filesystem::path &csvPath);
 
-	[[nodiscard]] uint32_t getNumberOfCsvEntries() const;
-
-	void setNumberOfCsvEntries(uint32_t numberOfCsvEntries);
-
 	[[nodiscard]] const std::string &getMqttBrokerAddress() const;
 
 	void setMqttBrokerAddress(const std::string &mqttBrokerAddress);
 
-	[[nodiscard]] const std::string &getMqttTopic() const;
+	[[nodiscard]] const std::filesystem::path &getCaFile() const;
 
-	void setMqttTopic(const std::string &mqttTopic);
+	void setCaFile(const std::filesystem::path &caFile);
 
 	[[nodiscard]] uint32_t getMqttBrokerPort() const;
 
@@ -101,6 +105,38 @@ public:
 
 	void setLoraChannel(uint8_t loraChannel);
 
+	[[nodiscard]] bool isSslEnable() const;
+
+	void setSslEnable(bool sslEnable);
+
+	[[nodiscard]] const std::filesystem::path &getClientKey() const;
+
+	void setClientKey(const std::filesystem::path &clientKey);
+
+	[[nodiscard]] const std::filesystem::path &getClientCertificate() const;
+
+	void setClientCertificate(const std::filesystem::path &clientCertificate);
+
+	[[nodiscard]] const std::string &getGatewayId() const;
+
+	void setGatewayId(const std::string &gatewayId);
+
+	[[nodiscard]] const std::vector<DeviceIdentification> &getSupportedDevices() const;
+
+	void setSupportedDevices(const std::vector<DeviceIdentification> &supportedDevices);
+
+	[[nodiscard]] const std::string &getCompany() const;
+
+	void setCompany(const std::string &company);
+
+	[[nodiscard]] int getGeneratorDeviceType() const;
+
+	void setGeneratorDeviceType(int generatorDeviceType);
+
+	[[nodiscard]] int getGeneratorDeviceNumber() const;
+
+	void setGeneratorDeviceNumber(int generatorDeviceNumber);
+
 private:
 	/// Print logs into console
 	bool verbose_;
@@ -108,29 +144,42 @@ private:
 	std::string logPath_;
 	/// Type of the device communication
 	EDeviceCommunicationType deviceType_ { EDeviceCommunicationType::E_INVALID };
+	/// Vector of supported devices
+	std::vector<DeviceIdentification> supportedDevices_;
 	/// Path to the uart device
 	std::string uartDevice_;
 	/// Baud rate of the uart device
 	uint32_t baudRate_ { 0 };
-
+	/// ID of the gateway
+	std::string gatewayId_;
+	/// Owner of the gateway
+	std::string company_;
 	/// Output type
 	EOutputType outputType_ { EOutputType::E_INVALID };
 
+	/// For generator input set device
+	int generatorDeviceType_;
+	int generatorDeviceNumber_;
+
 	/// Path to the output csv folder
 	std::filesystem::path csvPath_;
-	/// Number of entries in the csv file
-	uint32_t numberOfCsvEntries_ { 0 };
 
 	/// MQTT broker address
 	std::string mqttBrokerAddress_;
 	/// MQTT broker port
 	uint32_t mqttBrokerPort_;
 	/// MQTT broker port
-	std::string mqttTopic_;
-	/// MQTT broker port
 	std::string mqttUsername_;
 	/// MQTT broker port
 	std::string mqttPassword_;
+	/// SSL enabled
+	bool sslEnable_ { false };
+	/// Path to client certificate
+	std::filesystem::path clientKey_;
+	/// Path to client key
+	std::filesystem::path clientCertificate_;
+	/// CA file path
+	std::filesystem::path caFile_;
 
 	/// LoRa settings
 	/// Index of the M0 pin

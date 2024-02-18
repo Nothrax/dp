@@ -1,0 +1,47 @@
+{
+  "generic_settings": {
+    "verbose": true,
+    "log_path": "./",
+    "gateway_id": "gateway1",
+    "company": "company"
+  },
+  "device_settings": {
+    "supported_devices": [
+      {
+        "device_type": 1,
+        "device_number": 1
+      },
+      {
+        "device_type": 2,
+        "device_number": 1
+      }
+    ],
+    "device_communication_type": "GENERATOR",
+    "generator_settings": {
+      "device_type": 1,
+      "device_number": 1
+    },
+    "lora_settings": {
+      "uart_device_path": "/dev/ttyS0",
+      "lora_channel": 2,
+      "m0_pin": 4,
+      "m1_pin": 5,
+      "uart_baudrate": 9600,
+      "lora_address": 5156
+    }
+  },
+  "output_settings": {
+    "output_type": "MQTT",
+    "csv_path": "/gateway/data",
+    "mqtt_settings": {
+      "hostname": "127.0.0.1",
+      "port": 1883,
+      "username": "test1",
+      "password": "test2",
+      "ssl": false,
+      "ca_file": "",
+      "client_cert": "",
+      "client_key": ""
+    }
+  }
+}
