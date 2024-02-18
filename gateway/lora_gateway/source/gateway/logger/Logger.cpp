@@ -45,18 +45,7 @@ bool Logger::initLogger(const std::filesystem::path &logPath, bool verbose) {
 	return true;
 }
 
-void Logger::logInfo(const std::string &log) {
-	auto logger = spdlog::get(LOGGER_NAME);
-	logger->info(log);
-}
-
-void Logger::logWarning(const std::string &log) {
-	auto logger = spdlog::get(LOGGER_NAME);
-	logger->warn(log);
-}
-
-void Logger::logError(const std::string &log) {
-	auto logger = spdlog::get(LOGGER_NAME);
-	logger->error(log);
+void Logger::destroyLogger() {
+	spdlog::drop_all();
 }
 }
