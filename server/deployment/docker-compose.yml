@@ -41,6 +41,7 @@ services:
     volumes:
       - ./configs/gateway:/gateway/config/
       - ./storage/gateway/log:/gateway/log/
+      - ./storage/gateway/csv:/gateway/csv/
     entrypoint: ["/gateway/docker_build/LoraGateway",
                  "--config=/gateway/config/for_docker.json"]
     restart: on-failure
