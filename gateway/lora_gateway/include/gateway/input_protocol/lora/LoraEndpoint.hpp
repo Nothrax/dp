@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gateway/input_protocol/Endpoint.hpp>
-#include "gateway/input_protocol/InputProtocolMessage.hpp"
+#include <gateway/input_protocol/InputProtocolMessage.hpp>
 #include <gateway/input_protocol/lora/UartManager.hpp>
 #include <gateway/structures/GlobalContext.hpp>
 

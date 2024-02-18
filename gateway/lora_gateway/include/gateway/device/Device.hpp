@@ -36,6 +36,8 @@ public:
 	[[nodiscard]] bool isMessageLost() const;
 
 protected:
+	static_assert(static_cast<int>(input_protocol::EDeviceType::E_WINE_CELLAR) == 1, "Device type mismatch");
+	static_assert(static_cast<int>(input_protocol::EDeviceType::E_BEE_SCALE) == 2, "Device type mismatch");
 	/// Mask for the message lost flag
 	static constexpr uint8_t MESSAGE_LOST_MASK { 0b01000000 };
 	/// Mask for the wrong checksum flag

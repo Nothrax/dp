@@ -12,8 +12,6 @@
 
 namespace gateway::output_protocol::mqtt_protocol {
 
-//todo subscribe thread for deleting acked messages
-
 Mqtt::Mqtt(const std::shared_ptr<structures::GlobalContext> &context): Output(context) {
 	publishTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId() + "/gateway";
 	subscribeTopic_ = context->settings->getCompany() + "/" + context->settings->getGatewayId() + "/uploader";

@@ -12,9 +12,6 @@ RUN apt-get update && \
     make
 
 
-#todo boost
-#todo pahoo
-
 RUN mkdir /gateway/
 COPY . /gateway/
 RUN mkdir /gateway/data
