@@ -3,6 +3,7 @@ services:
   # InfluxDB: https://hub.docker.com/_/influxdb
   influxdb:
     image: influxdb:2.1
+    user: 1000:1000
     profiles: ["all", "database"]
     ports:
       - 8069:8069
@@ -21,7 +22,8 @@ services:
       - iot-emulator
   mosquitto:
     image: eclipse-mosquitto:2.0.18
-    profiles: ["all", "mosquitto"]
+    user: 1000:1000
+    profiles: ["all", "mosquitto", "test"]
     volumes:
       - ./storage/mosquitto/log:/mosquitto/log
       - ./storage/mosquitto/data:/mosquitto/data
@@ -32,7 +34,29 @@ services:
     restart: on-failure:10
     networks:
       - iot-emulator
- 
+  gateway:
+    image:  gateway
+    user: 1000:1000
+    profiles: ["all", "gateway", "test"]
+    volumes:
+      - ./configs/gateway:/gateway/config/
+      - ./storage/gateway/log:/gateway/log/
+    entrypoint: ["/gateway/docker_build/LoraGateway",
+                 "--config=/gateway/config/for_docker.json"]
+    restart: on-failure
+    networks:
+      - iot-emulator
+  uploader:
+    image:  uploader
+    user: 1000:1000
+    profiles: ["all", "uploader", "test"]
+    volumes:
+      - ./configs/uploader:/uploader/config/
+    entrypoint: ["python3", "main.py",
+                 "-c", "/uploader/config/for_docker.json"]
+    restart: on-failure:10
+    networks:
+      - iot-emulator
 networks:
   iot-emulator:
     name: iot-emulator
