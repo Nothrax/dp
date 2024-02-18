@@ -23,7 +23,7 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2.0.18
     user: 1000:1000
-    profiles: ["all", "mosquitto", "test"]
+    profiles: ["all", "mosquitto"]
     volumes:
       - ./storage/mosquitto/log:/mosquitto/log
       - ./storage/mosquitto/data:/mosquitto/data
@@ -37,7 +37,7 @@ services:
   gateway:
     image:  gateway
     user: 1000:1000
-    profiles: ["all", "gateway", "test"]
+    profiles: ["all", "gateway"]
     volumes:
       - ./configs/gateway:/gateway/config/
       - ./storage/gateway/log:/gateway/log/
@@ -50,7 +50,7 @@ services:
   uploader:
     image:  uploader
     user: 1000:1000
-    profiles: ["all", "uploader", "test"]
+    profiles: ["all", "uploader"]
     volumes:
       - ./configs/uploader:/uploader/config/
     entrypoint: ["python3", "main.py",
