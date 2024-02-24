@@ -6,5 +6,14 @@
     "ca_cert": "./ca.pem",
     "cert_file": "./cert.pem",
     "keyfile": "./key.pem"
+  },
+  "timeseries_settings": {
+    "address": "influxdb:8042"
+  },
+  "relation_settings": {
+    "address": "127.0.0.1:10011",
+    "user": "test",
+    "password": "test"
   }
+
 }

@@ -1,3 +1,4 @@
 *.log
 *.csv
 storage/influxdb*
+storage/mariadb*

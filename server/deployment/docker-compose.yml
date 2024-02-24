@@ -5,7 +5,7 @@ services:
     image: influxdb:2.1
     profiles: ["all", "database", "test"]
     ports:
-      - 8042:8042
+      - 8043:8042
     volumes:
       - ./storage/influxdb:/var/lib/influxdb2 #this will be mounted
       - ./configs/influx:/etc/influx/
@@ -54,6 +54,30 @@ services:
       - ./configs/uploader:/uploader/config/
     entrypoint: ["python3", "main.py",
                  "-c", "/uploader/config/for_docker.json"]
+    restart: on-failure:10
+    networks:
+      - iot-emulator
+
+  mariadb:
+    image: mariadb:latest
+    profiles: ["all", "mariadb"]
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - ./storage/mariadb-data:/var/lib/mysql
+      - ./configs/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: on-failure:10
+    networks:
+      - iot-emulator
+
+  # Add Adminer service
+  adminer:
+    image: adminer
+    profiles: ["all", "mariadb"]
+    ports:
+      - 8080:8080
+    links:
+      - mariadb
     restart: on-failure:10
     networks:
       - iot-emulator
