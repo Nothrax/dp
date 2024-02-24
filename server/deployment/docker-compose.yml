@@ -3,10 +3,9 @@ services:
   # InfluxDB: https://hub.docker.com/_/influxdb
   influxdb:
     image: influxdb:2.1
-    user: 1000:1000
-    profiles: ["all", "database"]
+    profiles: ["all", "database", "test"]
     ports:
-      - 8069:8069
+      - 8042:8042
     volumes:
       - ./storage/influxdb:/var/lib/influxdb2 #this will be mounted
       - ./configs/influx:/etc/influx/
@@ -14,8 +13,9 @@ services:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
       - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
-      - DOCKER_INFLUXDB_INIT_ORG=trubkacorp
-      - DOCKER_INFLUXDB_INIT_BUCKET=test_bucket
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
       - INFLUXD_CONFIG_PATH=/etc/influx/config.yaml
     restart: on-failure:10
     networks:
@@ -23,21 +23,20 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2.0.18
     user: 1000:1000
-    profiles: ["all", "mosquitto"]
+    profiles: ["all", "mosquitto", "test"]
     volumes:
       - ./storage/mosquitto/log:/mosquitto/log
       - ./storage/mosquitto/data:/mosquitto/data
       - ./configs/mosquitto:/mosquitto/config/
     ports:
-      - 1883:1883
-      - 8883:8883
+      - 1884:1883
+      - 8884:8883
     restart: on-failure:10
     networks:
       - iot-emulator
   gateway:
     image:  gateway
-    user: 1000:1000
-    profiles: ["all", "gateway"]
+    profiles: ["all", "gateway", "test"]
     volumes:
       - ./configs/gateway:/gateway/config/
       - ./storage/gateway/log:/gateway/log/

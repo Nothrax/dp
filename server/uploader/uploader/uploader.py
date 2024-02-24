@@ -16,7 +16,7 @@ class Uploader:
         self._device_manager = DeviceManager(config)
         self._device_manager.load_devices()
         self._logger = logging.getLogger("Uploader")
-        self._timeseries_manager = TimeseriesManager(config)
+        self._timeseries_manager = TimeseriesManager(config, self._device_manager)
         self._out_message_counter = 0
         return
 
