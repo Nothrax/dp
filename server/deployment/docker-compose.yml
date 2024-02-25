@@ -3,7 +3,7 @@ services:
   # InfluxDB: https://hub.docker.com/_/influxdb
   influxdb:
     image: influxdb:2.1
-    profiles: ["all", "database", "test"]
+    profiles: ["all", "database"]
     ports:
       - 8043:8042
     volumes:
@@ -23,7 +23,7 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2.0.18
     user: 1000:1000
-    profiles: ["all", "mosquitto", "test"]
+    profiles: ["all", "mosquitto"]
     volumes:
       - ./storage/mosquitto/log:/mosquitto/log
       - ./storage/mosquitto/data:/mosquitto/data
@@ -36,7 +36,7 @@ services:
       - iot-emulator
   gateway:
     image:  gateway
-    profiles: ["all", "gateway", "test"]
+    profiles: ["all", "gateway"]
     volumes:
       - ./configs/gateway:/gateway/config/
       - ./storage/gateway/log:/gateway/log/
@@ -63,6 +63,8 @@ services:
     profiles: ["all", "mariadb"]
     environment:
       MYSQL_ROOT_PASSWORD: example
+    ports:
+      - 3306:3306
     volumes:
       - ./storage/mariadb-data:/var/lib/mysql
       - ./configs/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql

@@ -8,12 +8,13 @@
     "keyfile": "./key.pem"
   },
   "timeseries_settings": {
-    "address": "influxdb:8042"
+    "address": "172.17.0.1:8042",
+    "token": "randomTokenValue"
   },
   "relation_settings": {
-    "address": "127.0.0.1:10011",
-    "user": "test",
-    "password": "test"
+    "address": "mariadb",
+    "user": "root",
+    "password": "example"
   }
 
 }

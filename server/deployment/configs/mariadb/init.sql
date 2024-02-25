@@ -56,7 +56,7 @@ VALUES (1, 'john_doe', 'my_secure_password', 'abc123', 'John', 'Doe', 'admin');
 INSERT INTO employed (user_id, company_id) VALUES (1, 1);
 
 INSERT INTO gateway (id, name, placement, company_id)
-VALUES (1, 'Main Gateway', 'Office Building A', 1);
+VALUES (1, 'gateway1', 'Office Building A', 1);
 
 INSERT INTO device (id, device_type, device_number, device_name, placement, gateway_id)
 VALUES (1, 1, 1, 'sklep1', 'Floor 1, Room 101', 1),
