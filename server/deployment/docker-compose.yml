@@ -5,7 +5,7 @@ services:
     image: influxdb:2.1
     profiles: ["all", "database"]
     ports:
-      - 8043:8042
+      - 8042:8042
     volumes:
       - ./storage/influxdb:/var/lib/influxdb2 #this will be mounted
       - ./configs/influx:/etc/influx/
@@ -29,8 +29,8 @@ services:
       - ./storage/mosquitto/data:/mosquitto/data
       - ./configs/mosquitto:/mosquitto/config/
     ports:
-      - 1884:1883
-      - 8884:8883
+      - 1883:1883
+      - 8883:8883
     restart: on-failure:10
     networks:
       - iot-emulator
