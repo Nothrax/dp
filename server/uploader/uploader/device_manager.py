@@ -58,9 +58,6 @@ class DeviceManager:
         return
 
     def load_devices(self) -> None:
-        # todo from relational database
-        #self._company_device_registry.add_device("company1", "gateway1", DeviceType.SCALE, 1, self._config.influxdb_token)
-        #self._company_device_registry.add_device("company1", "gateway1", DeviceType.CELLAR, 1, self._config.influxdb_token)
         # Connect to the database
         try:
             conn = mysql.connector.connect(
