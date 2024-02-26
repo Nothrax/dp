@@ -6,5 +6,15 @@
     "ca_cert": "./ca.pem",
     "cert_file": "./cert.pem",
     "keyfile": "./key.pem"
+  },
+  "timeseries_settings": {
+    "address": "172.17.0.1:8042",
+    "token": "randomTokenValue"
+  },
+  "relation_settings": {
+    "address": "mariadb",
+    "user": "root",
+    "password": "example"
   }
+
 }
