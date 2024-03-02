@@ -1,0 +1,10 @@
+{
+  "timeseries_settings": {
+    "address": "127.0.0.1:8042"
+  },
+  "relation_settings": {
+    "address": "127.0.0.1",
+    "user": "root",
+    "password": "example"
+  }
+}
