@@ -60,7 +60,7 @@ services:
 
   mariadb:
     image: mariadb:latest
-    profiles: ["all", "mariadb"]
+    profiles: ["all", "mariadb", "database"]
     environment:
       MYSQL_ROOT_PASSWORD: example
     ports:
@@ -75,7 +75,7 @@ services:
   # Add Adminer service
   adminer:
     image: adminer
-    profiles: ["all", "mariadb"]
+    profiles: ["all", "mariadb", "database"]
     ports:
       - 8080:8080
     links:

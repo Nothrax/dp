@@ -2,8 +2,9 @@ import json
 
 
 class Config:
-    def __init__(self, influxdb_address, db_address, db_user, db_password, flask_host, flask_port):
+    def __init__(self, influxdb_address, influxdb_token, db_address, db_user, db_password, flask_host, flask_port):
         self.influxdb_address = influxdb_address
+        self.influxdb_token = influxdb_token
         self.db_address = db_address
         self.db_user = db_user
         self.db_password = db_password
@@ -22,13 +23,14 @@ def load_config(json_file_path):
 
             timeseries_settings = data.get('timeseries_settings', {})
             influxdb_address = timeseries_settings.get('address')
+            influxdb_token = timeseries_settings.get('token')
 
             relation_settings = data.get('relation_settings', {})
             db_address = relation_settings.get('address')
             db_user = relation_settings.get('user')
             db_password = relation_settings.get('password')
 
-            return Config(influxdb_address=influxdb_address, db_address=db_address, db_user=db_user,
+            return Config(influxdb_address=influxdb_address, influxdb_token=influxdb_token, db_address=db_address, db_user=db_user,
                           db_password=db_password, flask_host=flask_host, flask_port=flask_port)
     except FileNotFoundError:
         print(f"Error: JSON file '{json_file_path}' not found.")
