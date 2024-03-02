@@ -1,16 +1,29 @@
-# This is a sample Python script.
+#!/usr/bin/env python3
+import logging
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from flask_endpoint import FlaskEndpoint
+from flask_endpoint import argparse_init
+from flask_endpoint.config import load_config
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def main() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(name)s: %(message)s",
+        datefmt="[%X]",
+    )
+    logger = logging.getLogger("Main")
+    args = argparse_init()
+    config = load_config(args.config)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    server = FlaskEndpoint(config)
+    try:
+        logger.info("Starting uploader")
+        server.start()
+    except KeyboardInterrupt:
+        logger.info("Stopping uploader")
+        server.stop()
+
+
+if __name__ == "__main__":
+    main()

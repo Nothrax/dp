@@ -1,4 +1,8 @@
 {
+  "flask_settings": {
+    "host": "127.0.0.1",
+    "port": 5000
+  },
   "timeseries_settings": {
     "address": "127.0.0.1:8042"
   },
