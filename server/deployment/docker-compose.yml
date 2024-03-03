@@ -29,8 +29,8 @@ services:
       - ./storage/mosquitto/data:/mosquitto/data
       - ./configs/mosquitto:/mosquitto/config/
     ports:
-      - 1883:1883
-      - 8883:8883
+      - 1884:1883
+      - 8884:8883
     restart: on-failure:10
     networks:
       - iot-emulator
@@ -55,12 +55,27 @@ services:
     entrypoint: ["python3", "main.py",
                  "-c", "/uploader/config/for_docker.json"]
     restart: on-failure:10
+    depends_on:
+      - mariadb
+      - influxdb
     networks:
       - iot-emulator
-
+  flask_endpoint:
+    image:  flask_endpoint
+    user: 1000:1000
+    profiles: ["all", "flask_endpoint"]
+    volumes:
+      - ./configs/flask_endponint:/flask_endponint/config/
+    ports:
+      - 5000:5000
+    entrypoint: ["python3", "main.py",
+                 "-c", "/flask_endponint/config/for_docker.json"]
+    restart: on-failure:10
+    networks:
+      - iot-emulator
   mariadb:
     image: mariadb:latest
-    profiles: ["all", "mariadb"]
+    profiles: ["all", "mariadb", "database"]
     environment:
       MYSQL_ROOT_PASSWORD: example
     ports:
@@ -75,7 +90,7 @@ services:
   # Add Adminer service
   adminer:
     image: adminer
-    profiles: ["all", "mariadb"]
+    profiles: ["all", "mariadb", "database"]
     ports:
       - 8080:8080
     links:
@@ -83,6 +98,20 @@ services:
     restart: on-failure:10
     networks:
       - iot-emulator
+  grafana:
+    image: grafana/grafana:latest
+    user: 1000:1000
+    profiles: ["all", "database"]
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=secret
+    volumes:
+      - ./configs/grafana/:/etc/grafana/
+      - ./storage/grafana:/var/lib/grafana
+    depends_on:
+      - influxdb
 networks:
   iot-emulator:
     name: iot-emulator

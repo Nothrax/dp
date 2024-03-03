@@ -1,11 +1,7 @@
 {
-  "mqtt_settings": {
-    "address": "127.0.0.1",
-    "port": 1884,
-    "ssl": false,
-    "ca_cert": "./ca.pem",
-    "cert_file": "./cert.pem",
-    "keyfile": "key.pem"
+  "flask_settings": {
+    "host": "127.0.0.1",
+    "port": 5000
   },
   "timeseries_settings": {
     "address": "127.0.0.1:8042",
