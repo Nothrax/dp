@@ -1,7 +1,7 @@
 {
   "mqtt_settings": {
     "address": "127.0.0.1",
-    "port": 1883,
+    "port": 1884,
     "ssl": false,
     "ca_cert": "./ca.pem",
     "cert_file": "./cert.pem",

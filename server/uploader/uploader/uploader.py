@@ -57,7 +57,6 @@ class Uploader:
             self._logger.warning(f"Unsupported message type {message.message_type}")
 
     def handle_data_message(self, message: GatewayMessage, device: Device) -> None:
-        # todo filter the data
         self._timeseries_manager.store_data_points(message)
         if message.stored_data_points:
             self.handle_stored_data(device)
@@ -72,7 +71,6 @@ class Uploader:
                             f"{device.company_name} with wrong message id {message.message_id}")
             return
         self._logger.info(f"Stored data received for device {device.device_type} {device.device_id} {device.company_name}")
-        # todo filter the data
         self._timeseries_manager.store_data_points(message)
         ack_message = UploaderMessage(MessageType.DATA_READ_ACK, message.company, message.gateway_id,
                                       message.message_id)
