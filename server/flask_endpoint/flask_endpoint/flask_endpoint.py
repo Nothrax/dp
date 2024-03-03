@@ -100,7 +100,7 @@ class FlaskEndpoint:
 
     def start(self):
         logging.info("Starting FlaskEndpoint")
-        self._app.run(host=self._config.flask_host, port=self._config.flask_port, debug=True)
+        self._app.run(host=self._config.flask_host, port=self._config.flask_port)
         pass
 
     def stop(self):

@@ -1,6 +1,6 @@
 {
   "flask_settings": {
-    "host": "127.0.0.1",
+    "host": "flask_endpoint",
     "port": 5000
   },
   "timeseries_settings": {
