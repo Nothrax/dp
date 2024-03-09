@@ -14,10 +14,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.trubka.iot_plot.R
 import com.trubka.iot_plot.databinding.ActivityMainBinding
-import com.trubka.iot_plot.influx_connection.InfluxDataView
+import com.trubka.iot_plot.api_connection.ApiDataView
 import com.trubka.iot_plot.data.model.InfluxGraphs
-import com.trubka.iot_plot.influx_connection.InfluxViewModel
-import com.trubka.iot_plot.influx_connection.InfluxViewModelFactory
+import com.trubka.iot_plot.api_connection.ApiViewModel
+import com.trubka.iot_plot.api_connection.ApiViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -41,10 +41,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var graphView: LinearLayout
 
     private lateinit var server: String
-    private lateinit var token: String
-    private lateinit var organization: String
+    private lateinit var password: String
+    private lateinit var username: String
+    private lateinit var companies: ArrayList<String>
 
-    private lateinit var influxViewModel: InfluxViewModel
+    private lateinit var apiViewModel: ApiViewModel
     private lateinit var influxGraphs: InfluxGraphs
 
     private val fromCalendar = Calendar.getInstance()
@@ -80,23 +81,24 @@ class MainActivity : AppCompatActivity() {
         val b = getIntent().getExtras()
         if (b != null) {
             server = b.getString("address").toString()
-            token = b.getString("token").toString()
-            organization = b.getString("organization").toString()
+            username = b.getString("username").toString()
+            password = b.getString("password").toString()
+            companies = b.getStringArrayList("companies") as ArrayList<String>
         }
 
-        influxViewModel =
-            ViewModelProvider(this, InfluxViewModelFactory()).get(InfluxViewModel::class.java)
+        apiViewModel =
+            ViewModelProvider(this, ApiViewModelFactory()).get(ApiViewModel::class.java)
 
-        influxViewModel.influxFormState.observe(this@MainActivity, Observer {
-            val influxState = it ?: return@Observer
+        apiViewModel.apiFormState.observe(this@MainActivity, Observer {
+            val apiState = it ?: return@Observer
 
-            if (!influxState.isDataValid) {
+            if (!apiState.isDataValid) {
                 Toast.makeText(applicationContext, "Received invalid data!", Toast.LENGTH_SHORT)
                     .show()
             }
         })
 
-        influxViewModel.influxResult.observe(this@MainActivity, Observer {
+        apiViewModel.apiResult.observe(this@MainActivity, Observer {
             val queryResult = it ?: return@Observer
 
             if (queryResult.error != null) {
@@ -116,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         createPlotButton.setOnClickListener {
             switchView(ViewSwitch.CREATOR)
             resetGraphAdder()
-            influxViewModel.getBuckets(server, organization, token)
+            apiViewModel.getBuckets(server, username, password)
         }
 
         savePlotButton.setOnClickListener {
@@ -133,7 +135,7 @@ class MainActivity : AppCompatActivity() {
             deleteGraph()
         }
 
-        retButton.setOnClickListener{
+        retButton.setOnClickListener {
             switchView(ViewSwitch.CHOOSER)
         }
 
@@ -147,10 +149,10 @@ class MainActivity : AppCompatActivity() {
         val actualGraph = binding.graphChooser.selectedItem.toString()
         for (graphInfo in influxGraphs.graphs) {
             if (graphInfo.graphName == actualGraph) {
-                influxViewModel.getGraphData(
+                apiViewModel.getGraphData(
                     serverAddress = server,
-                    organization = organization,
-                    token = token,
+                    organization = username,
+                    token = password,
                     bucket = graphInfo.bucket,
                     location = graphInfo.place,
                     device = graphInfo.device,
@@ -177,9 +179,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveGraph() {
-        val bucket = binding.bucketSpinner.selectedItem.toString()
-        val place = binding.locationSpinner.selectedItem.toString()
-        val device = binding.deviceSpinner.selectedItem.toString()
+        val company = binding.companySpinner.selectedItem.toString()
+        val deviceType = binding.deviceTypeSpinner.selectedItem.toString()
+        //todo mapovani device type na device name
+        val deviceName = binding.deviceNameSpinner.selectedItem.toString()
         val measurements = binding.checkboxLayout
         val childCount = measurements.getChildCount()
         val measurementList: ArrayList<String> = ArrayList()
@@ -194,7 +197,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (bucket == "" || place == "" || device == " " || measurementList.isEmpty() || graphName == "") {
+        if (company == "" || deviceType == "" || deviceName == " " || measurementList.isEmpty() || graphName == "") {
 
             Toast.makeText(
                 applicationContext,
@@ -207,9 +210,9 @@ class MainActivity : AppCompatActivity() {
 
 
         val graphInfo = GraphInfo(
-            bucket = bucket,
-            place = place,
-            device = device,
+            bucket = company,
+            place = deviceType,
+            device = deviceName,
             measurements = measurementList,
             timeFrom = fromCalendar,
             timeTo = toCalendar,
@@ -264,23 +267,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetGraphAdder() {
-        val bucketSpinner = binding.bucketSpinner
-        val locationSpinner = binding.locationSpinner
-        val deviceSpinner = binding.deviceSpinner
+        val companySpinner = binding.companySpinner
+        val deviceTypeSpinner = binding.deviceTypeSpinner
+        val deviceNameSpinner = binding.deviceNameSpinner
         val name = binding.graphName
 
         name.setText("")
 
-        setValuesInSpinner(ArrayList(), bucketSpinner, "Nebyl nalezen žádný účet!")
-        setValuesInSpinner(ArrayList(), locationSpinner, "Nebylo nalezeno žádné místo!")
-        setValuesInSpinner(ArrayList(), deviceSpinner, "Nebylo nalezeno žádné zařízení!")
+        setValuesInSpinner(companies, companySpinner, "Nebyla nalezena žádná společnost!")
+        setValuesInSpinner(ArrayList(), deviceTypeSpinner, "Nebylo nalezeno žádné zařízení!")
+        setValuesInSpinner(ArrayList(), deviceNameSpinner, "Nebylo nalezeno žádné zařízení!")
 
     }
 
     private fun setUpGraphAdder() {
-        val bucketSpinner = binding.bucketSpinner
+        val companySpinner = binding.companySpinner
 
-        bucketSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        companySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 //nothing
             }
@@ -291,14 +294,14 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                val bucket = bucketSpinner.selectedItem.toString()
-                influxViewModel.getLocation(server, organization, token, bucket)
+                val company = companySpinner.selectedItem.toString()
+                apiViewModel.getLocation(server, username, password, company)
             }
 
         }
 
-        val locationSpinner = binding.locationSpinner
-        locationSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        val deviceTypeSpinner = binding.deviceTypeSpinner
+        deviceTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 //nothing
             }
@@ -309,51 +312,48 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                val location = locationSpinner.selectedItem.toString()
-                val bucket = bucketSpinner.selectedItem.toString()
-                influxViewModel.getDevice(server, organization, token, bucket, location)
+                val location = deviceTypeSpinner.selectedItem.toString()
+                val bucket = companySpinner.selectedItem.toString()
+                apiViewModel.getDevice(server, username, password, bucket, location)
             }
 
         }
 
-        val deviceSpinner = binding.deviceSpinner
-        binding.deviceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                //nothing
-            }
+        val deviceNameSpinner = binding.deviceNameSpinner
+        binding.deviceNameSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //nothing
+                }
 
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val bucket = bucketSpinner.selectedItem.toString()
-                val location = locationSpinner.selectedItem.toString()
-                val device = deviceSpinner.selectedItem.toString()
-                influxViewModel.getMeasurements(
-                    server,
-                    organization,
-                    token,
-                    bucket,
-                    location,
-                    device
-                )
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val company = companySpinner.selectedItem.toString()
+                    val deviceType = deviceTypeSpinner.selectedItem.toString()
+                    val deviceId = deviceNameSpinner.selectedItem.toString()
+                    apiViewModel.getMeasurements(
+                        server,
+                        username,
+                        password,
+                        company,
+                        deviceType,
+                        deviceId
+                    )
+                }
             }
-        }
     }
 
-    private fun updateGraphCreator(data: InfluxDataView) {
-        if (data.bucketList != null) {
-            val bucketSpinner = binding.bucketSpinner
-            setValuesInSpinner(data.bucketList, bucketSpinner, "Nebyl nalezen žádný účet!")
-        }
+    private fun updateGraphCreator(data: ApiDataView) {
         if (data.locationList != null) {
-            val locationSpinner = binding.locationSpinner
+            val locationSpinner = binding.deviceTypeSpinner
             setValuesInSpinner(data.locationList, locationSpinner, "Nebylo nalezeno žádné místo")
         }
         if (data.deviceList != null) {
-            val deviceSpinner = binding.deviceSpinner
+            val deviceSpinner = binding.deviceNameSpinner
             setValuesInSpinner(data.deviceList, deviceSpinner, "Nebylo nalezeno žádné zařízení")
         }
         if (data.measurementList != null) {
@@ -421,11 +421,13 @@ class MainActivity : AppCompatActivity() {
                 addView.visibility = View.GONE
                 graphView.visibility = View.GONE
             }
+
             ViewSwitch.CREATOR -> {
                 addView.visibility = View.VISIBLE
                 chooserView.visibility = View.GONE
                 graphView.visibility = View.GONE
             }
+
             ViewSwitch.PLOT -> {
                 graphView.visibility = View.VISIBLE
                 addView.visibility = View.GONE

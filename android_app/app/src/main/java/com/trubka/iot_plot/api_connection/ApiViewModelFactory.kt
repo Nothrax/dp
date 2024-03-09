@@ -1,15 +1,15 @@
-package com.trubka.iot_plot.influx_connection
+package com.trubka.iot_plot.api_connection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class InfluxViewModelFactory : ViewModelProvider.Factory {
+class ApiViewModelFactory : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(InfluxViewModel::class.java)) {
-            return InfluxViewModel(
-                influxRepository = InfluxRepository()
+        if (modelClass.isAssignableFrom(ApiViewModel::class.java)) {
+            return ApiViewModel(
+                apiRepository = ApiRepository()
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

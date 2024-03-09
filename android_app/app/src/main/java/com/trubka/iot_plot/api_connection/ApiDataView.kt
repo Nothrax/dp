@@ -1,9 +1,9 @@
-package com.trubka.iot_plot.influx_connection
+package com.trubka.iot_plot.api_connection
 
-data class InfluxDataView(
+data class ApiDataView(
     val apiAddress: String? = null,
-    val token: String? = null,
-    val organization: String? = null,
+    val password: String? = null,
+    val username: String? = null,
     val bucketList: ArrayList<String>? = null,
     val locationList: ArrayList<String>? = null,
     val deviceList: ArrayList<String>? = null,

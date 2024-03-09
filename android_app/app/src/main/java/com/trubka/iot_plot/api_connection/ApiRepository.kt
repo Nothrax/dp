@@ -1,24 +1,26 @@
-package com.trubka.iot_plot.influx_connection
+package com.trubka.iot_plot.api_connection
 
-
-import com.influxdb.client.kotlin.InfluxDBClientKotlinFactory
-import kotlinx.coroutines.channels.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.util.*
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
 import kotlin.collections.ArrayList
+
 
 data class Value(val measurement: String, val value: Double, val time: Instant)
 
-class InfluxRepository {
+class ApiRepository {
 
 
 
     fun makeBucketListRequest(
         address: String, token: String, organization: String,
     ): ArrayList<String> {
-        val influxDBClient =
+/*        val influxDBClient =
             InfluxDBClientKotlinFactory.create(address, token.toCharArray(), organization)
         val query = "buckets()" +
                 " |> drop(columns: [\"_stop\", \"time\", \"id\", \"organizationID\", \"retentionPolicy\", \"retentionPeriod\"])"
@@ -29,14 +31,15 @@ class InfluxRepository {
             launch { // launch a new coroutine and continue
                 results.consumeEach { list.add(it.values["name"] as String) }
             }
-        }
-        return list
+        }*/
+        return ArrayList();
     }
 
     fun makeLocationListRequest(
         address: String, token: String, organization: String,
         bucket: String,
     ): ArrayList<String> {
+        /*
         val influxDBClient =
             InfluxDBClientKotlinFactory.create(address, token.toCharArray(), organization)
         val query = "from(bucket: \"" + bucket + "\")\n" +
@@ -54,8 +57,8 @@ class InfluxRepository {
         } catch (e: java.lang.Exception) {
             // handler
         }
-
-        return list
+*/
+        return ArrayList();
     }
 
     fun makeDeviceListRequest(
@@ -63,7 +66,7 @@ class InfluxRepository {
         bucket: String,
         location: String
     ): ArrayList<String> {
-        val influxDBClient =
+        /*val influxDBClient =
             InfluxDBClientKotlinFactory.create(address, token.toCharArray(), organization)
         val query = "from(bucket: \"" + bucket + "\")\n" +
                 "  |> range(start: 0, stop: 999999999999999999)\n" +
@@ -80,9 +83,9 @@ class InfluxRepository {
             }
         } catch (e: java.lang.Exception) {
             // handler
-        }
+        }*/
 
-        return list
+        return ArrayList();
     }
 
     fun makeMeasurementListRequest(
@@ -91,7 +94,7 @@ class InfluxRepository {
         location: String,
         device: String,
     ):ArrayList<String> {
-        val influxDBClient =
+       /* val influxDBClient =
             InfluxDBClientKotlinFactory.create(address, token.toCharArray(), organization)
         val query = "from(bucket: \"" + bucket + "\")\n" +
                 "  |> range(start: 0, stop: 999999999999999999)\n" +
@@ -110,9 +113,9 @@ class InfluxRepository {
         } catch (e: java.lang.Exception) {
             // handler
         }
+*/
 
-
-        return list
+        return ArrayList()
     }
 
     fun makeGraphRequest(
@@ -125,7 +128,7 @@ class InfluxRepository {
         timeTo: Calendar
     ): ArrayList<Value> {
 
-        val list: ArrayList<Value> = ArrayList()
+        /*val list: ArrayList<Value> = ArrayList()
 
         if (measurements.isEmpty()) {
             return list
@@ -171,18 +174,50 @@ class InfluxRepository {
             } catch (e: java.lang.Exception) {
                 print("test")
             }
-            return list
-        }
+        }*/
+        return ArrayList()
     }
 
+    fun getCompanies(address: String, username: String, password: String): ArrayList<String> {
+        return arrayListOf("jedna", "dba", "trzy")
+    }
 
-    fun makePingRequest(address: String, token: String, organization: String): Boolean {
-        val influxDBClient = InfluxDBClientKotlinFactory.create(address, token.toCharArray())
+    fun makeLoginRequest(address: String, username: String, password: String): Boolean {
         try {
-            val response = influxDBClient.ping()
-            influxDBClient.close()
-            return response
+            val url = URL("http://$address/get_companies")
+
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.doOutput = true
+
+            // Set request parameters (form data)
+            val postData = "username=${URLEncoder.encode(username, "UTF-8")}&password=${URLEncoder.encode(password, "UTF-8")}"
+            val postDataBytes = postData.toByteArray(Charsets.UTF_8)
+
+            // Send the request
+            val outputStream = DataOutputStream(connection.outputStream)
+            outputStream.write(postDataBytes)
+            outputStream.flush()
+            outputStream.close()
+
+            // Get the response
+            val responseCode = connection.responseCode
+            println("\nSent 'POST' request to URL: $url; Response Code: $responseCode")
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    println(line)
+                }
+                reader.close()
+                return true
+            } else {
+                println("Error: Unable to connect to the server.")
+                return false
+            }
         } catch (e: Exception) {
+            println("Exception occurred: ${e.message}")
             return false
         }
     }

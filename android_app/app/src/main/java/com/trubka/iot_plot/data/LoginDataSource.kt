@@ -2,7 +2,7 @@ package com.trubka.iot_plot.data
 
 import com.trubka.iot_plot.data.model.LoggedInUser
 import java.io.IOException
-import com.trubka.iot_plot.influx_connection.InfluxRepository
+import com.trubka.iot_plot.api_connection.ApiRepository
 
 
 /**
@@ -10,13 +10,14 @@ import com.trubka.iot_plot.influx_connection.InfluxRepository
  */
 class LoginDataSource {
 
-    fun login(serverAddress: String, organization: String, token: String): Result<LoggedInUser> {
-        val influx = InfluxRepository()
-        if (influx.makePingRequest(serverAddress, token, organization)) {
-            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
-            return Result.Success(fakeUser)
+    fun login(serverAddress: String, username: String, password: String): Result<LoggedInUser> {
+        val api = ApiRepository()
+        return if (api.makeLoginRequest(address = serverAddress, username = username, password = password)) {
+            val companies = api.getCompanies(serverAddress, username, password)
+            val user = LoggedInUser(username = username, password = password, companies = companies)
+            Result.Success(user)
         } else {
-            return Result.Error(IOException("Error logging in"))
+            Result.Error(IOException("Error logging in"))
         }
     }
 

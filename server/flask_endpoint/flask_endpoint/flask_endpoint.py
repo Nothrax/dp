@@ -22,8 +22,8 @@ class FlaskEndpoint:
         def get_companies():
             username = request.form.get('username')
             password = request.form.get('password')
-            if username is None or password is None:
-                return jsonify({"error": "Username and password are required"}), 400
+            if not self._relation_db_manager.is_authenticated(username, password):
+                return jsonify({"error": "Wrong password or username"}), 401
 
             companies = self._relation_db_manager.get_companies(username, password)
             return jsonify(companies)
