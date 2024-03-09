@@ -2,7 +2,7 @@ from typing import List, Dict, Any
 
 from influxdb_client import InfluxDBClient
 from flask_endpoint.config import Config
-from flask_endpoint.device_type import DeviceType
+from flask_endpoint.device_type import DeviceType, get_unit_for_field
 
 
 class InfluxDBConnection:
@@ -46,7 +46,7 @@ class InfluxDBConnection:
             field = table.records[0].values["_field"]
             for record in table:
                 time = record.values["_time"]
-                data_point = {"time": int(time.timestamp()), field: record.values["_value"]}
+                data_point = {"time": int(time.timestamp()), "value": record.values["_value"]}
                 data_set.append(data_point)
-            data.append({"measurement": table.records[0].values["_field"], "values": data_set})
+            data.append({"measurement": field, "unit": get_unit_for_field(field, device_type), "values": data_set})
         return data
