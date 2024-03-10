@@ -8,6 +8,5 @@ import java.io.Serializable
 data class LoggedInUserView(
     val apiAddress: String,
     val username: String,
-    val password: String,
-    val companies: ArrayList<String>
+    val password: String
 )

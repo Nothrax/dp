@@ -149,7 +149,6 @@ class LoginActivity : AppCompatActivity() {
         b.putString("address", model.apiAddress)
         b.putString("username", model.username)
         b.putString("password", model.password)
-        b.putStringArrayList("companies", model.companies)
         intent.putExtras(b)
         startActivity(intent)
     }

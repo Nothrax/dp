@@ -5,6 +5,5 @@ package com.trubka.iot_plot.data.model
  */
 data class LoggedInUser(
     val username: String,
-    val password: String,
-    val companies: ArrayList<String>
+    val password: String
 )

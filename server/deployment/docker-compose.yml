@@ -90,7 +90,7 @@ services:
   # Add Adminer service
   adminer:
     image: adminer
-    profiles: ["all", "mariadb", "database"]
+    profiles: ["all", "mariadb", "database", "test"]
     ports:
       - 8080:8080
     links:

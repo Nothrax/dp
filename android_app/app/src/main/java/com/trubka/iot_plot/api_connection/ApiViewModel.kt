@@ -7,6 +7,7 @@ import com.trubka.iot_plot.R
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
 
 class ApiViewModel(private val apiRepository: ApiRepository) : ViewModel() {
     private val _apiForm = MutableLiveData<ApiFormState>()
@@ -18,71 +19,84 @@ class ApiViewModel(private val apiRepository: ApiRepository) : ViewModel() {
     private val executor: ExecutorService = Executors.newCachedThreadPool()
 
     fun login(serverAddress: String, username: String, password: String) {
-        executor.execute{
-            try{
-                if(apiRepository.makeLoginRequest(serverAddress, password, username)){
-                    _apiResult.postValue(ApiResult(success = ApiDataView(apiAddress = serverAddress, username = username, password = password)))
-                }else{
+        executor.execute {
+            try {
+                if (apiRepository.makeLoginRequest(serverAddress, password, username)) {
+                    _apiResult.postValue(
+                        ApiResult(
+                            success = ApiDataView(
+                                apiAddress = serverAddress,
+                                username = username,
+                                password = password
+                            )
+                        )
+                    )
+                } else {
                     _apiResult.postValue(ApiResult(error = R.string.login_failed))
                 }
-            }catch (e: java.lang.Exception){
+            } catch (e: java.lang.Exception) {
                 _apiResult.postValue(ApiResult(error = R.string.login_failed))
             }
         }
     }
 
-    fun getBuckets(serverAddress: String, organization: String, token: String){
-        executor.execute{
-            try{
-                val result = apiRepository.makeBucketListRequest(serverAddress, token, organization)
-                _apiResult.postValue(ApiResult(success = ApiDataView(bucketList = result)))
-            }catch (e: java.lang.Exception){
+    fun getCompanies(serverAddress: String, username: String, password: String) {
+        executor.execute {
+            try {
+                val result = apiRepository.getCompanies(
+                    address = serverAddress,
+                    password = password,
+                    username = username
+                )
+                _apiResult.postValue(ApiResult(success = ApiDataView(companyList = result)))
+            } catch (e: java.lang.Exception) {
                 _apiResult.postValue(ApiResult(error = R.string.login_failed))
             }
         }
     }
 
-    fun getLocation(serverAddress: String, organization: String, token: String, bucket: String){
-        executor.execute{
-            try{
-                val result = apiRepository.makeLocationListRequest(serverAddress, token, organization, bucket)
-                _apiResult.postValue(ApiResult(success = ApiDataView(locationList = result)))
-            }catch (e: java.lang.Exception){
-                _apiResult.postValue(ApiResult(error = R.string.login_failed))
-            }
-        }
-    }
-
-    fun getDevice(serverAddress: String, organization: String, token: String, bucket: String, location: String){
-        executor.execute{
-            try{
-                val result = apiRepository.makeDeviceListRequest(serverAddress, token, organization, bucket, location)
+    fun getDevices(server: String, user: String, password: String, company: String) {
+        executor.execute {
+            try {
+                val result: ArrayList<Device> =
+                    apiRepository.makeDeviceListRequest(server, user, password, company)
                 _apiResult.postValue(ApiResult(success = ApiDataView(deviceList = result)))
-            }catch (e: java.lang.Exception){
+            } catch (e: java.lang.Exception) {
                 _apiResult.postValue(ApiResult(error = R.string.login_failed))
             }
         }
     }
 
-    fun getMeasurements(serverAddress: String, organization: String, token: String, bucket: String, location: String, device: String){
-        executor.execute{
-            try{
-                val result = apiRepository.makeMeasurementListRequest(serverAddress, token, organization, bucket, location, device)
-                _apiResult.postValue(ApiResult(success = ApiDataView(measurementList = result)))
-            }catch (e: java.lang.Exception){
-                _apiResult.postValue(ApiResult(error = R.string.login_failed))
-            }
-        }
+    fun setDeviceType(deviceType: DeviceType) {
+        _apiResult.postValue(ApiResult(success = ApiDataView(currentDeviceType = deviceType)))
     }
 
-    fun getGraphData(serverAddress: String, organization: String, token: String, bucket: String, location: String, device: String,
-                     measurements: List<String>, timeFrom: Calendar, timeTo: Calendar
-    ){
-        executor.execute{
-            try{
-                val result = apiRepository.makeGraphRequest(serverAddress, token, organization, bucket, location, device, measurements, timeFrom, timeTo)
-                _apiResult.postValue(ApiResult(success = ApiDataView(dataList = result)))
-            }catch (e: java.lang.Exception){
+    fun getGraphData(
+        address: String,
+        username: String,
+        password: String,
+        company: String,
+        deviceType: DeviceType,
+        deviceId: Int,
+        fields: List<String>,
+        timeFrom: Calendar,
+        timeTo: Calendar
+    ) {
+        executor.execute {
+            try {
+                val result = apiRepository.makeGraphRequest(
+                    address = address,
+                    username = username,
+                    password = password,
+                    company = company,
+                    deviceType = deviceType,
+                    deviceId = deviceId,
+                    fields = fields,
+                    timeFrom = timeFrom,
+                    timeTo = timeTo
+                )
+                _apiResult.postValue(ApiResult(success = ApiDataView(measurements = result)))
+            } catch (e: java.lang.Exception) {
                 _apiResult.postValue(ApiResult(error = R.string.data_load_failed))
             }
         }
@@ -93,9 +107,9 @@ class ApiViewModel(private val apiRepository: ApiRepository) : ViewModel() {
             _apiForm.value = ApiFormState(addressError = R.string.invalid_address)
         } else if (!isUsernameValid(username)) {
             _apiForm.value = ApiFormState(usernameError = R.string.invalid_username)
-        } else if(!isPasswordValid(password)){
+        } else if (!isPasswordValid(password)) {
             _apiForm.value = ApiFormState(passwordError = R.string.invalid_password)
-        }else{
+        } else {
             _apiForm.value = ApiFormState(isDataValid = true)
         }
     }

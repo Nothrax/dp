@@ -13,8 +13,7 @@ class LoginDataSource {
     fun login(serverAddress: String, username: String, password: String): Result<LoggedInUser> {
         val api = ApiRepository()
         return if (api.makeLoginRequest(address = serverAddress, username = username, password = password)) {
-            val companies = api.getCompanies(serverAddress, username, password)
-            val user = LoggedInUser(username = username, password = password, companies = companies)
+            val user = LoggedInUser(username = username, password = password)
             Result.Success(user)
         } else {
             Result.Error(IOException("Error logging in"))

@@ -31,6 +31,10 @@ import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import com.trubka.iot_plot.api_connection.Device
+import com.trubka.iot_plot.api_connection.Measurement
+import com.trubka.iot_plot.api_connection.enumToString
+import com.trubka.iot_plot.api_connection.stringToEnum
 
 
 class MainActivity : AppCompatActivity() {
@@ -43,10 +47,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var server: String
     private lateinit var password: String
     private lateinit var username: String
-    private lateinit var companies: ArrayList<String>
 
     private lateinit var apiViewModel: ApiViewModel
     private lateinit var influxGraphs: InfluxGraphs
+
+    private var devices: ArrayList<Device> = ArrayList()
 
     private val fromCalendar = Calendar.getInstance()
     private val toCalendar = Calendar.getInstance()
@@ -83,7 +88,6 @@ class MainActivity : AppCompatActivity() {
             server = b.getString("address").toString()
             username = b.getString("username").toString()
             password = b.getString("password").toString()
-            companies = b.getStringArrayList("companies") as ArrayList<String>
         }
 
         apiViewModel =
@@ -118,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         createPlotButton.setOnClickListener {
             switchView(ViewSwitch.CREATOR)
             resetGraphAdder()
-            apiViewModel.getBuckets(server, username, password)
+            apiViewModel.getCompanies(server, username, password)
         }
 
         savePlotButton.setOnClickListener {
@@ -149,14 +153,14 @@ class MainActivity : AppCompatActivity() {
         val actualGraph = binding.graphChooser.selectedItem.toString()
         for (graphInfo in influxGraphs.graphs) {
             if (graphInfo.graphName == actualGraph) {
-                apiViewModel.getGraphData(
-                    serverAddress = server,
-                    organization = username,
-                    token = password,
-                    bucket = graphInfo.bucket,
-                    location = graphInfo.place,
-                    device = graphInfo.device,
-                    measurements = graphInfo.measurements,
+               apiViewModel.getGraphData(
+                    address = server,
+                    username = username,
+                    password = password,
+                    company = graphInfo.company,
+                    deviceType = graphInfo.deviceType,
+                    deviceId = graphInfo.deviceId,
+                    fields = graphInfo.fields,
                     timeFrom = graphInfo.timeFrom,
                     timeTo = graphInfo.timeTo
                 )
@@ -179,26 +183,69 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveGraph() {
-        val company = binding.companySpinner.selectedItem.toString()
-        val deviceType = binding.deviceTypeSpinner.selectedItem.toString()
-        //todo mapovani device type na device name
-        val deviceName = binding.deviceNameSpinner.selectedItem.toString()
-        val measurements = binding.checkboxLayout
-        val childCount = measurements.getChildCount()
-        val measurementList: ArrayList<String> = ArrayList()
-        val graphName = binding.graphName.text.toString()
-
-        for (i in 0 until childCount) {
-            val v: View = measurements.getChildAt(i)
-            if (v is CheckBox) {
-                if (v.isChecked) {
-                    measurementList.add(v.getHint().toString())
+        try {
+            val company = binding.companySpinner.selectedItem.toString()
+            val deviceType = stringToEnum(binding.deviceTypeSpinner.selectedItem.toString())
+            val deviceName = binding.deviceNameSpinner.selectedItem.toString()
+            var deviceId = -1
+            for (device in devices) {
+                if (device.deviceName == deviceName) {
+                    deviceId = device.deviceId
                 }
             }
-        }
+            val measurements = binding.checkboxLayout
+            val childCount = measurements.childCount
+            val fieldsList: ArrayList<String> = ArrayList()
+            val graphName = binding.graphName.text.toString()
 
-        if (company == "" || deviceType == "" || deviceName == " " || measurementList.isEmpty() || graphName == "") {
+            for (i in 0 until childCount) {
+                val v: View = measurements.getChildAt(i)
+                if (v is CheckBox) {
+                    if (v.isChecked) {
+                        fieldsList.add(v.hint.toString())
+                    }
+                }
+            }
 
+            if (company == "" || deviceId == -1 || fieldsList.isEmpty() || graphName == "") {
+
+                Toast.makeText(
+                    applicationContext,
+                    "Nebyly vyplněny všechny parametry!",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                return
+            }
+
+
+            val graphInfo = GraphInfo(
+                company = company,
+                deviceType = deviceType,
+                deviceId = deviceId,
+                fields = fieldsList,
+                timeFrom = fromCalendar,
+                timeTo = toCalendar,
+                graphName = graphName
+            )
+
+            for (graph in influxGraphs.graphs) {
+                if (graph.graphName == graphInfo.graphName) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Graf se stejným názvem již existuje a nebyl vytvořen nový!",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    return
+                }
+            }
+
+
+            influxGraphs.graphs.add(graphInfo)
+
+            updateSavedGraphsDropdown()
+        }catch (e: Exception){
             Toast.makeText(
                 applicationContext,
                 "Nebyly vyplněny všechny parametry!",
@@ -208,33 +255,6 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-
-        val graphInfo = GraphInfo(
-            bucket = company,
-            place = deviceType,
-            device = deviceName,
-            measurements = measurementList,
-            timeFrom = fromCalendar,
-            timeTo = toCalendar,
-            graphName = graphName
-        )
-
-        for (graph in influxGraphs.graphs) {
-            if (graph.graphName == graphInfo.graphName) {
-                Toast.makeText(
-                    applicationContext,
-                    "Graf se stejným názvem již existuje a nebyl vytvořen nový!",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                return
-            }
-        }
-
-
-        influxGraphs.graphs.add(graphInfo)
-
-        updateSavedGraphsDropdown()
     }
 
     private fun updateSavedGraphsDropdown() {
@@ -274,7 +294,7 @@ class MainActivity : AppCompatActivity() {
 
         name.setText("")
 
-        setValuesInSpinner(companies, companySpinner, "Nebyla nalezena žádná společnost!")
+        setValuesInSpinner(ArrayList(), companySpinner, "Nebyla nalezena žádná společnost!")
         setValuesInSpinner(ArrayList(), deviceTypeSpinner, "Nebylo nalezeno žádné zařízení!")
         setValuesInSpinner(ArrayList(), deviceNameSpinner, "Nebylo nalezeno žádné zařízení!")
 
@@ -294,8 +314,15 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                val company = companySpinner.selectedItem.toString()
-                apiViewModel.getLocation(server, username, password, company)
+                if(companySpinner.isEnabled){
+                    val company = companySpinner.selectedItem.toString()
+                    apiViewModel.getDevices(
+                        server = server,
+                        user = username,
+                        password = password,
+                        company = company
+                    )
+                }
             }
 
         }
@@ -312,105 +339,118 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                val location = deviceTypeSpinner.selectedItem.toString()
-                val bucket = companySpinner.selectedItem.toString()
-                apiViewModel.getDevice(server, username, password, bucket, location)
+                try {
+                    if (deviceTypeSpinner.isEnabled) {
+                        val deviceType = stringToEnum(deviceTypeSpinner.selectedItem.toString())
+                        apiViewModel.setDeviceType(deviceType)
+                    }else{
+                        val deviceNameSpinner = binding.deviceNameSpinner
+                        setValuesInSpinner(ArrayList(), deviceNameSpinner, "Nebylo nalezeno žádné zařízení")
+                        val measurementLayout = findViewById<LinearLayout>(R.id.checkbox_layout)
+                        measurementLayout.removeAllViews()
+                    }
+                } catch (e: Exception) {
+                    //nothing
+                }
             }
 
         }
 
-        val deviceNameSpinner = binding.deviceNameSpinner
-        binding.deviceNameSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    //nothing
-                }
-
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    val company = companySpinner.selectedItem.toString()
-                    val deviceType = deviceTypeSpinner.selectedItem.toString()
-                    val deviceId = deviceNameSpinner.selectedItem.toString()
-                    apiViewModel.getMeasurements(
-                        server,
-                        username,
-                        password,
-                        company,
-                        deviceType,
-                        deviceId
-                    )
-                }
-            }
     }
 
     private fun updateGraphCreator(data: ApiDataView) {
-        if (data.locationList != null) {
-            val locationSpinner = binding.deviceTypeSpinner
-            setValuesInSpinner(data.locationList, locationSpinner, "Nebylo nalezeno žádné místo")
+        if (data.companyList != null) {
+            val companySpinner = binding.companySpinner
+            setValuesInSpinner(data.companyList, companySpinner, "Nebyla nalezena žádná společnost")
         }
+
         if (data.deviceList != null) {
-            val deviceSpinner = binding.deviceNameSpinner
-            setValuesInSpinner(data.deviceList, deviceSpinner, "Nebylo nalezeno žádné zařízení")
-        }
-        if (data.measurementList != null) {
-            val measurementLayout = findViewById<LinearLayout>(R.id.checkbox_layout)
-
-            measurementLayout.removeAllViews()
-
-            for (measurement in data.measurementList) {
-                val checkBox = CheckBox(this)
-                checkBox.setHint(measurement)
-                val params = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                )
-                params.gravity = Gravity.CENTER
-                checkBox.layoutParams = params
-                checkBox.setTextColor(Color.BLACK)
-                checkBox.setHintTextColor(Color.BLACK)
-                measurementLayout.addView(checkBox)
+            devices = data.deviceList
+            val deviceTypeSpinner = binding.deviceTypeSpinner
+            val deviceTypes: ArrayList<String> = ArrayList()
+            for (device in data.deviceList) {
+                deviceTypes.add(enumToString(device.deviceType))
             }
-            //todo loading screen?
+            if(deviceTypes.isEmpty()){
+                setValuesInSpinner(ArrayList(), deviceTypeSpinner, "Nebylo nalezeno žádné zařízení")
+            }else{
+                val uniqueTypes = deviceTypes.distinct() as ArrayList<String>
+                setValuesInSpinner(uniqueTypes, deviceTypeSpinner, "Nebylo nalezeno žádné zařízení")
+            }
         }
-        if (data.dataList != null) {
+
+        if (data.currentDeviceType != null) {
+            val deviceNameSpinner = binding.deviceNameSpinner
+            val deviceNames: ArrayList<String> = ArrayList()
+            val measurements: ArrayList<String> = ArrayList()
+            for (device in devices) {
+                if (device.deviceType == data.currentDeviceType) {
+                    deviceNames.add(device.deviceName)
+                    if(measurements.isEmpty()){
+                        measurements.addAll(device.fields)
+                    }
+                }
+            }
+            setValuesInSpinner(deviceNames, deviceNameSpinner, "Nebylo nalezeno žádné místo")
+            if(deviceNames.isNotEmpty()){
+                val measurementLayout = findViewById<LinearLayout>(R.id.checkbox_layout)
+
+                measurementLayout.removeAllViews()
+
+                for (measurement in measurements) {
+                    val checkBox = CheckBox(this)
+                    checkBox.hint = measurement
+                    val params = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                    )
+                    params.gravity = Gravity.CENTER
+                    checkBox.layoutParams = params
+                    checkBox.setTextColor(Color.BLACK)
+                    checkBox.setHintTextColor(Color.BLACK)
+                    measurementLayout.addView(checkBox)
+                }
+            }
+
+        }
+        if (data.measurements != null) {
             //todo move
-            if (data.dataList.isEmpty()) return
+            if (data.measurements.isEmpty()) return
 
             val graph = findViewById<View>(R.id.graph) as GraphView
             val rnd = Random()
             graph.removeAllSeries()
 
             val actualGraph = binding.graphChooser.selectedItem.toString()
-            var measurementList = ArrayList<String>()
+            var fieldList = ArrayList<String>()
             for (graphInfo in influxGraphs.graphs) {
                 if (graphInfo.graphName == actualGraph) {
-                    measurementList = graphInfo.measurements
+                    fieldList = graphInfo.fields
                 }
             }
 
 
-            for (measurement in measurementList) {
+            for (field in fieldList) {
                 val series: LineGraphSeries<DataPoint> = LineGraphSeries()
-                for (value in data.dataList) {
-                    if (value.measurement == measurement) {
-                        series.appendData(DataPoint(Date.from(value.time), value.value), true, 1000)
-                        series.color =
-                            Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-                        series.isDrawDataPoints = true
-                        series.title = measurement
+                for (measurement in data.measurements) {
+                    if(measurement.measurement == field){
+                        for (value in measurement.values) {
+                            series.appendData(DataPoint(Date.from(value.time), value.value), true, 1000)
+                            series.color =
+                                Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+                            series.isDrawDataPoints = true
+                            series.title = field
+                        }
+
                     }
                 }
                 graph.addSeries(series)
             }
             val timeFormat = SimpleDateFormat("HH:mm");
-            graph.getGridLabelRenderer()
-                .setLabelFormatter(DateAsXAxisLabelFormatter(graph.getContext(), timeFormat));
-            graph.getLegendRenderer().setVisible(true);
-            graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP)
+            graph.gridLabelRenderer.labelFormatter =
+                DateAsXAxisLabelFormatter(graph.context, timeFormat);
+            graph.legendRenderer.isVisible = true;
+            graph.legendRenderer.align = LegendRenderer.LegendAlign.TOP
         }
     }
 
@@ -439,9 +479,9 @@ class MainActivity : AppCompatActivity() {
     private fun setValuesInSpinner(list: ArrayList<String>, spinner: Spinner, emptyText: String) {
         if (list.isEmpty()) {
             list.add(emptyText)
-            spinner.setEnabled(false)
+            spinner.isEnabled = false
         } else {
-            spinner.setEnabled(true)
+            spinner.isEnabled = true
         }
 
         val arrayAdapter =
@@ -457,22 +497,22 @@ class MainActivity : AppCompatActivity() {
 
         val fromDate = findViewById<EditText>(R.id.date_from_edit_text)
         fromDate.transformIntoDatePicker(this, "dd/MM/yyyy", fromCalendar)
-        fromDate.setText(dateFormat.format(fromCalendar.getTime()))
+        fromDate.setText(dateFormat.format(fromCalendar.time))
 
         val toDate = findViewById<EditText>(R.id.date_to_edit_text)
         toDate.transformIntoDatePicker(this, "dd/MM/yyyy", toCalendar)
-        toDate.setText(dateFormat.format(toCalendar.getTime()))
+        toDate.setText(dateFormat.format(toCalendar.time))
 
         val fromTime = findViewById<EditText>(R.id.time_from_edit_text)
         fromTime.transformIntoTimePicker(this, "HH:mm", fromCalendar)
-        fromTime.setText(timeFormat.format(fromCalendar.getTime()))
+        fromTime.setText(timeFormat.format(fromCalendar.time))
 
         val toTime = findViewById<EditText>(R.id.time_to_edit_text)
         toTime.transformIntoTimePicker(this, "HH:mm", toCalendar)
-        toTime.setText(timeFormat.format(toCalendar.getTime()))
+        toTime.setText(timeFormat.format(toCalendar.time))
     }
 
-    fun EditText.transformIntoDatePicker(
+    private fun EditText.transformIntoDatePicker(
         context: Context,
         format: String,
         calendar: Calendar,
@@ -505,7 +545,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun EditText.transformIntoTimePicker(
+    private fun EditText.transformIntoTimePicker(
         context: Context,
         format: String,
         calendar: Calendar,

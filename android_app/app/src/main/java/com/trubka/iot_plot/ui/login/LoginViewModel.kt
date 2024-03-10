@@ -26,7 +26,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         executor.execute{
             val result = loginRepository.login(serverAddress, username, password)
             if (result is Result.Success) {
-                _loginResult.postValue(LoginResult(success = LoggedInUserView(apiAddress = serverAddress, username = username, password = password, companies = result.data.companies)))
+                _loginResult.postValue(LoginResult(success = LoggedInUserView(apiAddress = serverAddress, username = username, password = password)))
             } else {
                 _loginResult.postValue(LoginResult(error = R.string.login_failed))
             }

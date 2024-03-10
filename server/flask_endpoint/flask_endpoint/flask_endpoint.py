@@ -75,7 +75,8 @@ class FlaskEndpoint:
                 company = request.form.get('company')
                 device_type = int(request.form.get('device_type'))
                 device_id = int(request.form.get('device_id'))
-                fields = request.form.getlist('fields')
+                fields_string = request.form.get('fields')
+                fields = fields_string.split(',')
                 time_from = request.form.get('from')
                 time_to = request.form.get('to')
 
