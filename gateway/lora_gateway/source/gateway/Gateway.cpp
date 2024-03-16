@@ -20,7 +20,10 @@ void Gateway::start() {
 	while(!context_->context.stopped()) {
 		auto message = endpoint_->getMessage(messageReceiveTimeoutMs_);
 		if(message) {
+			logger::Logger::logInfo("Received message from endpoint");
 			processMessage(*message);
+		}else{
+			logger::Logger::logError("Failed to receive message from endpoint");
 		}
 	}
 	logger::Logger::logInfo("Stopping gateway of type LoRa");
