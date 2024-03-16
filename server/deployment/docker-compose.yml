@@ -69,11 +69,11 @@ services:
     user: 1000:1000
     profiles: ["all", "flask_endpoint", "platform"]
     volumes:
-      - ./configs/flask_endponint:/flask_endpoint/config/
+      - ./configs/flask_endpoint:/flask_endpoint/config/
     ports:
-      - 5000:5000
+      - 61048:5000
     entrypoint: ["python3", "main.py",
-                 "-c", "/flask_endponint/config/for_docker.json"]
+                 "-c", "/flask_endpoint/config/for_docker.json"]
     restart: on-failure:10
     networks:
       - iot-emulator
