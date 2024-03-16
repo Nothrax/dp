@@ -3,7 +3,7 @@ services:
   # InfluxDB: https://hub.docker.com/_/influxdb
   influxdb:
     image: influxdb:2.1
-    profiles: ["all", "database"]
+    profiles: ["all", "database", "test"]
     ports:
       - 8042:8042
     volumes:
@@ -63,7 +63,7 @@ services:
   flask_endpoint:
     image:  flask_endpoint
     user: 1000:1000
-    profiles: ["all", "flask_endpoint"]
+    profiles: ["all", "flask_endpoint", "test"]
     volumes:
       - ./configs/flask_endponint:/flask_endponint/config/
     ports:
@@ -75,7 +75,7 @@ services:
       - iot-emulator
   mariadb:
     image: mariadb:latest
-    profiles: ["all", "mariadb", "database"]
+    profiles: ["all", "mariadb", "database", "test"]
     environment:
       MYSQL_ROOT_PASSWORD: example
     ports:
@@ -90,7 +90,7 @@ services:
   # Add Adminer service
   adminer:
     image: adminer
-    profiles: ["all", "mariadb", "database"]
+    profiles: ["all", "mariadb", "database", "test"]
     ports:
       - 8080:8080
     links:

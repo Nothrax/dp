@@ -1,0 +1,2 @@
+timestamp_ms,protocol_version,device_type,device_number,flags,temperature,humidity,co2,check_sum
+1700996862782,3,1,1,0,21.000000,50.799999,534,249

@@ -22,13 +22,11 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     private val executor: ExecutorService = Executors.newSingleThreadExecutor()
 
-    fun login(serverAddress: String, organization: String, token: String) {
+    fun login(serverAddress: String, username: String, password: String) {
         executor.execute{
-            //only visual
-            //SystemClock.sleep(3000)
-            val result = loginRepository.login(serverAddress, organization, token)
+            val result = loginRepository.login(serverAddress, username, password)
             if (result is Result.Success) {
-                _loginResult.postValue(LoginResult(success = LoggedInUserView(apiAddress = serverAddress, token = token, organization = organization)))
+                _loginResult.postValue(LoginResult(success = LoggedInUserView(apiAddress = serverAddress, username = username, password = password)))
             } else {
                 _loginResult.postValue(LoginResult(error = R.string.login_failed))
             }
@@ -38,27 +36,24 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     fun loginDataChanged(serverAddress: String, organization: String, token: String) {
         if (!isAddressValid(serverAddress)) {
             _loginForm.value = LoginFormState(addressError = R.string.invalid_address)
-        } else if (!isOrganizationValid(organization)) {
-            _loginForm.value = LoginFormState(organizationError = R.string.invalid_organization)
-        } else if(!isTokenValid(token)){
-            _loginForm.value = LoginFormState(tokenError = R.string.invalid_token)
+        } else if (!isUsernameValid(organization)) {
+            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
+        } else if(!isPasswordValid(token)){
+            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
         }else{
             _loginForm.value = LoginFormState(isDataValid = true)
         }
     }
 
     private fun isAddressValid(address: String): Boolean {
-        //todo better check?
         return address.isNotBlank()
     }
 
-    private fun isOrganizationValid(organization: String): Boolean {
-        //todo better check?
+    private fun isUsernameValid(organization: String): Boolean {
         return organization.isNotBlank()
     }
 
-    private fun isTokenValid(token: String): Boolean {
-        //todo better check?
-        return token.length > 5
+    private fun isPasswordValid(password: String): Boolean {
+        return password.length > 1
     }
 }

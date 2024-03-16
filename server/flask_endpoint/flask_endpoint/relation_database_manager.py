@@ -12,6 +12,14 @@ class RelationDBManager:
         self._config = config
         self._logger = logging.getLogger("RelationDBManager")
 
+    def is_authenticated(self, username: str, password: str) -> bool:
+        if username is None or password is None:
+            return False
+        user = self.get_user(username, password)
+        if user is None:
+            return False
+        return True
+
     def is_authorized(self, username: str, password: str, company: str) -> bool:
         if username is None or password is None or company is None:
             return False
@@ -19,6 +27,38 @@ class RelationDBManager:
         if company not in companies:
             return False
         return True
+
+    def get_user(self, username: str, password: str) -> Dict[str, str] | None:
+        user = None
+        try:
+            conn = mysql.connector.connect(
+                host=self._config.db_address,
+                user=self._config.db_user,
+                password=self._config.db_password,
+                database="iot"
+            )
+        except mysql.connector.Error as err:
+            print("Error connecting to MariaDB.")
+            raise err
+
+        cursor = conn.cursor(dictionary=True)
+
+        try:
+            cursor.execute(f"""SELECT username, password
+                                FROM user
+                                WHERE username = '{username}' AND password = '{password}';""")
+            result = cursor.fetchone()
+
+            if result is not None:
+                user = result
+
+        except mysql.connector.Error as err:
+            print("Error executing query: {}".format(err))
+            raise err
+
+        cursor.close()
+        conn.close()
+        return user
 
     def get_companies(self, username: str, password: str) -> List[str]:
         companies = []

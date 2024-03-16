@@ -35,8 +35,8 @@ class LoginActivity : AppCompatActivity() {
         updateFieldsFromPreferences()
 
         val serverAddress = binding.apiAddressField
-        val organization = binding.organizationField
-        val token = binding.tokenField
+        val username = binding.usernameField
+        val password = binding.passwordField
         val login = binding.loginButton
 
 
@@ -51,11 +51,11 @@ class LoginActivity : AppCompatActivity() {
             if (loginState.addressError != null) {
                 serverAddress.error = getString(loginState.addressError)
             }
-            if (loginState.organizationError != null) {
-                organization.error = getString(loginState.organizationError)
+            if (loginState.usernameError != null) {
+                username.error = getString(loginState.usernameError)
             }
-            if (loginState.tokenError != null) {
-                token.error = getString(loginState.tokenError)
+            if (loginState.passwordError != null) {
+                password.error = getString(loginState.passwordError)
             }
         })
 
@@ -73,33 +73,33 @@ class LoginActivity : AppCompatActivity() {
         serverAddress.afterTextChanged {
             loginViewModel.loginDataChanged(
                 serverAddress.text.toString(),
-                organization.text.toString(),
-                token.text.toString()
+                username.text.toString(),
+                password.text.toString()
             )
         }
 
-        organization.afterTextChanged {
+        username.afterTextChanged {
             loginViewModel.loginDataChanged(
                 serverAddress.text.toString(),
-                organization.text.toString(),
-                token.text.toString()
+                username.text.toString(),
+                password.text.toString()
             )
         }
 
-        token.afterTextChanged {
+        password.afterTextChanged {
             loginViewModel.loginDataChanged(
                 serverAddress.text.toString(),
-                organization.text.toString(),
-                token.text.toString()
+                username.text.toString(),
+                password.text.toString()
             )
         }
 
-        token.apply {
+        password.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
                     serverAddress.text.toString(),
-                    organization.text.toString(),
-                    token.text.toString()
+                    username.text.toString(),
+                    password.text.toString()
                 )
             }
 
@@ -108,8 +108,8 @@ class LoginActivity : AppCompatActivity() {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
                             serverAddress.text.toString(),
-                            organization.text.toString(),
-                            token.text.toString()
+                            username.text.toString(),
+                            password.text.toString()
                         )
                 }
                 false
@@ -121,16 +121,16 @@ class LoginActivity : AppCompatActivity() {
 
                 loginViewModel.login(
                     serverAddress.text.toString(),
-                    organization.text.toString(),
-                    token.text.toString()
+                    username.text.toString(),
+                    password.text.toString()
                 )
             }
         }
         ///set values for the first time
         loginViewModel.loginDataChanged(
             serverAddress.text.toString(),
-            organization.text.toString(),
-            token.text.toString()
+            username.text.toString(),
+            password.text.toString()
         )
 
     }
@@ -144,15 +144,11 @@ class LoginActivity : AppCompatActivity() {
         ).show()
         showLoadingScreen(false)
 
-        val serverAddress = binding.apiAddressField
-        val organization = binding.organizationField
-        val token = binding.tokenField
-
         val intent = Intent(this, MainActivity::class.java)
         val b = Bundle()
-        b.putString("address", serverAddress.text.toString())
-        b.putString("token", token.text.toString())
-        b.putString("organization", organization.text.toString())
+        b.putString("address", model.apiAddress)
+        b.putString("username", model.username)
+        b.putString("password", model.password)
         intent.putExtras(b)
         startActivity(intent)
     }
@@ -178,8 +174,8 @@ class LoginActivity : AppCompatActivity() {
         val sharedPreferences: SharedPreferences = this.getSharedPreferences(sharedPrefFile,
             Context.MODE_PRIVATE)
         binding.apiAddressField.setText(sharedPreferences.getString("PREF_API_ADDRESS",""))
-        binding.tokenField.setText(sharedPreferences.getString("PREF_TOKEN",""))
-        binding.organizationField.setText(sharedPreferences.getString("PREF_ORGANIZATION",""))
+        binding.usernameField.setText(sharedPreferences.getString("PREF_USERNAME",""))
+        binding.passwordField.setText(sharedPreferences.getString("PREF_PASSWORD",""))
         binding.saveLoginCheck.isChecked = sharedPreferences.getBoolean("PREF_CHECK",false)
     }
 
@@ -190,8 +186,8 @@ class LoginActivity : AppCompatActivity() {
         val editor:SharedPreferences.Editor =  sharedPreferences.edit()
         if(binding.saveLoginCheck.isChecked){
             editor.putString("PREF_API_ADDRESS", binding.apiAddressField.getText().toString())
-            editor.putString("PREF_TOKEN", binding.tokenField.getText().toString())
-            editor.putString("PREF_ORGANIZATION", binding.organizationField.getText().toString())
+            editor.putString("PREF_USERNAME", binding.usernameField.getText().toString())
+            editor.putString("PREF_PASSWORD", binding.passwordField.getText().toString())
             editor.putBoolean("PREF_CHECK", binding.saveLoginCheck.isChecked)
             editor.apply()
         }else{
