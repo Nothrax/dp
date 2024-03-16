@@ -74,7 +74,7 @@ class DeviceManager:
 
         try:
             cursor.execute("""
-                SELECT c.name AS company_name, g.name AS gateway_name, d.device_type, d.id AS device_id
+                SELECT c.name AS company_name, g.name AS gateway_name, d.device_type, d.device_number, d.id AS device_id
                 FROM device d
                 INNER JOIN gateway g ON d.gateway_id = g.id
                 INNER JOIN company c ON g.company_id = c.id
@@ -85,7 +85,7 @@ class DeviceManager:
             number_of_devices = 0
             for device in devices:
                 number_of_devices += 1
-                self._company_device_registry.add_device(device['company_name'], device['gateway_name'], DeviceType(device['device_type']), device['device_id'], self._config.influxdb_token)
+                self._company_device_registry.add_device(device['company_name'], device['gateway_name'], DeviceType(device['device_type']), device['device_number'], self._config.influxdb_token)
                 print(f"registered device {DeviceType(device['device_type'])} {device['device_id']} from {device['company_name']} {device['gateway_name']}")
             print(f"Number of devices: {number_of_devices}")
 
