@@ -35,7 +35,7 @@ TARGET_LINK_LIBRARIES(lora_gateway_lib
         spdlog::spdlog_header_only
 )
 
-IF(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
     TARGET_LINK_LIBRARIES(lora_gateway_lib
             wiringPi )
 ENDIF()
