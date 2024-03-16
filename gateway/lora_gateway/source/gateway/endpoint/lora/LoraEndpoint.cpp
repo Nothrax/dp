@@ -115,6 +115,7 @@ bool LoraEndpoint::initializeLora() {
 
 	/// Set mode back to wireless communication
 	setMode(ELoraMode::E_NORMAL_MODE);
+	logger::Logger::logInfo("LoRa board initialized");
 	return true;
 }
 }
