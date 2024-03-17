@@ -15,7 +15,7 @@ Scripts for docker compose deployment.
  - flask_endpoint - http endpoint for gui app
  - mariadb - relational database
  - adminer - http app for editing relational database
- - grafana - application for notifications and dashboars
+ - grafana - application for notifications and dashboards
 
 # Run
 ```
