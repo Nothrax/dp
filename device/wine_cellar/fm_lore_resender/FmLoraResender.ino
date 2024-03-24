@@ -48,8 +48,8 @@ struct RFMessage {
 struct LoRaMessage {
 	/// Version number of protocl
 	uint8_t protocolVersion;
-  /// Unit type
-  uint8_t unitType;
+  	/// Unit type
+  	uint8_t unitType;
 	/// Unit identification number
 	uint8_t unitNumber;
 	/// Flags

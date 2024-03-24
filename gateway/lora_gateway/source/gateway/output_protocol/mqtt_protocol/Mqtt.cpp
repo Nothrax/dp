@@ -41,7 +41,9 @@ bool Mqtt::initialize() {
 
 	auto ret = connect();
 
-	listenerThread_ = std::thread(&Mqtt::listenerLoop, this);
+	if(!listenerThread_.joinable()) {
+		listenerThread_ = std::thread(&Mqtt::listenerLoop, this);
+	}
 
 	return ret;
 }
@@ -120,6 +122,7 @@ void Mqtt::disconnect() {
 		client_->unsubscribe(subscribeTopic_);
 		client_->disconnect();
 	}
+
 	client_.reset();
 }
 

@@ -111,7 +111,7 @@ class RelationDBManager:
 
         try:
             cursor.execute(f"""
-                   SELECT c.name AS company_name, g.name AS gateway_name, d.device_type, d.device_name, d.id AS device_id
+                   SELECT c.name AS company_name, g.name AS gateway_name, d.device_type, d.device_number, d.device_name, d.id AS device_id
                    FROM device d
                    INNER JOIN gateway g ON d.gateway_id = g.id
                    INNER JOIN company c ON g.company_id = c.id
@@ -123,13 +123,13 @@ class RelationDBManager:
             for row in result:
                 if row['device_type'] == DeviceType.CELLAR.value:
                     devices.append({
-                        "device_id": row['device_id'],
+                        "device_id": row['device_number'],
                         "device_type": row['device_type'],
                         "device_name": row['device_name'],
                         "fields": ["temperature", "humidity", "co2"]})
                 elif row['device_type'] == DeviceType.SCALE.value:
                     devices.append({
-                        "device_id": row['device_id'],
+                        "device_id": row['device_number'],
                         "device_type": row['device_type'],
                         "device_name": row['device_name'],
                         "fields": ["weight", "temperature", "humidity"]})

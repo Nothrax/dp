@@ -3,7 +3,7 @@ services:
   # InfluxDB: https://hub.docker.com/_/influxdb
   influxdb:
     image: influxdb:2.1
-    profiles: ["all", "database", "test"]
+    profiles: ["all", "database", "platform"]
     ports:
       - 8042:8042
     volumes:
@@ -20,20 +20,22 @@ services:
     restart: on-failure:10
     networks:
       - iot-emulator
+  # add mosquitto service
   mosquitto:
     image: eclipse-mosquitto:2.0.18
     user: 1000:1000
-    profiles: ["all", "mosquitto"]
+    profiles: ["all", "mosquitto", "platform"]
     volumes:
       - ./storage/mosquitto/log:/mosquitto/log
       - ./storage/mosquitto/data:/mosquitto/data
       - ./configs/mosquitto:/mosquitto/config/
     ports:
-      - 1884:1883
-      - 8884:8883
+      - 1883:1883
+      - 8883:8883
     restart: on-failure:10
     networks:
       - iot-emulator
+  # add gateway service
   gateway:
     image:  gateway
     profiles: ["all", "gateway"]
@@ -46,10 +48,11 @@ services:
     restart: on-failure
     networks:
       - iot-emulator
+  # add uploader service
   uploader:
     image:  uploader
     user: 1000:1000
-    profiles: ["all", "uploader"]
+    profiles: ["all", "uploader", "platform"]
     volumes:
       - ./configs/uploader:/uploader/config/
     entrypoint: ["python3", "main.py",
@@ -60,22 +63,24 @@ services:
       - influxdb
     networks:
       - iot-emulator
+  # add flask endpoint service
   flask_endpoint:
     image:  flask_endpoint
     user: 1000:1000
-    profiles: ["all", "flask_endpoint", "test"]
+    profiles: ["all", "flask_endpoint", "platform"]
     volumes:
-      - ./configs/flask_endponint:/flask_endponint/config/
+      - ./configs/flask_endpoint:/flask_endpoint/config/
     ports:
-      - 5000:5000
+      - 61048:5000
     entrypoint: ["python3", "main.py",
-                 "-c", "/flask_endponint/config/for_docker.json"]
+                 "-c", "/flask_endpoint/config/for_docker.json"]
     restart: on-failure:10
     networks:
       - iot-emulator
+  # add mariadb service
   mariadb:
     image: mariadb:latest
-    profiles: ["all", "mariadb", "database", "test"]
+    profiles: ["all", "mariadb", "database", "platform"]
     environment:
       MYSQL_ROOT_PASSWORD: example
     ports:
@@ -90,18 +95,19 @@ services:
   # Add Adminer service
   adminer:
     image: adminer
-    profiles: ["all", "mariadb", "database", "test"]
+    profiles: ["all", "mariadb", "database", "platform"]
     ports:
-      - 8080:8080
+      - 59452:8080
     links:
       - mariadb
     restart: on-failure:10
     networks:
       - iot-emulator
+  # Add grafana service
   grafana:
     image: grafana/grafana:latest
     user: 1000:1000
-    profiles: ["all", "database"]
+    profiles: ["all", "database", "platform"]
     ports:
       - 3000:3000
     environment:
