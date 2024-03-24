@@ -16,7 +16,7 @@ void Gateway::start() {
 		logger::Logger::logError("Failed to initialize gateway");
 		return;
 	}
-
+	logger::Logger::logInfo("Gateway started parsing messages");
 	while(!context_->context.stopped()) {
 		auto message = endpoint_->getMessage(messageReceiveTimeoutMs_);
 		if(message) {
@@ -51,6 +51,7 @@ bool Gateway::initialize() {
 		logger::Logger::logError("Failed to initialize output of type {}, reconnect will be attempted",
 								 common_tools::EnumTools::enumToString(context_->settings->getOutputType()));
 	}
+	logger::Logger::logInfo("Gateway initialized");
 	return true;
 }
 

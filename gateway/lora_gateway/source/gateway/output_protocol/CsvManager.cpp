@@ -39,7 +39,11 @@ void CsvManager::initializeDeviceEntry(input_protocol::EDeviceType deviceType, u
 				std::istreambuf_iterator<char>(),
 				'\n'
 		);
-		outputsEntries_[deviceType][deviceNumber].entryCounter_ = lineCount - 1;
+		if(lineCount > 0){
+			outputsEntries_[deviceType][deviceNumber].entryCounter_ = lineCount - 1;
+		}else{
+			outputsEntries_[deviceType][deviceNumber].entryCounter_ = 0;
+		}
 		inFile.close();
 		outputsEntries_[deviceType][deviceNumber].file_.open(deviceFile, std::ios::out | std::ios::app);
 	} else {
