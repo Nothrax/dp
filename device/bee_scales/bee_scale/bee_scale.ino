@@ -1,6 +1,7 @@
 #include <SoftwareSerial.h>
 #include <VirtualWire.h>
 #include <HX711.h>
+#include <DHT.h>
 
 /// LoRa board (E32-868T20D) specific settings
 /// LoRa Tx pin number
@@ -70,9 +71,15 @@ uint8_t loraSettings[] = { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0x24 };
 #define UNIT_NUMBER 1;
 #define UNIT_TYPE 2;
 
+#define DHT_PIN 10
+// Sensor is of type DHT11
+#define DHT_TYPE DHT11
+
 
 HX711 scale1;
 HX711 scale2;
+/// Instance of the DHT sensor
+DHT dht(DHT_PIN, DHT_TYPE);
 
 /// LoRa message counter
 uint8_t loraCounter { 0 };
@@ -132,6 +139,9 @@ void setup() {
 	digitalWrite(LORA_M1_PIN, LOW);
 	delay(500);
 
+  /// Initialization of communication with DHT
+	dht.begin();
+
   scale1.begin(LOADCELL_DOUT_PIN1, LOADCELL_SCK_PIN1);
   scale2.begin(LOADCELL_DOUT_PIN2, LOADCELL_SCK_PIN2);
   scale1.set_scale(CALIBRATION_FACTOR); 
@@ -149,10 +159,22 @@ void loop() {
 
 Measurement makeMeasurement(){
   Measurement measurement;
-  measurement.scale_1 = 15.0;
-  measurement.scale_2 = 20.0;
-  measurement.humidity = 86.5;
-  measurement.temperature = 22.3;
+
+  measurement.scale_1 = scale1.get_units();
+  measurement.scale_2 = scale2.get_units();
+	measurement.humidity = dht.readHumidity();
+	measurement.temperature = dht.readTemperature();
+
+  Serial.print("Scale 1: ");
+  Serial.println(measurement.scale_1, 1);
+  Serial.print("Scale 2: ");
+  Serial.println(measurement.scale_2, 1);
+  Serial.print("Temperature: ");
+  Serial.println(measurement.temperature, 1);
+  Serial.print("Humidity: ");
+  Serial.println(measurement.humidity, 1);
+
+
   return measurement;
 }
 
