@@ -12,6 +12,10 @@ Scripts for docker compose deployment.
  - mosquitto - MQTT broker
  - gateway - gateway program, generating random data with default settings
  - uploader - uploader program
+ - flask_endpoint - http endpoint for gui app
+ - mariadb - relational database
+ - adminer - http app for editing relational database
+ - grafana - application for notifications and dashboards
 
 # Run
 ```

@@ -22,11 +22,11 @@ class MqttClient:
         self._mqtt_client.on_connect = self._on_connect
         self._mqtt_client.on_disconnect = self._on_disconnect
         self._mqtt_client.on_message = self._on_message
-        if self._config.ssl:
+        if self._config.mqtt_ssl:
             self._mqtt_client.tls_set(
-                ca_certs=self._config.ca_cert,
-                certfile=self._config.cert_file,
-                keyfile=self._config.key_file,
+                ca_certs=self._config.mqtt_ca_cert,
+                certfile=self._config.mqtt_cert_file,
+                keyfile=self._config.mqtt_key_file,
                 tls_version=ssl.PROTOCOL_TLS_CLIENT,
             )
             self._mqtt_client.tls_insecure_set(False)
@@ -51,10 +51,10 @@ class MqttClient:
 
     def connect(self) -> bool:
         try:
-            self._mqtt_client.connect(self._config.address, port=self._config.port, keepalive=60)
+            self._mqtt_client.connect(self._config.mqtt_address, port=self._config.mqtt_port, keepalive=60)
             return True
         except ConnectionRefusedError:
-            self._logger.error(f"Connection refused to {self._config.address}:{self._config.port}")
+            self._logger.error(f"Connection refused to {self._config.mqtt_address}:{self._config.mqtt_port}")
             return False
 
     def start(self) -> None:

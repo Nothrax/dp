@@ -33,7 +33,6 @@
             android:layout_height="match_parent"
             android:id="@+id/graph"/>
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/grap_chooser_view"
         android:layout_width="match_parent"
@@ -147,7 +146,6 @@
 
         </LinearLayout>
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/graph_creator_view"
         android:layout_width="match_parent"
@@ -171,19 +169,19 @@
             android:autofillHints="jméno grafu"/>
 
         <TextView
-            android:id="@+id/bucket_spinner_text"
+            android:id="@+id/company_spinner_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="@color/black"
             android:padding="10dp"
-            android:text="@string/bucket_spinner_text" />
+            android:text="@string/company_spinner_text" />
         <Spinner
-            android:id="@+id/bucket_spinner"
+            android:id="@+id/company_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawSelectorOnTop="true"
-            android:prompt="@string/bucket_spinner_text"
+            android:prompt="@string/company_spinner_text"
             android:gravity="center" />
 
         <View
@@ -192,19 +190,19 @@
             android:background="#bdc3c7"/>
 
         <TextView
-            android:id="@+id/location_spinner_text"
+            android:id="@+id/device_type_spinner_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="@color/black"
             android:padding="10dp"
-            android:text="@string/location_spinner_text" />
+            android:text="@string/device_type_spinner_text" />
         <Spinner
-            android:id="@+id/location_spinner"
+            android:id="@+id/device_type_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawSelectorOnTop="true"
-            android:prompt="@string/location_spinner_text"
+            android:prompt="@string/device_type_spinner_text"
             android:gravity="center" />
 
         <View
@@ -221,7 +219,7 @@
             android:padding="10dp"
             android:text="@string/device_spinner_text" />
         <Spinner
-            android:id="@+id/device_spinner"
+            android:id="@+id/device_name_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawSelectorOnTop="true"

@@ -5,7 +5,7 @@ from uploader.device.device_type import DeviceType
 
 
 class Device:
-    def __init__(self, company_name: str, gateway_id: str, device_type: DeviceType, device_id: int):
+    def __init__(self, company_name: str, gateway_id: str, device_type: DeviceType, device_id: int) -> None:
         self.company_name = company_name
         self.gateway_id = gateway_id
         self.device_type = device_type

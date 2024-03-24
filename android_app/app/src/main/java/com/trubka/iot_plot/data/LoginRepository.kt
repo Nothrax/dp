@@ -27,9 +27,9 @@ class LoginRepository(val dataSource: LoginDataSource) {
         dataSource.logout()
     }
 
-    fun login(serverAddress: String, organization: String, token: String): Result<LoggedInUser> {
+    fun login(serverAddress: String, username: String, password: String): Result<LoggedInUser> {
         // handle login
-        val result = dataSource.login(serverAddress, organization, token)
+        val result = dataSource.login(serverAddress, username, password)
 
         if (result is Result.Success) {
             setLoggedInUser(result.data)

@@ -85,24 +85,24 @@
                     android:autofillHints="api_address"/>
 
                 <EditText
-                    android:id="@+id/organization_field"
+                    android:id="@+id/username_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:gravity="center_horizontal"
                     android:hint="@string/organization_hint_text"
-                    android:autofillHints="organization"/>
+                    android:autofillHints="username" />
 
                 <EditText
-                    android:id="@+id/token_field"
+                    android:id="@+id/password_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="textPassword"
                     android:gravity="center_horizontal"
                     android:hint="@string/token_hint_text"
-                    android:autofillHints="token"
+                    android:autofillHints="password"
                     />
 
                 <CheckBox
