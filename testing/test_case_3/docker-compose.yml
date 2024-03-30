@@ -1,0 +1,65 @@
+version: '3'
+services:
+  # InfluxDB: https://hub.docker.com/_/influxdb
+  influxdb:
+    image: influxdb:2.1
+    profiles: ["test_case_3"]
+    ports:
+      - 8042:8042
+    volumes:
+      - ./storage/influxdb:/var/lib/influxdb2 #this will be mounted
+      - ./configs/influx:/etc/influx/
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
+      - INFLUXD_CONFIG_PATH=/etc/influx/config.yaml
+    restart: on-failure:10
+    networks:
+      - iot-emulator
+  # add flask endpoint service
+  flask_endpoint:
+    image:  flask_endpoint
+    user: 1000:1000
+    profiles: ["test_case_3"]
+    volumes:
+      - ./configs/flask_endpoint:/flask_endpoint/config/
+    ports:
+      - 61048:5000
+    entrypoint: ["python3", "main.py",
+                 "-c", "/flask_endpoint/config/for_docker.json"]
+    restart: on-failure:10
+    networks:
+      - iot-emulator
+  # add mariadb service
+  mariadb:
+    image: mariadb:latest
+    profiles: ["test_case_3"]
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    ports:
+      - 3306:3306
+    volumes:
+      - ./storage/mariadb-data:/var/lib/mysql
+      - ./configs/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: on-failure:10
+    networks:
+      - iot-emulator
+
+  # Add Adminer service
+  adminer:
+    image: adminer
+    profiles: ["test_case_3"]
+    ports:
+      - 59452:8080
+    links:
+      - mariadb
+    restart: on-failure:10
+    networks:
+      - iot-emulator
+networks:
+  iot-emulator:
+    name: iot-emulator
