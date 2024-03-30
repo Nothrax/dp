@@ -49,25 +49,15 @@ CREATE TABLE employed (
     FOREIGN KEY (company_id) REFERENCES company(id)
 );
 
-INSERT INTO company (id, name) VALUES 
-(1, 'company1'),
-(2, 'company2');
+INSERT INTO company (id, name) VALUES (1, 'company1');
+INSERT INTO user (id, username, password, database_token, first_name, last_name, privileges)
+VALUES (1, 'john_doe', 'my_secure_password', 'abc123', 'John', 'Doe', 'admin');
 
-INSERT INTO user (id, username, password, database_token, first_name, last_name, privileges) VALUES
-(1, 'john_doe', 'pass', 'abc123', 'John', 'Doe', 'admin'),
-(2, 'steve_elan', 'pass', 'abc123', 'John', 'Doe', 'admin');
+INSERT INTO employed (user_id, company_id) VALUES (1, 1);
 
-INSERT INTO employed (user_id, company_id) VALUES 
-(1, 1),
-(1, 2),
-(2, 2);
+INSERT INTO gateway (id, name, placement, company_id)
+VALUES (1, 'gateway1', 'Office Building A', 1);
 
-INSERT INTO gateway (id, name, placement, company_id) VALUES
-(1, 'gateway1', 'Office Building A', 1),
-(2, 'gateway2', 'Office Building ', 2);
-
-INSERT INTO device (id, device_type, device_number, device_name, placement, gateway_id) VALUES 
-(1, 1, 1, 'sklep1', 'Floor 1, Room 102', 1),
-(2, 1, 2, 'sklep2', 'Floor 1, Room 103', 1),
-(3, 1, 3, 'sklep3', 'Floor 1, Room 104', 1),
-(4, 2, 4, 'ul1', 'Floor 2, Room 201', 2);
+INSERT INTO device (id, device_type, device_number, device_name, placement, gateway_id)
+VALUES (1, 1, 1, 'sklep1', 'Floor 1, Room 101', 1),
+       (2, 2, 1, 'ul1', 'Floor 2, Room 201', 1);

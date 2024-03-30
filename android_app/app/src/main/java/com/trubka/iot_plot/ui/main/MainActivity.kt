@@ -374,12 +374,8 @@ class MainActivity : AppCompatActivity() {
             if(deviceTypes.isEmpty()){
                 setValuesInSpinner(ArrayList(), deviceTypeSpinner, "Nebylo nalezeno žádné zařízení")
             }else{
-                if(deviceTypes.size == 1){
-                    setValuesInSpinner(deviceTypes, deviceTypeSpinner, "Nebylo nalezeno žádné zařízení")
-                }else{
-                    val uniqueTypes = deviceTypes.distinct() as ArrayList<String>
-                    setValuesInSpinner(uniqueTypes, deviceTypeSpinner, "Nebylo nalezeno žádné zařízení")
-                }
+                val uniqueTypes = deviceTypes.distinct()
+                setValuesInSpinner(ArrayList(uniqueTypes), deviceTypeSpinner, "Nebylo nalezeno žádné zařízení")
             }
         }
 
