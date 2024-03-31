@@ -16,6 +16,7 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
       - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
+      - DOCKER_INFLUXDB_INIT_CLI_CONFIG_NAME=test_case_2
       - INFLUXD_CONFIG_PATH=/etc/influx/config.yaml
     restart: on-failure:10
     networks:
@@ -30,7 +31,7 @@ services:
       - ./storage/mosquitto/data:/mosquitto/data
       - ./configs/mosquitto:/mosquitto/config/
     ports:
-      - 1883:1883
+      - 1884:1883
       - 8883:8883
     restart: on-failure:10
     networks:
