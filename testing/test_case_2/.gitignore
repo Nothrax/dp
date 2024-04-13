@@ -1,0 +1,5 @@
+*.log
+*.csv
+storage/influxdb*
+storage/mariadb*
+storage/mosquitto*
