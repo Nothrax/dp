@@ -31,6 +31,20 @@ public:
 	[[nodiscard]] std::shared_ptr<input_protocol::InputProtocolMessage> getMessage(unsigned int timeoutMs) override;
 
 private:
+	static constexpr float MAX_TEMPERATURE { 70.0f };
+	static constexpr float MIN_TEMPERATURE_ { -20.0f };
+	static constexpr float MAX_HUMIDITY { 100.0f };
+	static constexpr float MIN_HUMIDITY { 0.0f };
+	static constexpr uint32_t MAX_CO2 { 10000 };
+	static constexpr uint32_t MIN_CO2 { 10000 };
+	static constexpr float MAX_WEIGHT { 200.0f };
+	static constexpr float MIN_WEIGHT { 0.0f };
+	static constexpr float TEMPERATURE_STEP { 0.5f };
+	static constexpr float HUMIDITY_STEP { 0.5f };
+	static constexpr uint32_t CO2_STEP { 10 };
+	static constexpr float WEIGHT_STEP { 0.5f };
+
+
 	/// Maximum index of the message
 	static constexpr uint32_t MAX_MESSAGE_INDEX { 15 };
 	/// Message counter - index of the current message
@@ -45,5 +59,8 @@ private:
 	float humidityBee_ { 80.5f };
 	float temperatureBee_ { 15.5f };
 	float weightBee_ { 109.5f };
+
+
+	void updateValues();
 };
 }

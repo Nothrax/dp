@@ -1,0 +1,142 @@
+% ============================================================================ %
+%
+%           Šablona bakalářské/diplomové práce
+%
+% Autor:    Ing. Jozef Říha (2006-05-04), od té doby šablonu udržuje
+%           Ing. Pavel Tomášek, Ph.D. (tomasek@utb.cz)
+%
+% Verze:    2021-05-04
+%
+% Kódování: UTF-8 (kontrolní řetězec: žluťoučký kůň úpěl ďábelšké ódy)
+%
+% Sazba:    pdflatex prace.tex && pdflatex prace.tex
+%           (nutné dvakrát pro korektní vložení citací a jiných referencí),
+%           v případě umístění literatury do externího bib souboru je třeba volat
+%           pdflatex prace.tex && bibtex prace && pdflatex prace.tex && pdflatex prace.tex
+%
+% Tip:      Ve správně vysázeném českém textu by na konci řádku neměla zůstant
+%           samotná jednopísmenná předložka či spojka. Na takové místo se vkládá
+%           nezalomitelná mezera pomocí symbolu ~. Existuje program, který umí
+%           zpracovat celý TeX dokument najednou podle českých konvencí:
+%           http://petr.olsak.net/ftp/olsak/vlna/
+%
+% Pozor:    Vzhledem k požadovanému standardu PDF/A nesmí vložené obrázky 
+%           obsahovat alfa kanál (průhlednost).
+%
+% ============================================================================ %
+
+
+\documentclass[a4paper,12pt]{article}
+
+% Definice vzhledu a nastavení se načítá z následujícího souboru (netřeba editovat)
+\input{tex/UTB.tex}
+
+% Uživatelské definice -- upravte dle požadavků
+\nastavfakultu{FAI}
+	% FAI  -- pro Fakultu aplikované informatiky
+	% FAME -- pro Fakultu managementu a ekonomiky
+	% FHS  -- pro Fakultu humanitních studií
+	% FLKR -- pro Fakultu logistiky a krizového řízení
+	% FMK  -- pro Fakutlu mutimediálních komunikací
+	% FT   -- pro Fakultu technologickou
+	% UNI  -- pro Univerzitní institut
+\nastavtyp{DP}
+	% BP   -- bakalářská práce
+	% DP   -- diplomová práce
+\nastavrok{2024}
+	% zadejte rok místo "xxxx"
+\nastavjazyk{CZ}
+	% CZ   -- práce bude v českém jazyce
+	% EN   -- práce bude v anglickém jazyce
+
+% Lze přidat vertikalni odsazeni nad (prvni parametr) a pod (druhy parametr)
+% obrázky, tabulky i rovnice/soustavy rovnic
+\nastavmezerukolemobrazku{0mm}{0mm}
+\nastavmezerukolemtabulek{0mm}{0mm}
+\nastavmezerukolemrovnic{0mm}{0mm}
+
+\nastavautora{Bc. Jakub Trubka}
+\nastavnazevcz{Systém pro sběr a zpracování dat v zemědělství}
+\nastavnazeven{Název práce anglicky (max. 2 řádky)} % Jen u anglicky psané práce
+\nastavabstraktcz{Tato diplomová práce se zabývá návrhem a implementací systému pro sběr, zpracování, uchovávání a vizualizaci dat získaných v oblasti zemědělství, primárně v oblasti sadařství a vinařství.  Výsledný systém umožňuje uživateli monitorování podmínek v místě umístění zařízení se senzory. Systém klade důraz na nízkou cenu, odolnost a rozšiřitelnost. V rámci teoretické části jsou popsána existující řešení a rozebrána problematika sběru, zpracování a vizualizace dat. Praktická část se věnuje návrhu architektury systému, včetně návrhu jednotlivých zařízení pro sběr dat a komunikačních protokolů. Dále se praktická část zabývá implementací celého systému a jeho jednotlivých částí. V práci jsou též diskutovány výsledky získané experimentováním s vytvořeným systémem a diskutovány další možnosti zlepšení systému jako takového.
+}
+\nastavabstrakten{This thesis deals with the design and implementation of a system for collection, processing, storage and visualization of data obtained in the field of agriculture, primarily in the field of orchards and viticulture. The resulting system allows the user to monitor the conditions at the location of the device with sensors. The system emphasizes low cost, durability, and expandability. In the theoretical part, existing solutions are described and the issues of data collection, processing and visualization are analyzed. The practical part is devoted to the design of the system architecture, including the design of individual devices for data collection and communication protocols. Furthermore, the practical part deals with the implementation of the entire system and its individual parts. The work also discusses the results obtained by experimenting with the created system and discusses other possibilities for improving the system as such.}
+\nastavklicovaslovacz{IoT, sběr dat, analýza dat, vizualizace dat, LoRa, MQTT, InfluxDB, zemědělství, senzory}
+\nastavklicovaslovaen{IoT, data collection, data analysis, data visualization, LoRa, MQTT, InfluxDB, agriculture, sensors}
+
+% Následující příkaz nastaví standard PDF/A-1b
+\aplikujpdfa
+
+
+% ============================================================================ %
+\begin{document}
+
+\titulnistrana
+
+\zadani
+%\includepdf[pages=-]{zadani.pdf}
+
+\prohlaseni
+
+\abstraktaklicovaslova
+
+
+% ============================================================================ %
+\clearpage
+\thispagestyle{empty}
+Děkuji vedoucímu diplomové práce Ing. Pavlovi Vařachovi, Ph.D. za rady, trpělivost a ochotu při konzultacích. Poděkování patří také Vinařskému spolku Uherčice za poskytnutí prostor k testování systému.
+
+
+
+% ============================================================================ %
+\obsah  % Obsah je generován automaticky
+
+
+% ============================================================================ %
+\OdsazovaniOdstavcuStart % Nastaví odsazování odstavců dle zvoleného jazyka
+
+\input{tex/text.tex} % Hlavni text prace
+
+\OdsazovaniOdstavcuStop
+
+
+% ============================================================================ %
+%\seznamlit{
+  % Na toto místo je třeba vložit veškeré citované bibliografické položky.
+  %\bibitem{HRW1997}Halliday, D.; Resnick, R.; Walker, J.: \emph{Fundamentals of Physics}. John Wiley \&~Sons, Inc., páté vydání, 1997, ISBN 978-0-471-28323-2.
+  %\bibitem{Delorme2006}Delorme, A.: \emph{Encyclopedia of Medical Devices and Instrumentation}, ročník 6, kapitola Statistical Methods. Wiley Interscience, 2006, ISBN 978-0-471-73287-7, s. 240–264, doi:10.1002/0471732877.emd318.
+  %\bibitem{Bourreau2006}Bourreau, D.; Peden, A.; Maguer, S. L.: A Quasi-Optical Free-Space Measurement Setup Without Time-Domain Gating for Material Characterization in the W-Band. \emph{Instrumentation and Measurement}, IEEE Transactions on, ročník 55, č. 6, prosinec 2006: s. 2022–2028, ISSN 0018-9456.
+  %\bibitem{Judish1999}Judish, R. M.; Splett, J.: Robust Statistical Analysis of Vector Network Analyzer Intercomparisons. In IMTC/99. \emph{Proceedings of the 16th IEEE Instrumentation and Measurement Technology Conference (Cat. No.99CH36309)}, ročník 3, květen 1999, ISSN 1091-5281, s. 1320–1324, doi:10.1109/IMTC.1999.776019.
+  %\bibitem{Valente2005}Valente, F.: \emph{Variational Bayesian Methods for Audio Indexing}. Dizertační práce, Université Nice Sophia Antipolis, září 2005.
+  %\bibitem{Fralick1997}Fralick, D. T.: W-band Free Space Permittivity Measurement Setup for Candidate Radome Materials. Technická zpráva, NASA Langley Technical Report Server, 1997.
+  %\bibitem{WWWCST}3DEXPERIENCE® Company - Dassault Systèmes®: CST Studio Suite 3D EM simulation and analysis software [online]. https://www.3ds.com/products-  services/simulia/products/cst-studio-suite/, 2020, [cit. 2020-01-26].
+%}
+% Pro generování literatury lze alternativně použít i příkaz "\seznamlitbib", 
+% který se postará o plnohodnotné vkládání referencí pomocí "bibliography". 
+% V takovém případě se využívají bibliografické údaje uložené v souboru 
+% tex/literatura.bib. Ty se automaticky upravuji dle zvolené citační normy 
+% (v šabloně je nastavena česká norma).
+\seznamlitbib
+
+
+% ============================================================================ %
+\input{tex/zkratky.tex} % Seznam zkratek
+
+
+% ============================================================================ %
+\seznamobr  % Seznam je generován automaticky
+
+
+% ============================================================================ %
+\seznamtab  % Seznam je generován automaticky
+
+
+% ============================================================================ %
+\input{tex/prilohy.tex} % Prilohy
+
+
+% ============================================================================ %
+
+\end{document}
+
+% ============================================================================ %

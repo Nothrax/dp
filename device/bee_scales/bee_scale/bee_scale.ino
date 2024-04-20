@@ -66,6 +66,7 @@ struct Measurement {
 /// 0x24 - Transparent transition mode, IO drive mode 0, Wireles wake-up time 1250ms, FEC off, transmission power 30dBm
 uint8_t loraSettings[] = { 0xc0, 0x14, 0x24, 0x1a, 0x02, 0x24 };
 
+#define MEASUREMENT_DELAY_MS 300000
 /// LoRa Gateway protocol values
 #define PROTOCOL_VERSION 3;
 #define UNIT_NUMBER 1;
@@ -154,7 +155,7 @@ void setup() {
 void loop() {
   Measurement measurement = makeMeasurement();
   sendLoRaMessage(measurement);
-  delay(30000);
+  delay(MEASUREMENT_DELAY_MS);
 }
 
 Measurement makeMeasurement(){
@@ -179,13 +180,13 @@ Measurement makeMeasurement(){
 }
 
 void sendLoRaMessage(const Measurement& measurement) {
-	LoRaMessage loraMessage;
-	loraMessage.protocolVersion = PROTOCOL_VERSION;
-	loraMessage.unitNumber = UNIT_NUMBER;
+  LoRaMessage loraMessage;
+  loraMessage.protocolVersion = PROTOCOL_VERSION;
+  loraMessage.unitNumber = UNIT_NUMBER;
   loraMessage.unitType = UNIT_TYPE;
-	loraMessage.flags = 0;
-	/// Adding message counter to flags
-	loraMessage.flags = loraCounter & 0b00001111;
+  loraMessage.flags = 0;
+  /// Adding message counter to flags
+  loraMessage.flags = loraCounter & 0b00001111;
 
   memcpy((void *)&loraMessage.values[0], (void *)&measurement.temperature, 4);
   memcpy((void *)&loraMessage.values[1], (void *)&measurement.humidity, 4);

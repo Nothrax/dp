@@ -43,7 +43,36 @@ std::shared_ptr<input_protocol::InputProtocolMessage> GeneratorEndpoint::getMess
 	message->checkSum = common_tools::MessageTools::calculateChecksum((uint8_t *)message.get(),
 																	  sizeof(input_protocol::InputProtocolMessage) -
 																	  sizeof(uint32_t));
+	updateValues();
 	std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	return message;
+}
+
+void GeneratorEndpoint::updateValues() {
+	temperatureCellar_ += TEMPERATURE_STEP;
+	if(temperatureCellar_ > MAX_TEMPERATURE) {
+		temperatureCellar_ = MIN_TEMPERATURE_;
+	}
+	humidityCellar_ += HUMIDITY_STEP;
+	if(humidityCellar_ > MAX_HUMIDITY) {
+		humidityCellar_ = MIN_HUMIDITY;
+	}
+	co2Cellar_ += CO2_STEP;
+	if(co2Cellar_ > MAX_CO2) {
+		co2Cellar_ = MIN_CO2;
+	}
+
+	temperatureBee_ += TEMPERATURE_STEP;
+	if(temperatureBee_ > MAX_TEMPERATURE) {
+		temperatureBee_ = MIN_TEMPERATURE_;
+	}
+	humidityBee_ += HUMIDITY_STEP;
+	if(humidityBee_ > MAX_HUMIDITY) {
+		humidityBee_ = MIN_HUMIDITY;
+	}
+	weightBee_ += WEIGHT_STEP;
+	if(weightBee_ > MAX_WEIGHT) {
+		weightBee_ = MIN_WEIGHT;
+	}
 }
 }
